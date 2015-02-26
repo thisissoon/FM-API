@@ -1,0 +1,5 @@
+.git
+docs
+dist
+*.py[cod]
+.env
