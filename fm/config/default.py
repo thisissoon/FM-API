@@ -10,6 +10,10 @@ Default configuration for the Flask application.
 
 import os
 
+# Debugging
+
+DEBUG = True
+
 # Player
 
 PLAYER_CHANNEL = os.environ.get('PLAYER_CHANNEL', 'fm.player')

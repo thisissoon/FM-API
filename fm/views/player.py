@@ -32,8 +32,10 @@ class Tracks(MethodView):
 
         channel = current_app.config.get('PLAYER_CHANNEL')
         redis.publish(channel, json.dumps({
-            'event': 'add',
+            'event': 'play',
             'track': 'spotify:track:67WTwafOMgegV6ABnBQxcE'}))
+
+        return json.dumps({'code': 200})
 
     def put(self):
         """ Allows for updates to a playing track. This resource can be

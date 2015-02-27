@@ -12,7 +12,7 @@ from flask.ext.script import Manager, Server
 from fm import app
 
 manager = Manager(app.create)
-manager.add_command("runserver", Server())
+manager.add_command("runserver", Server(host='0.0.0.0'))
 
 
 def run():
