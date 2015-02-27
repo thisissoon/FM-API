@@ -10,6 +10,10 @@ Default configuration for the Flask application.
 
 import os
 
+# Player
+
+PLAYER_CHANNEL = os.envorn.get('PLAYER_CHANNEL', 'fm.player')
+
 # Via
 
 VIA_ROUTES_MODULE = 'fm.routes.root'

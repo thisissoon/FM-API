@@ -8,7 +8,11 @@ fm.views.player
 Views for handling /player API resource requests.
 """
 
+import json
+
+from flask import current_app
 from flask.views import MethodView
+from fm.ext import redis
 
 
 class Tracks(MethodView):
@@ -26,7 +30,10 @@ class Tracks(MethodView):
         """ Allows you to add a new track to the player playlist.
         """
 
-        pass
+        channel = current_app.config.get('PLAYER_CHANNEL')
+        redis.publish(channel, json.dumps({
+            'event': 'add',
+            'track': 'spotify:track:67WTwafOMgegV6ABnBQxcE'}))
 
     def put(self):
         """ Allows for updates to a playing track. This resource can be
