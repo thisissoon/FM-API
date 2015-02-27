@@ -1,5 +1,6 @@
 # Installation Requirements for FM API
 
 flask==0.10.1
+Flask-Via==2015.1.1
 pyspotify==2.0.0b4
 redis==2.10.3
