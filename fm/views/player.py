@@ -10,9 +10,11 @@ Views for handling /player API resource requests.
 
 import json
 
-from flask import current_app
+from flask import request
 from flask.views import MethodView
 from fm.ext import redis
+from webargs import Arg, ValidationError
+from webargs.flaskparser import FlaskParser
 
 
 class Tracks(MethodView):
@@ -27,13 +29,17 @@ class Tracks(MethodView):
         pass
 
     def post(self):
-        """ Allows you to add a new track to the player playlist.
+        """ Allows you to add anew track to the player playlist.
         """
 
-        channel = current_app.config.get('PLAYER_CHANNEL')
-        redis.publish(channel, json.dumps({
-            'event': 'play',
-            'track': 'spotify:track:67WTwafOMgegV6ABnBQxcE'}))
+        try:
+            args = FlaskParser().parse({
+                'track': Arg(str, required=True)
+            }, request)
+        except ValidationError as err:
+            return json.dumps({'error': str(err),  'code': 400})
+
+        redis.rpush('playlist', args.get('track'))
 
         return json.dumps({'code': 200})
 
