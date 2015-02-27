@@ -2,5 +2,6 @@
 
 flask==0.10.1
 Flask-Via==2015.1.1
+Flask-Script==2.0.5
 pyspotify==2.0.0b4
 redis==2.10.3

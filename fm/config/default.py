@@ -12,7 +12,7 @@ import os
 
 # Player
 
-PLAYER_CHANNEL = os.envorn.get('PLAYER_CHANNEL', 'fm.player')
+PLAYER_CHANNEL = os.environ.get('PLAYER_CHANNEL', 'fm.player')
 
 # Via
 
