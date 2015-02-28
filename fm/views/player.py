@@ -12,21 +12,36 @@ import json
 
 from flask import request
 from flask.views import MethodView
-from fm.ext import redis
+from fm.ext import config, redis
 from webargs import Arg, ValidationError
 from webargs.flaskparser import FlaskParser
 
 
-class Tracks(MethodView):
-    """ The Player resource allows for the management of the playlist and
-    the current playing track.
+class Pause(MethodView):
+    """ The pause resources allows the payer to paused and unpaused via
+    POST for pause and DELTETE to unpause the player.
     """
 
-    def get(self):
-        """ Returns the current tracks in the playlist.
+    def post(self):
+        """ Pauses the player.
         """
 
-        pass
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'pause'}))
+
+        return json.dumps({'code': 201})
+
+    def delete(self):
+        """ Unapuses the player.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'resume'}))
+
+        return json.dumps({'code': 204})
+
+
+class Tracks(MethodView):
+    """ The Track resource allows for the management of the playlist.
+    """
 
     def post(self):
         """ Allows you to add anew track to the player playlist.
@@ -42,17 +57,3 @@ class Tracks(MethodView):
         redis.rpush('playlist', args.get('track'))
 
         return json.dumps({'code': 200})
-
-    def put(self):
-        """ Allows for updates to a playing track. This resource can be
-        used to pause and resume the playing track.
-        """
-
-        pass
-
-    def delete(self):
-        """ Allows for a track to be unloaded by the player. This can be any
-        player in the playlist.
-        """
-
-        pass
