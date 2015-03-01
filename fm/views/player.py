@@ -12,6 +12,7 @@ import json
 
 from flask import request
 from flask.views import MethodView
+from fm import http
 from fm.ext import config, redis
 from webargs import Arg, ValidationError
 from webargs.flaskparser import FlaskParser
@@ -28,7 +29,7 @@ class Pause(MethodView):
 
         redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'pause'}))
 
-        return json.dumps({'code': 201})
+        return http.Created()
 
     def delete(self):
         """ Unapuses the player.
@@ -36,7 +37,7 @@ class Pause(MethodView):
 
         redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'resume'}))
 
-        return json.dumps({'code': 204})
+        return http.NoContent()
 
 
 class Tracks(MethodView):
@@ -56,4 +57,4 @@ class Tracks(MethodView):
 
         redis.rpush('playlist', args.get('track'))
 
-        return json.dumps({'code': 200})
+        return http.Created()
