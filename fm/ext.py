@@ -11,7 +11,11 @@ Flask Application Extension Instantiation.
 from flask.ext.via import Via
 from fm.config import ConfigProxy
 from fm.db.nosql import Redis
+from fm.tasks import celery as _celery
 from werkzeug import LocalProxy
+
+# Celery
+celery = LocalProxy(lambda: _celery())
 
 # Flask-Via for Routing Modules
 via = Via()
