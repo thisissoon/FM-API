@@ -12,6 +12,7 @@ from fm.ext import db
 from sqlalchemy.dialects.postgresql import UUID
 
 
-class Track(db.Model):
+class SpotifyTrack(db.Model):
 
     id = db.Column(UUID, primary_key=True)
+    spotify_id = db.Column(db.Unicode(128), unique=True, nullable=False, index=True)

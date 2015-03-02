@@ -8,7 +8,7 @@ fm.ext
 Flask Application Extension Instantiation.
 """
 
-from flask.ext.sqlalchemy import SQLAlchemy
+from fm.db.sqla import FMSQLAlchemy
 from flask.ext.via import Via
 from fm.config import ConfigProxy
 from fm.db.nosql import Redis
@@ -28,4 +28,4 @@ redis = Redis()
 config = LocalProxy(lambda: ConfigProxy())
 
 # SQLAlchemy
-db = SQLAlchemy()
+db = FMSQLAlchemy()

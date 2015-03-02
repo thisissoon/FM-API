@@ -17,3 +17,6 @@ pyspotify==2.0.0b4
 
 # Asynchronous
 celery==3.1.17
+
+# Misc
+python-dateutil==2.4.0
