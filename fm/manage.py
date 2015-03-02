@@ -8,11 +8,18 @@ fm.manage
 FM Management Command Scripts.
 """
 
+from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Server
 from fm import app
+from fm.ext import db
 
-manager = Manager(app.create)
+app = app.create()
+
+manager = Manager(app)
+migrate = Migrate(app, db)
+
 manager.add_command("runserver", Server(host='0.0.0.0'))
+manager.add_command('db', MigrateCommand)
 
 
 def run():
