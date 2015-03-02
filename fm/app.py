@@ -10,8 +10,9 @@ Flask Application Factory for bootstraping the FM API Application.
 
 import os
 
-from fm.ext import db, redis, via
 from flask import Flask
+from fm.ext import db, redis, via
+from fm import models  # noqa
 
 
 def configure(app, config=None):
