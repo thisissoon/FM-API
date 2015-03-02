@@ -8,4 +8,4 @@ fm.models
 SQLAlchemy models.
 """
 
-from fm.models import track
+from fm.models import spotify  # noqa
