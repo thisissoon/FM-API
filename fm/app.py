@@ -10,7 +10,7 @@ Flask Application Factory for bootstraping the FM API Application.
 
 import os
 
-from fm.ext import redis, via
+from fm.ext import db, redis, via
 from flask import Flask
 
 
@@ -60,6 +60,9 @@ def create(config=None):
 
     # Reids
     redis.init_app(app)
+
+    # SQLAlchemy
+    db.init_app(app)
 
     # Routes
     via.init_app(app)

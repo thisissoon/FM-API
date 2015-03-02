@@ -35,5 +35,14 @@ VIA_ROUTES_MODULE = 'fm.routes.root'
 
 # Redis
 
-REDIS_SERVER_URI = os.environ.get('REDIS_SERVER_URI')
-REDIS_DB = os.environ.get('REDIS_DB')
+REDIS_SERVER_URI = os.environ.get(
+    'REDIS_SERVER_URI',
+    'redis://localhost:6379/')
+REDIS_DB = os.environ.get('REDIS_DB', 0)
+
+# SQLAlchemy
+
+SQLALCHEMY_NATIVE_UNICODE = False
+SQLALCHEMY_DATABASE_URI = os.environ.get(
+    'SQLALCHEMY_DATABASE_URI',
+    'sqlite://:memory:')

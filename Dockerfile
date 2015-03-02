@@ -8,9 +8,10 @@ RUN cat /mopidy.gpg | apt-key add -
 
 RUN apt-get update && apt-get install -y \
         build-essential \
-        python-dev \
+        libpq-dev \
         libffi-dev \
         libspotify-dev \
+        python-dev \
     && apt-get clean \
     && apt-get autoclean \
     && apt-get autoremove -y \
