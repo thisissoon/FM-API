@@ -8,6 +8,8 @@ fm.http
 Classes for returning HTTP responses.
 """
 
+import json
+
 
 from werkzeug.wrappers import Response as ResponseBase
 
@@ -22,7 +24,7 @@ class Response(ResponseBase):
         'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload'
     }
 
-    def __init__(self, response={}, *args, **kwargs):
+    def __init__(self, response=None, *args, **kwargs):
         """ Overrides default response constructor, automaticall turning the
         response data into a JSON object and setting default headers.
         """
@@ -32,6 +34,9 @@ class Response(ResponseBase):
 
         # Update passed headers with the default headers
         headers.update(self.default_headers)
+
+        if response is not None:
+            response = json.dumps(response)
 
         return super(ResponseBase, self).__init__(
             response,

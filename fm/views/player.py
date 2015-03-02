@@ -44,6 +44,14 @@ class Tracks(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
+    def get(self):
+        """ Returns a paginated list of tracks currently in the playlist.
+        """
+
+        tracks = redis.lrange('playlist', 0, -1)
+
+        return http.OK(tracks or [])
+
     def post(self):
         """ Allows you to add anew track to the player playlist.
         """
