@@ -14,5 +14,7 @@ from flask.ext.via.routers import Include
 
 routes = [
     # /player/*
-    Include('fm.routes.player', url_prefix='/player', endpoint='player')
+    Include('fm.routes.player', url_prefix='/player', endpoint='player'),
+    # /track/*
+    Include('fm.routes.track', url_prefix='/track', endpoint='track')
 ]

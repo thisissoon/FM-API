@@ -40,7 +40,7 @@ class Pause(MethodView):
         return http.NoContent()
 
 
-class Tracks(MethodView):
+class Playlist(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
