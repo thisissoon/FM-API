@@ -11,7 +11,7 @@ Models for storing Spotify Track data.
 import uuid
 
 from fm.ext import db
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.ext.associationproxy import association_proxy
 
 
@@ -74,6 +74,9 @@ class Album(db.Model):
 
     #: Album Name
     name = db.Column(db.Unicode(128))
+
+    #: Album Images - JSON object
+    images = db.Column(JSON)
 
     #
     # Relations

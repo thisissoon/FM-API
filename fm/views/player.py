@@ -67,9 +67,14 @@ class Playlist(MethodView):
 
         album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
         if album is None:
-            album = Album(name=data['album']['name'], spotify_uri=data['album']['uri'])
+            album = Album()
             db.session.add(album)
-            db.session.commit()
+
+        album.name = data['album']['name']
+        album.images = data['album']['images']
+        album.spotify_uri = data['album']['uri']
+
+        db.session.commit()
 
         for item in data['artists']:
             artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
