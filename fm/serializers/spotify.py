@@ -14,16 +14,42 @@ from kim.fields import Field
 from kim.contrib.sqa import SQASerializer
 
 
+class ArtistSerializer(SQASerializer):
+    """
+    """
+
+    id = Field(t.String, read_only=True)
+    name = Field(t.String)
+    spotify_uri = Field(t.String)
+
+
 class AlbumSerializer(SQASerializer):
     """
     """
 
-    pass
+    id = Field(t.String, read_only=True)
+    name = Field(t.String)
+    spotify_uri = Field(t.String)
+    images = Field(t.BaseType)
+
+    #
+    # Relations
+    #
+
+    artists = Field(t.Collection(t.Nested(ArtistSerializer)))
 
 
 class TrackSerialzier(SQASerializer):
     """
     """
 
-    name = Field(t.String, required=True)
-    duration = Field(t.Integer, required=True)
+    id = Field(t.String, read_only=True)
+    name = Field(t.String)
+    duration = Field(t.Integer)
+    spotify_uri = Field(t.String)
+
+    #
+    # Relations
+    #
+
+    album = Field(t.Nested(AlbumSerializer))

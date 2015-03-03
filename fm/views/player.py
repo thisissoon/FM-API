@@ -15,9 +15,11 @@ from flask.views import MethodView
 from fm import http
 from fm.http.pagination import paginate
 from fm.ext import config, db, redis
-from fm.serializers.player import PlaylistSerializer
 from fm.models.spotify import Album, Artist, Track
+from fm.serializers.player import PlaylistSerializer
+from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
+from sqlalchemy.dialects.postgresql import Any, array
 
 
 class Pause(MethodView):
@@ -46,7 +48,7 @@ class Playlist(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
-    @paginate
+    @paginate()
     def get(self, *args, **kwargs):
         """ Returns a paginated list of tracks currently in the playlist.
         """
@@ -56,7 +58,11 @@ class Playlist(MethodView):
 
         tracks = redis.lrange('playlist', offset, (offset + limit - 1))
 
-        return http.OK(tracks or [])
+        rows = Track.query \
+            .filter(Any(Track.spotify_uri, array(tracks))) \
+            .all()
+
+        return http.OK(TrackSerialzier().serialize(rows, many=True))
 
     def post(self):
         """ Allows you to add anew track to the player playlist.
