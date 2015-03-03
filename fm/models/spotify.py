@@ -30,7 +30,14 @@ class Artist(db.Model):
     #: Artist Name
     name = db.Column(db.Unicode(128))
 
-    albums = association_proxy('album_associations', 'album', creator=lambda album: ArtistAlbumAssociation(album=album))
+    #
+    # Relations
+    #
+
+    albums = association_proxy(
+        'album_associations',
+        'album',
+        creator=lambda album: ArtistAlbumAssociation(album=album))
 
 
 class ArtistAlbumAssociation(db.Model):
@@ -68,7 +75,14 @@ class Album(db.Model):
     #: Album Name
     name = db.Column(db.Unicode(128))
 
-    artists = association_proxy('artist_associations', 'artist', creator=lambda artist: ArtistAlbumAssociation(artist=artist))
+    #
+    # Relations
+    #
+
+    artists = association_proxy(
+        'artist_associations',
+        'artist',
+        creator=lambda artist: ArtistAlbumAssociation(artist=artist))
 
 
 class Track(db.Model):
