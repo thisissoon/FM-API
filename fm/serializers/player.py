@@ -23,13 +23,19 @@ class PlaylistSerializer(Serializer):
     uri = Field(t.String, required=True)
 
     def validate_uri(self, uri):
-        """
+        """ Validates the URI to ensure the track is valid and can be played
+        in the GB region.
+
+        Arguments
+        ---------
+        uri : str
+            The spotify track URI
         """
 
-        api = spotipy.Spotify()
+        spotify = spotipy.Spotify()
 
         try:
-            track = api.track(uri)
+            track = spotify.track(uri)
         except spotipy.SpotifyException:
             raise ValidationError('Invalid Spotify Track URI: {0}'.format(uri))
 

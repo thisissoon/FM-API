@@ -62,6 +62,6 @@ class Playlist(MethodView):
         except MappingErrors as e:
             return http.UnprocessableEntity(errors=e.message)
 
-        redis.rpush('playlist', track.uri)
+        redis.rpush('playlist', track['uri'])
 
         return http.Created()
