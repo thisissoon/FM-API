@@ -46,7 +46,7 @@ class Playlist(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
-    @paginate(limit=1)
+    @paginate
     def get(self, *args, **kwargs):
         """ Returns a paginated list of tracks currently in the playlist.
         """
@@ -84,12 +84,15 @@ class Playlist(MethodView):
         for item in data['artists']:
             artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
             if artist is None:
-                artist = Artist(name=item['name'], spotify_uri=item['uri'])
+                artist = Artist()
+                db.session.add(artist)
 
-            if album not in artist.albums:
-                artist.albums.append(album)
+            artist.name = item['name']
+            artist.spotify_uri = item['uri']
 
-            db.session.add(artist)
+            if artist not in album.artists:
+                album.artists.append(artist)
+
             db.session.commit()
 
         track = Track.query.filter(Track.spotify_uri == data['uri']).first()
