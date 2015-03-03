@@ -35,10 +35,10 @@ class PlaylistSerializer(Serializer):
         spotify = spotipy.Spotify()
 
         try:
-            track = spotify.track(uri)
+            self.track = spotify.track(uri)
         except spotipy.SpotifyException:
             raise ValidationError('Invalid Spotify Track URI: {0}'.format(uri))
 
-        if 'GB' not in track['available_markets']:
+        if 'GB' not in self.track['available_markets']:
             raise ValidationError(
-                '{0} cannot be played in the GB region'.format(track['name']))
+                '{0} cannot be played in the GB region'.format(self.track['name']))

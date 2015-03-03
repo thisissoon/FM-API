@@ -10,6 +10,7 @@ SQLAlchemy models.
 
 import datetime
 
+from dateutil.tz import tzutc
 from sqlalchemy import Column
 from fm.db.types import UTCDateTime
 from flask.ext.sqlalchemy import Model
@@ -24,12 +25,12 @@ class FMModel(Model):
         UTCDateTime,
         index=True,
         nullable=False,
-        default=datetime.datetime.utcnow)
+        default=lambda: datetime.datetime.now(tzutc()))
 
     #: Always store an update date
     updated = Column(
         UTCDateTime,
         index=True,
         nullable=False,
-        default=datetime.datetime.utcnow,
-        onupdate=datetime.datetime.utcnow)
+        default=lambda: datetime.datetime.now(tzutc()),
+        onupdate=lambda: datetime.datetime.now(tzutc()))

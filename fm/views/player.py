@@ -13,8 +13,9 @@ import json
 from flask import request
 from flask.views import MethodView
 from fm import http
-from fm.ext import config, redis
+from fm.ext import config, db, redis
 from fm.serializers.player import PlaylistSerializer
+from fm.models.spotify import Album, Artist, Track
 from kim.exceptions import MappingErrors
 
 
@@ -58,10 +59,41 @@ class Playlist(MethodView):
 
         serializer = PlaylistSerializer()
         try:
-            track = serializer.marshal(request.json)
+            serializer.marshal(request.json)
         except MappingErrors as e:
             return http.UnprocessableEntity(errors=e.message)
 
-        redis.rpush('playlist', track['uri'])
+        data = serializer.track
+
+        album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
+        if album is None:
+            album = Album(name=data['album']['name'], spotify_uri=data['album']['uri'])
+            db.session.add(album)
+            db.session.commit()
+
+        for item in data['artists']:
+            artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
+            if artist is None:
+                artist = Artist(name=item['name'], spotify_uri=item['uri'])
+
+            if album not in artist.albums:
+                artist.albums.append(album)
+
+            db.session.add(artist)
+            db.session.commit()
+
+        track = Track.query.filter(Track.spotify_uri == data['uri']).first()
+        if track is None:
+            track = Track()
+            db.session.add(track)
+
+        track.name = data['name']
+        track.spotify_uri = data['uri']
+        track.duration = data['duration_ms']
+        track.album_id = album.id
+
+        db.session.commit()
+
+        redis.rpush('playlist', track.spotify_uri)
 
         return http.Created()
