@@ -85,3 +85,34 @@ class NoContent(Response):
     """
 
     default_status = 204
+
+
+class UnprocessableEntity(Response):
+    """ Return a standard HTTP 422 Response. This should be used for raising
+    validation errors back to the client.
+
+    Example
+    -------
+        >>> from fm import http
+        >>> response = http.UnprocessableEntity(errors=[{'foo': 'bar'}])
+
+    """
+
+    default_status = 422
+
+    def __init__(self, *args, **kwargs):
+        """
+        """
+
+        errors = kwargs.pop('errors', [])
+        message = kwargs.get('message', 'Validation Error')
+
+        response = {
+            'message': message,
+            'errors': errors
+        }
+
+        return super(UnprocessableEntity, self).__init__(
+            response,
+            *args,
+            **kwargs)

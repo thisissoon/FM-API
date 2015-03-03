@@ -14,8 +14,7 @@ from flask import request
 from flask.views import MethodView
 from fm import http
 from fm.ext import config, redis
-from webargs import Arg, ValidationError
-from webargs.flaskparser import FlaskParser
+from fm.serializers.player import PlaylistSchema
 
 
 class Pause(MethodView):
@@ -56,13 +55,8 @@ class Playlist(MethodView):
         """ Allows you to add anew track to the player playlist.
         """
 
-        try:
-            args = FlaskParser().parse({
-                'track': Arg(str, required=True)
-            }, request)
-        except ValidationError as err:
-            return json.dumps({'error': str(err),  'code': 400})
-
-        redis.rpush('playlist', args.get('track'))
+        errors = PlaylistSchema().validate(request.json or {})
+        if errors:
+            return http.UnprocessableEntity(errors=errors)
 
         return http.Created()

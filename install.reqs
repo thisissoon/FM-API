@@ -14,9 +14,13 @@ redis==2.10.3
 
 # Spotify
 pyspotify==2.0.0b4
+spotipy==2.3.0
 
 # Asynchronous
 celery==3.1.17
+
+# Serialization
+marshmallow==1.2.2
 
 # Misc
 python-dateutil==2.4.0
