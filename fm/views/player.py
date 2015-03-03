@@ -14,7 +14,8 @@ from flask import request
 from flask.views import MethodView
 from fm import http
 from fm.ext import config, redis
-from fm.serializers.player import PlaylistSchema
+from fm.serializers.player import PlaylistSerializer
+from kim.exceptions import MappingErrors
 
 
 class Pause(MethodView):
@@ -55,8 +56,12 @@ class Playlist(MethodView):
         """ Allows you to add anew track to the player playlist.
         """
 
-        errors = PlaylistSchema().validate(request.json or {})
-        if errors:
-            return http.UnprocessableEntity(errors=errors)
+        serializer = PlaylistSerializer()
+        try:
+            track = serializer.marshal(request.json)
+        except MappingErrors as e:
+            return http.UnprocessableEntity(errors=e.message)
+
+        redis.rpush('playlist', track.uri)
 
         return http.Created()
