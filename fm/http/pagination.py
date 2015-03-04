@@ -123,8 +123,8 @@ class Pagination(object):
             links.append(self.last_url)
 
         headers = {
-            'Pagination-Count': self.total,
-            'Pagination-Pages': self.pages
+            'Total-Count': self.total,
+            'Total-Pages': self.pages
         }
 
         if len(links) > 0:
