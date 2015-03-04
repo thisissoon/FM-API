@@ -51,7 +51,7 @@ class PlayingView(MethodView):
         """ Returns the currently playing track.
         """
 
-        uri = redis.get('playing')
+        uri = redis.get('fm:player:state:playing')
         if uri is None:
             return http.NotFound()
 
@@ -59,7 +59,16 @@ class PlayingView(MethodView):
         if track is None:
             return http.NotFound()
 
-        return http.OK(TrackSerialzier().serialize(track))
+        try:
+            paused = int(redis.get('fm:player:state:paused'))
+        except ValueError:
+            paused = 0
+
+        headers = {
+            'Paused': paused
+        }
+
+        return http.OK(TrackSerialzier().serialize(track), headers=headers)
 
 
 class PlaylistView(MethodView):
@@ -136,6 +145,6 @@ class PlaylistView(MethodView):
 
         db.session.commit()
 
-        redis.rpush('playlist', track.spotify_uri)
+        redis.rpush('fm:player:state:playlist', track.spotify_uri)
 
         return http.Created(location=url_for('tracks.track', pk=track.id))
