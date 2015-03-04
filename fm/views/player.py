@@ -146,5 +146,10 @@ class PlaylistView(MethodView):
         db.session.commit()
 
         redis.rpush('fm:player:state:playlist', track.spotify_uri)
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'added',
+            'id': track.id,
+            'uri': track.uri
+        }))
 
         return http.Created(location=url_for('tracks.track', pk=track.id))
