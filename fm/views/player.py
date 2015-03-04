@@ -10,7 +10,7 @@ Views for handling /player API resource requests.
 
 import json
 
-from flask import request
+from flask import request, url_for
 from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
@@ -119,4 +119,4 @@ class Playlist(MethodView):
 
         redis.rpush('playlist', track.spotify_uri)
 
-        return http.Created()
+        return http.Created(location=url_for('tracks.track', pk=track.id))

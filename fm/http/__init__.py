@@ -13,6 +13,8 @@ import json
 
 from .pagination import Pagination
 
+from flask import request
+from furl import furl
 from werkzeug.wrappers import Response as ResponseBase
 
 
@@ -34,9 +36,9 @@ class Response(ResponseBase):
         headers = kwargs.pop('headers', {})
         status = kwargs.pop('status', None)
 
-        limit = kwargs.pop('limit')
-        page = kwargs.pop('page')
-        total = kwargs.pop('total')
+        limit = kwargs.pop('limit', None)
+        page = kwargs.pop('page', None)
+        total = kwargs.pop('total', None)
 
         if all([limit, page, total]):
             headers.update(Pagination(limit, total, page).headers())
@@ -80,6 +82,25 @@ class Created(Response):
     """
 
     default_status = 201
+
+    def __init__(self, *args, **kwargs):
+        """
+        """
+
+        location = kwargs.pop('location', None)
+        headers = kwargs.pop('headers', {})
+
+        if location is not None:
+            f = furl(request.url_root)
+            f.path = location
+            headers.update({
+                'Location': '{0}'.format(f.url)
+            })
+
+        return super(Created, self).__init__(
+            headers=headers,
+            *args,
+            **kwargs)
 
 
 class NoContent(Response):

@@ -17,5 +17,5 @@ routes = [
     # /tracks
     Pluggable('', track.TracksView, 'collection'),
     # /tracks/{id}
-    Pluggable('/track/<id>', track.TrackVeiw, 'track')
+    Pluggable('/track/<pk>', track.TrackVeiw, 'track')
 ]
