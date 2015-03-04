@@ -3,6 +3,8 @@ FM-API
 
 Simple Flask API Interface to the physical FM Player via Redis Pub Sub.
 
+All examples use ``HTTPie`` - http://httpie.org
+
 Responses
 ---------
 
@@ -35,7 +37,7 @@ Example Response
 
 .. code-block::
 
-    curl http://localhost/tracks\?limit\=1\&page\=4
+    http GET http://localhost/tracks\?limit\=1\&page\=4
 
     HTTP/1.0 200 OK
     Content-Length: 759
@@ -67,7 +69,7 @@ album and artist nested objects.
 
 .. code-block::
 
-    curl http://localhost/player/playlist\?limit\=5
+    http GET http://localhost/player/playlist\?limit\=5
 
     HTTP/1.0 200 OK
     Content-Length: 3811
@@ -127,7 +129,7 @@ used to then request the track object.
 
 .. code-block::
 
-    curl http://localhost/player/playlist uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
+    http POST http://localhost/player/playlist uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
 
     HTTP/1.0 201 CREATED
     Content-Length: 0
@@ -141,12 +143,36 @@ used to then request the track object.
 ``/player/pause``
 ~~~~~~~~~~~~~~~~~
 
+This resource manages the pausing of the playback and acts as a creatable and deletable object.
+
 ``POST``
 ^^^^^^^^
 
 Create a pause event, this will stop the playback.
 
+.. code-block::
+
+    http POST http://localhost/player/pause
+
+    HTTP/1.0 201 CREATED
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:04:54 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
 ``DELETE``
 ^^^^^^^^^^
 
 Delete the pause event, this will resume the playback.
+
+.. code-block::
+
+    http DELETE http://localhost/player/pause
+
+    HTTP/1.0 204 NO CONTENT
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:04:54 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
