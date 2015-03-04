@@ -84,6 +84,28 @@ Example
     }
 
 
+Events
+------
+
+The API will publish several events to a Redis Pubsub channel called ``fm:player:channel``. This events
+include pause events and track adding. All events sent by the system are sent as JSON objects with an
+element in the object called ``event`` with the value being the event type:
+
+.. code-block::
+
+    {
+        'event': 'add',
+        'id': '1234',
+        'uri': 'spotify:track:1234'
+    }
+
+Event Types
+~~~~~~~~~~~
+
+* ``pause``: Fired when track playback has been paused
+* ``resume``: Fired when track playback has resumed
+* ``add``: Fired when a track has been added to the playlist
+
 Resources
 ---------
 
