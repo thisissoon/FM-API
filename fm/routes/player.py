@@ -14,8 +14,7 @@ from fm.views import player
 
 
 routes = [
-    # /player/pause
-    Pluggable('/pause', player.Pause, 'pause'),
-    # /player/playlist
-    Pluggable('/playlist', player.Playlist, 'playlist'),
+    Pluggable('/pause', player.PauseView, 'pause'),
+    Pluggable('/playing', player.PlayingView, 'playing'),
+    Pluggable('/playlist', player.PlaylistView, 'playlist'),
 ]

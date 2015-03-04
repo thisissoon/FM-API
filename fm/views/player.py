@@ -21,7 +21,7 @@ from kim.exceptions import MappingErrors
 from sqlalchemy.dialects.postgresql import Any, array
 
 
-class Pause(MethodView):
+class PauseView(MethodView):
     """ The pause resources allows the payer to paused and unpaused via
     POST for pause and DELTETE to unpause the player.
     """
@@ -43,7 +43,26 @@ class Pause(MethodView):
         return http.NoContent()
 
 
-class Playlist(MethodView):
+class PlayingView(MethodView):
+    """ Operates on the currently playing track.
+    """
+
+    def get(self):
+        """ Returns the currently playing track.
+        """
+
+        uri = redis.get('playing')
+        if uri is None:
+            return http.NotFound()
+
+        track = Track.query.filter(Track.spotify_uri == uri).first()
+        if track is None:
+            return http.NotFound()
+
+        return http.OK(TrackSerialzier().serialize(track))
+
+
+class PlaylistView(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
