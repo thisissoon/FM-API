@@ -35,6 +35,8 @@ Example Response
 
 .. code-block::
 
+    curl http://localhost/tracks\?limit\=1\&page\=4
+
     HTTP/1.0 200 OK
     Content-Length: 759
     Content-Type: application/json; charset=utf-8
