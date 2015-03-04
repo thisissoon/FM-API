@@ -57,15 +57,86 @@ Resources
 ``/player/playlist``
 ~~~~~~~~~~~~~~~~~~~~
 
+Manages the current playlist.
+
 ``GET``
 ^^^^^^^
 
-Returns the current playlist.
+Returns the current paginated playlist. This resource will return a JSON list of Track objects, including
+album and artist nested objects.
+
+.. code-block::
+
+    curl http://localhost/player/playlist\?limit\=5
+
+    HTTP/1.0 200 OK
+    Content-Length: 3811
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 13:58:09 GMT
+    Link: <http://localhost/player/playlist?limit=5&page=2>; rel="next", <http://localhost/player/playlist?limit=5&page=4>; rel="last"
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+    Total-Count: 17
+    Total-Pages: 4
+
+    [
+        {
+            "album": {
+                "artists": [
+                    {
+                        "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                        "name": "Nightwish",
+                        "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+                    }
+                ],
+                "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/7928fc9bd902b917aae0ef1bee41cb51598a2d27",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/e80cb4d324d16881e2f7653abdbd70497bbab68d",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/bf567406035a8e2b162c6a23470c6cdd5dd560f3",
+                        "width": 64
+                    }
+                ],
+                "name": "Showtime, Storytime",
+                "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+            },
+            "duration": 272906,
+            "id": "4b170737-017c-4e85-965c-47b8a158c789",
+            "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
+            "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+        },
+        ...
+    ]
+
 
 ``POST``
 ^^^^^^^^
 
-Append a track to the playlist.
+Add a track to the playlist. This resource does not return an data. The ``Location`` Header can
+used to then request the track object.
+
+.. code-block::
+
+    curl http://localhost/player/playlist uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
+
+    HTTP/1.0 201 CREATED
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 13:53:52 GMT
+    Location: http://localhost/tracks/track/c3111ce3-ef00-4bc3-b9ff-22979fe305e7
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
 
 ``/player/pause``
 ~~~~~~~~~~~~~~~~~
