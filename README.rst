@@ -32,8 +32,8 @@ meta data will be returned in the response headers:
 * ``Total-Pages``: The total number of pages
 * ``Total-Count``: The total number of items that are paginated
 
-Example Response
-~~~~~~~~~~~~~~~~
+Example
+~~~~~~~
 
 .. code-block::
 
@@ -52,6 +52,37 @@ Example Response
     [
         ...
     ]
+
+Validation
+----------
+
+In the event of validation errors the API will response with a ``422 - Unprocessable Entity``. The
+response data will contain a JSON object detailing the errors.
+
+Example
+~~~~~~~
+
+.. code-block::
+
+    http POST http://localhost/player/playlist uri=spotify:track:
+
+    HTTP/1.0 422 UNPROCESSABLE ENTITY
+    Content-Length: 97
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:55:34 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        "errors": {
+            "uri": [
+                "Invalid Spotify Track URI: spotify:track:",
+                "Another Error"
+            ]
+        },
+        "message": "Validation Error"
+    }
+
 
 Resources
 ---------
