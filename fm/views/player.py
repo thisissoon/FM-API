@@ -61,7 +61,7 @@ class PlayingView(MethodView):
 
         try:
             paused = int(redis.get('fm:player:state:paused'))
-        except ValueError:
+        except (ValueError, TypeError):
             paused = 0
 
         headers = {

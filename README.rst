@@ -201,7 +201,9 @@ This resource interacts with the currently playing track.
 ``GET``
 ^^^^^^^
 
-Returns the currently playing track. In the event a track is not playing a 404 will be returned.
+Returns the currently playing track. In the event a track is not playing a 404 will be returned. Also a ``Paused``
+header is included in the response, this is to ensure the correct state of the playing track is observed, in
+the event the track is paused the value will be ``1`` else it will be ``0``.
 
 .. code-block::
 
@@ -211,6 +213,7 @@ Returns the currently playing track. In the event a track is not playing a 404 w
     Content-Length: 1542
     Content-Type: application/json; charset=utf-8
     Date: Wed, 04 Mar 2015 14:27:39 GMT
+    Paused: 0
     Server: Werkzeug/0.10.1 Python/2.7.3
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
