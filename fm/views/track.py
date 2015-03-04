@@ -9,33 +9,50 @@ Track resources.
 """
 
 
+from fm.serializers.spotify import TrackSerialzier
+from fm.models.spotify import Track
 from flask.views import MethodView
 from fm import http
 
 
-class Tracks(MethodView):
-    """
+class TracksView(MethodView):
+    """ Operates on the Track collection.
     """
 
-    def get(self):
+    @http.pagination.paginate()
+    def get(self, *args, **kwargs):
+        """ Returns a paginated list of tracks stored in our DB.
         """
-        """
 
-        return http.OK()
+        total = Track.query.count()
+        rows = Track.query \
+            .limit(kwargs.get('limit')) \
+            .offset(kwargs.get('offset')) \
+            .all()
+
+        return http.OK(
+            TrackSerialzier().serialize(rows, many=True),
+            limit=kwargs.get('limit'),
+            page=kwargs.get('page'),
+            total=total)
 
 
-class Track(MethodView):
-    """
+class TrackVeiw(MethodView):
+    """ Operates on a single track object.
     """
 
     def get(self, pk):
-        """
+        """ Returns a single track object by primary key, if the track does
+        not exist a 404 will be returned.
+
+        Arguments
+        ---------
+        pk : str
+            The track primary key
         """
 
-        return http.OK()
+        track = Track.query.get(pk)
+        if track is None:
+            return http.NotFound()
 
-    def put(self, pk):
-        """
-        """
-
-        return http.OK()
+        return http.OK(TrackSerialzier().serialize(track))

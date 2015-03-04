@@ -14,8 +14,8 @@ from fm.views import track
 
 
 routes = [
-    # /track
-    Pluggable('/track', track.Tracks, 'collection'),
-    # /track/{id}
-    Pluggable('/track/<id>', track.Track, 'object')
+    # /tracks
+    Pluggable('', track.TracksView, 'collection'),
+    # /tracks/{id}
+    Pluggable('/track/<id>', track.TrackVeiw, 'track')
 ]

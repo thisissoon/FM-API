@@ -13,7 +13,6 @@ import json
 from flask import request
 from flask.views import MethodView
 from fm import http
-from fm.http.pagination import paginate
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
 from fm.serializers.player import PlaylistSerializer
@@ -48,7 +47,7 @@ class Playlist(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
-    @paginate()
+    @http.pagination.paginate()
     def get(self, *args, **kwargs):
         """ Returns a paginated list of tracks currently in the playlist.
         """

@@ -96,6 +96,20 @@ class NoContent(Response):
     default_status = 204
 
 
+class NotFound(Response):
+    """ Returns a standard HTTP 404 Response. This should be used when a pgae
+    foes not exist.
+
+    Example
+    -------
+        >>> from fm import http
+        >>> response = http.NotFound()
+
+    """
+
+    default_status = 404
+
+
 class UnprocessableEntity(Response):
     """ Return a standard HTTP 422 Response. This should be used for raising
     validation errors back to the client.
@@ -110,7 +124,8 @@ class UnprocessableEntity(Response):
     default_status = 422
 
     def __init__(self, *args, **kwargs):
-        """
+        """ Overrides parent constructor allowing error messages to be passed
+        into the response data.
         """
 
         errors = kwargs.pop('errors', [])

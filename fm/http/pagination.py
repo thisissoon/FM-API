@@ -122,14 +122,17 @@ class Pagination(object):
         if self.has_last:
             links.append(self.last_url)
 
-        if len(links) > 0:
-            return {
-                'Link': ', '.join(links),
-                'Pagination-Count': self.total,
-                'Pagination-Pages': self.pages
-            }
+        headers = {
+            'Pagination-Count': self.total,
+            'Pagination-Pages': self.pages
+        }
 
-        return {}
+        if len(links) > 0:
+            headers.update({
+                'Link': ', '.join(links),
+            })
+
+        return headers
 
     def make_link(self, page, rel):
         """ Generates the url to be used in the ``Link`` header, amending

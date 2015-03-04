@@ -16,5 +16,5 @@ routes = [
     # /player/*
     Include('fm.routes.player', url_prefix='/player', endpoint='player'),
     # /track/*
-    Include('fm.routes.track', url_prefix='/track', endpoint='track')
+    Include('fm.routes.track', url_prefix='/tracks', endpoint='tracks')
 ]
