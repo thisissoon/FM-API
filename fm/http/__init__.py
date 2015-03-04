@@ -11,6 +11,8 @@ Classes for returning HTTP responses.
 import json
 
 
+from .pagination import Pagination
+
 from werkzeug.wrappers import Response as ResponseBase
 
 
@@ -31,6 +33,13 @@ class Response(ResponseBase):
 
         headers = kwargs.pop('headers', {})
         status = kwargs.pop('status', None)
+
+        limit = kwargs.pop('limit')
+        page = kwargs.pop('page')
+        total = kwargs.pop('total')
+
+        if all([limit, page, total]):
+            headers.update(Pagination(limit, total, page).headers())
 
         # Update passed headers with the default headers
         headers.update(self.default_headers)

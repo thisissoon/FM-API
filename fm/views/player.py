@@ -53,16 +53,21 @@ class Playlist(MethodView):
         """ Returns a paginated list of tracks currently in the playlist.
         """
 
-        offset = kwargs.get('offset')
-        limit = kwargs.get('limit')
+        offset = kwargs.pop('offset')
+        limit = kwargs.pop('limit')
 
         tracks = redis.lrange('playlist', offset, (offset + limit - 1))
+        total = redis.llen('playlist')
 
         rows = Track.query \
             .filter(Any(Track.spotify_uri, array(tracks))) \
             .all()
 
-        return http.OK(TrackSerialzier().serialize(rows, many=True))
+        return http.OK(
+            TrackSerialzier().serialize(rows, many=True),
+            page=kwargs.get('page'),
+            total=total,
+            limit=limit)
 
     def post(self):
         """ Allows you to add anew track to the player playlist.

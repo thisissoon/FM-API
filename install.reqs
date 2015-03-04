@@ -24,3 +24,4 @@ py-kim==0.1.6
 
 # Misc
 python-dateutil==2.4.0
+furl==0.4.4
