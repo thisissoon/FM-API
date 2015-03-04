@@ -147,8 +147,7 @@ class PlaylistView(MethodView):
 
         redis.publish(config.PLAYER_CHANNEL, json.dumps({
             'event': 'add',
-            'id': track.id,
-            'uri': track.spotify_uri
+            'track': TrackSerialzier().serialize(track)
         }))
 
         return http.Created(location=url_for('tracks.track', pk=track.id))

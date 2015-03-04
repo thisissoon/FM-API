@@ -104,7 +104,7 @@ Event Types
 
 * ``pause``: Fired when track playback has been paused
 * ``resume``: Fired when track playback has resumed
-* ``add``: Fired when a track has been added to the playlist
+* ``add``: Fired when a track has been added to the playlist, included in the event is the track object
 
 Resources
 ---------
