@@ -162,14 +162,14 @@ var helper = (function() {
       console.log(this.authResult.code);
       $.ajax({
         type: 'POST',
-        url: window.location.href + '/connect?state={{ STATE }}',
-        contentType: 'application/octet-stream; charset=utf-8',
+        url: window.location.href + '/connect',
+        contentType: 'application/json; charset=utf-8',
         success: function(result) {
           console.log(result);
           helper.people();
         },
         processData: false,
-        data: this.authResult.code
+        data: JSON.stringify({token: this.authResult.code})
       });
     },
     /**
