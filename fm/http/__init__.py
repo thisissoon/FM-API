@@ -45,6 +45,7 @@ class Response(ResponseBase):
 
         # Update passed headers with the default headers
         headers.update(self.default_headers)
+        headers['Status'] = self.status
 
         if response is not None:
             response = json.dumps(response)
@@ -68,6 +69,7 @@ class OK(Response):
     """
 
     default_status = 200
+    _status = u'200 OK'
 
 
 class Created(Response):
@@ -82,6 +84,7 @@ class Created(Response):
     """
 
     default_status = 201
+    _status = u'201 Created'
 
     def __init__(self, *args, **kwargs):
         """
@@ -115,6 +118,7 @@ class NoContent(Response):
     """
 
     default_status = 204
+    _status = u'204 No Content'
 
 
 class NotFound(Response):
@@ -129,6 +133,7 @@ class NotFound(Response):
     """
 
     default_status = 404
+    _status = u'404 Not Found'
 
 
 class UnprocessableEntity(Response):
@@ -143,6 +148,7 @@ class UnprocessableEntity(Response):
     """
 
     default_status = 422
+    _status = u'422 Unprocessable Entity'
 
     def __init__(self, *args, **kwargs):
         """ Overrides parent constructor allowing error messages to be passed
