@@ -136,6 +136,21 @@ class NotFound(Response):
     _status = u'404 Not Found'
 
 
+class UnsupportedMediaType(Response):
+    """ Returns a standard HTTP 415 Response. This should be used when a
+    requst is made with an unsupported content type.
+
+    Example
+    -------
+        >>> from fm import http
+        >>> response = http.UnsupportedMediaType()
+
+    """
+
+    default_status = 415
+    _status = '415 Unsupported Media Type'
+
+
 class UnprocessableEntity(Response):
     """ Return a standard HTTP 422 Response. This should be used for raising
     validation errors back to the client.

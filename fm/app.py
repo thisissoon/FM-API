@@ -10,9 +10,11 @@ Flask Application Factory for bootstraping the FM API Application.
 
 import os
 
-from flask import Flask
+from flask import Flask, request
 from fm.ext import db, redis, via
 from fm import models  # noqa
+
+from fm.http import UnsupportedMediaType
 from fm.http.cors import CORS
 
 
@@ -71,5 +73,13 @@ def create(config=None):
 
     # Cross Origin
     CORS(app)
+
+    @app.before_request
+    def require_json():
+        """ Ensures the API only supports JSON in.
+        """
+
+        if request.mimetype != 'application/json':
+            return UnsupportedMediaType()
 
     return app
