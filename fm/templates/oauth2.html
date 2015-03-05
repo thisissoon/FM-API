@@ -39,8 +39,9 @@
   <div id="gConnect">
     <button class="g-signin"
         data-scope="https://www.googleapis.com/auth/plus.login"
-        data-requestvisibleactions="http://schemas.google.com/AddActivity"
-        data-clientId="984487466952-8ro142v8bjf8757ee6mn3hl5pmo1jp51.apps.googleusercontent.com"
+        data-requestvisibleactions="https://schemas.google.com/AddActivity"
+        data-clientId="826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com"
+        data-hd="thisissoon.com"
         data-accesstype="offline"
         data-callback="onSignInCallback"
         data-theme="dark"
@@ -82,11 +83,13 @@ var helper = (function() {
      *   other authentication information.
      */
     onSignInCallback: function(authResult) {
+      delete authResult['g-oauth-window'];  // Delete this or it breaks
       $('#authResult').html('Auth Result:<br/>');
       for (var field in authResult) {
         $('#authResult').append(' ' + field + ': ' + authResult[field] + '<br/>');
       }
       if (authResult['access_token']) {
+        console.log('here');
         // The user is signed in
         this.authResult = authResult;
         helper.connectServer();

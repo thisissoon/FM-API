@@ -25,3 +25,20 @@ class TestFrontendView(MethodView):
             return http.NotFound()
 
         return render_template('oauth2.html')
+
+
+class OAuth2View(MethodView):
+
+    def get(self, *args, **kwargs):
+        """
+        """
+
+        from ipdb import set_trace; set_trace()
+
+    def post(self, *args, **kwargs):
+        """
+        """
+
+        from ipdb import set_trace; set_trace()
+
+        return 'foo'
