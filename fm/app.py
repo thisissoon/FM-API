@@ -9,11 +9,11 @@ Flask Application Factory for bootstraping the FM API Application.
 """
 
 import os
+import traceback
 
 from flask import Flask, request
 from fm.ext import db, redis, via
 from fm import models  # noqa
-
 from fm import http
 from fm.http.cors import CORS
 
@@ -73,6 +73,22 @@ def errors(app):
         }
 
         return http.NotFound(response)
+
+    @app.errorhandler(Exception)
+    def handle_uncaught_error(e):
+        """ Handle uncaught errors from the BE. Always returns a 500. If
+        the application is in debug mode the traceback will also be
+        returned in the response object.
+        """
+
+        response = {
+            'message': 'Unknown Error'
+        }
+
+        if app.debug:
+            response['traceback'] = traceback.format_exc()
+
+        return http.InternalServerError(response)
 
 
 def create(config=None):

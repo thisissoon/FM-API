@@ -197,3 +197,18 @@ class UnprocessableEntity(Response):
             response,
             *args,
             **kwargs)
+
+
+class InternalServerError(Response):
+    """ Returns a standard HTTP 500 response. This is used when an error has
+    occured in the application.
+
+    Example
+    -------
+        >>> from fm import http
+        >>> response = http.InternalServerError()
+
+    """
+
+    default_status = 500
+    _status = u'500 Internal Server Error'
