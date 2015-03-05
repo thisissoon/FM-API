@@ -54,3 +54,4 @@ docs/_build/
 target/
 fugu.yml
 .tmuxp.yaml
+.env

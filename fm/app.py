@@ -13,6 +13,7 @@ import os
 from flask import Flask
 from fm.ext import db, redis, via
 from fm import models  # noqa
+from fm.http.cors import CORS
 
 
 def configure(app, config=None):
@@ -67,5 +68,8 @@ def create(config=None):
 
     # Routes
     via.init_app(app)
+
+    # Cross Origin
+    CORS(app)
 
     return app

@@ -46,3 +46,8 @@ SQLALCHEMY_NATIVE_UNICODE = False
 SQLALCHEMY_DATABASE_URI = os.environ.get(
     'SQLALCHEMY_DATABASE_URI',
     'sqlite://:memory:')
+
+# CORS
+
+CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count']
+CORS_ACA_HEADERS = ['Content-Type']
