@@ -14,6 +14,5 @@ from flask.ext.via.routers.default import Pluggable
 
 routes = [
     Pluggable('/test', TestFrontendView, 'test'),
-    Pluggable('/test/connect', OAuth2View, 'connect'),
-    Pluggable('/callback', OAuth2View, 'callback'),
+    Pluggable('/test/connect', OAuth2View, 'connect')
 ]
