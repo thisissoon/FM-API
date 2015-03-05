@@ -95,8 +95,9 @@ element in the object called ``event`` with the value being the event type:
 
     {
         'event': 'add',
-        'id': '1234',
-        'uri': 'spotify:track:1234'
+        'track' {
+            ...
+        }
     }
 
 Event Types
@@ -201,9 +202,9 @@ This resource interacts with the currently playing track.
 ``GET``
 ^^^^^^^
 
-Returns the currently playing track. In the event a track is not playing a 404 will be returned. Also a ``Paused``
-header is included in the response, this is to ensure the correct state of the playing track is observed, in
-the event the track is paused the value will be ``1`` else it will be ``0``.
+Returns the currently playing track. In the event a track is not playing a ``204 No Content`` will be returned.
+Also a ``Paused`` header is included in the response, this is to ensure the correct state of the playing track
+is observed, in the event the track is paused the value will be ``1`` else it will be ``0``.
 
 .. code-block::
 

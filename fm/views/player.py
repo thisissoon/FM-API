@@ -53,11 +53,11 @@ class PlayingView(MethodView):
 
         uri = redis.get('fm:player:state:playing')
         if uri is None:
-            return http.NotFound()
+            return http.NoContent()
 
         track = Track.query.filter(Track.spotify_uri == uri).first()
         if track is None:
-            return http.NotFound()
+            return http.NoContent()
 
         try:
             paused = int(redis.get('fm:player:state:paused'))
