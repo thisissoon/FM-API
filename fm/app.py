@@ -126,7 +126,7 @@ def create(config=None):
         """ Ensures the API only supports JSON in.
         """
 
-        if request.mimetype != 'application/json':
+        if not app.debug and request.mimetype != 'application/json':
             return http.UnsupportedMediaType()
 
     return app
