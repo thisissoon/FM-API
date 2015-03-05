@@ -121,6 +121,21 @@ class NoContent(Response):
     _status = u'204 No Content'
 
 
+class BadRequest(Response):
+    """ Returns a standard HTTP 400 Response. This should be returned when
+    the JSON body is malformed.
+
+    Example
+    -------
+        >>> from fm import http
+        >>> response = http.NotFound()
+
+    """
+
+    default_status = 400
+    _status = u'400 Bad Request'
+
+
 class NotFound(Response):
     """ Returns a standard HTTP 404 Response. This should be used when a pgae
     foes not exist.

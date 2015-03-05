@@ -14,7 +14,7 @@ from flask import Flask, request
 from fm.ext import db, redis, via
 from fm import models  # noqa
 
-from fm.http import UnsupportedMediaType
+from fm import http
 from fm.http.cors import CORS
 
 
@@ -47,6 +47,34 @@ def configure(app, config=None):
         app.config.from_pyfile(config)
 
 
+def errors(app):
+    """ Sets up error handlers for catching thrown errors by Flask.
+    """
+
+    @app.errorhandler(400)
+    def handle_400(e):
+        """ Handle 400's - This can be thrown when the request body cannot
+        be decoded, for example malformed JSON.
+        """
+
+        response = {
+            'message': 'Bad Request'
+        }
+
+        return http.BadRequest(response)
+
+    @app.errorhandler(404)
+    def handle_404(e):
+        """ Handle 404 errors.
+        """
+
+        response = {
+            'message': 'Not Found'
+        }
+
+        return http.NotFound(response)
+
+
 def create(config=None):
     """ Creates a Falsk Application instance.
 
@@ -74,12 +102,15 @@ def create(config=None):
     # Cross Origin
     CORS(app)
 
+    # Error Handling
+    errors(app)
+
     @app.before_request
     def require_json():
         """ Ensures the API only supports JSON in.
         """
 
         if request.mimetype != 'application/json':
-            return UnsupportedMediaType()
+            return http.UnsupportedMediaType()
 
     return app
