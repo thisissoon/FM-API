@@ -29,7 +29,7 @@ def runserver(ssl=False, host='0.0.0.0', port=5000):
 
     kwagrs = {
         'host': host,
-        'port': port
+        'port': int(port)
     }
 
     if ssl:
