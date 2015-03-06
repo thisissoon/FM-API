@@ -9,6 +9,13 @@ player:
   environment:
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@FMAPI_postgres_1:5432/soonfm
     - REDIS_SERVER_URI=redis://FMAPI_redis_1:6379/
+socket:
+  image: soon/fm-socket
+  command: forever -w server.js
+  ports:
+    - "8080:8080"
+  links:
+    - redis
 postgres:
   image: soon/docker-postgresql
   ports:
