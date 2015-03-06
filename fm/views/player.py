@@ -88,7 +88,7 @@ class PlaylistView(MethodView):
 
         response = []
 
-        if len(tracks > 0):
+        if total > 0:
             rows = Track.query \
                 .filter(Any(Track.spotify_uri, array(tracks))) \
                 .all()
