@@ -40,6 +40,7 @@
     <button class="g-signin"
         data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.profiles.read email"
         data-clientId="826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com"
+        data-requestvisibleactions="http://schema.org/AddAction"
         data-accesstype="offline"
         data-callback="onSignInCallback"
         data-theme="dark"
@@ -81,13 +82,7 @@ var helper = (function() {
      *   other authentication information.
      */
     onSignInCallback: function(authResult) {
-      delete authResult['g-oauth-window'];  // Delete this or it breaks
-      $('#authResult').html('Auth Result:<br/>');
-      for (var field in authResult) {
-        $('#authResult').append(' ' + field + ': ' + authResult[field] + '<br/>');
-      }
       if (authResult['access_token']) {
-        console.log('here');
         // The user is signed in
         this.authResult = authResult;
         helper.connectServer();

@@ -9,12 +9,15 @@ Views for the Google OAUTH2 authentication.
 """
 
 import httplib2
+import json
 
 from apiclient.discovery import build
 from flask import current_app, render_template, request
 from flask.views import MethodView
 from fm import http
-from fm.ext import config
+from fm.ext import config, db
+from fm.models.user import User
+from furl import furl
 from oauth2client.client import credentials_from_code
 
 
@@ -67,4 +70,22 @@ class GoogleConnectView(MethodView):
                 'token': ['Only Members of SOON_ or This Here can Login']
             })
 
-        return http.OK()
+        # All is Good
+        response_class = http.OK
+        user = User.query.filter(User.gplus_id == result['id']).first()
+        if user is None:
+            response_class = http.Created
+            user = User()
+            db.session.add(user)
+
+        user.gplus_id = result['id']
+        user.oauth2_credentials = json.loads(credentials.to_json())
+        user.email = result['emails'][0]['value']
+        user.given_name = result['name']['givenName']
+        user.family_name = result['name']['familyName']
+        user.display_name = result['displayName']
+        user.avatar_url = furl(result['image']['url']).remove(['sz']).url
+
+        db.session.commit()
+
+        return response_class()
