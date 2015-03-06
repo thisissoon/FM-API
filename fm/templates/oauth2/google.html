@@ -38,8 +38,7 @@
 <body>
   <div id="gConnect">
     <button class="g-signin"
-        data-scope="https://www.googleapis.com/auth/plus.login"
-        data-requestvisibleactions="https://schemas.google.com/AddActivity"
+        data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.profiles.read email"
         data-clientId="826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com"
         data-accesstype="offline"
         data-callback="onSignInCallback"
@@ -92,8 +91,6 @@ var helper = (function() {
         // The user is signed in
         this.authResult = authResult;
         helper.connectServer();
-        // After we load the Google+ API, render the profile data from Google+.
-        gapi.client.load('plus','v1',this.renderProfile);
       } else if (authResult['error']) {
         // There was an error, which means the user is not signed in.
         // As an example, you can troubleshoot by writing to the console:
@@ -103,30 +100,6 @@ var helper = (function() {
         $('#gConnect').show();
       }
       console.log('authResult', authResult);
-    },
-    /**
-     * Retrieves and renders the authenticated user's Google+ profile.
-     */
-    renderProfile: function() {
-      var request = gapi.client.plus.people.get( {'userId' : 'me'} );
-      request.execute( function(profile) {
-          $('#profile').empty();
-          if (profile.error) {
-            $('#profile').append(profile.error);
-            return;
-          }
-          $('#profile').append(
-              $('<p><img src=\"' + profile.image.url + '\"></p>'));
-          $('#profile').append(
-              $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
-              profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
-          if (profile.cover && profile.coverPhoto) {
-            $('#profile').append(
-                $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
-          }
-        });
-      $('#authOps').show('slow');
-      $('#gConnect').hide();
     },
     /**
      * Calls the server endpoint to disconnect the app for the user.
@@ -161,7 +134,7 @@ var helper = (function() {
       console.log(this.authResult.code);
       $.ajax({
         type: 'POST',
-        url: window.location.href + '/connect',
+        url: '/oauth2/google/connect',
         contentType: 'application/json; charset=utf-8',
         success: function(result) {
           console.log(result);
