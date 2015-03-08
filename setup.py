@@ -15,41 +15,11 @@ import os
 import sys
 
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(root, 'fm'))
 
 import fm
-
-
-class PyTest(TestCommand):
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = None
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = [
-            '--spec',
-            '--cov', 'fm',
-            '--cov-config', '.coveragerc',
-            '--cov-report', 'term-missing',
-            '--cov-report', 'html',
-            '--flakes', './fm',
-            'tests',
-        ]
-        self.test_suite = True
-
-    def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-        import _pytest.config
-        pm = _pytest.config.get_plugin_manager()
-        pm.consider_setuptools_entrypoints()
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
 
 
 def read_requirements(filename):
@@ -121,9 +91,6 @@ setup(
     },
     # Testing
     tests_require=TESTING_REQS,
-    cmdclass={
-        'test': PyTest
-    },
     # Entry points, for example Flask-Script
     entry_points={
         'console_scripts': [
