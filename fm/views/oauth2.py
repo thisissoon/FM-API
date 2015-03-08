@@ -12,7 +12,7 @@ import httplib2
 import json
 
 from apiclient.discovery import build
-from flask import current_app, render_template, request
+from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
 from fm import http
 from fm.ext import config, db
@@ -71,6 +71,7 @@ class GoogleConnectView(MethodView):
             })
 
         # All is Good
+        headers = {}
         response_class = http.OK
         user = User.query.filter(User.gplus_id == result['id']).first()
         if user is None:
@@ -88,4 +89,11 @@ class GoogleConnectView(MethodView):
 
         db.session.commit()
 
-        return response_class()
+        if response_class == http.Created:
+            location = furl(request.url_root) \
+                .set(path=url_for('users.user', pk=user.id))
+            headers.update({
+                'Location': location.url
+            })
+
+        return response_class(headers=headers)

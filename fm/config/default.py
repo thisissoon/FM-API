@@ -49,7 +49,7 @@ SQLALCHEMY_DATABASE_URI = os.environ.get(
 
 # CORS
 
-CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count']
+CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count', 'Auth-Token']
 CORS_ACA_HEADERS = ['Content-Type']
 
 # Google OAuth
