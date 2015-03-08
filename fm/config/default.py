@@ -14,6 +14,10 @@ import os
 
 DEBUG = True
 
+# Secret
+
+SECRET_KEY = 'CHANGEME'  # Changed for other environments
+
 # Celery
 
 CELERY_TIMEZONE = 'UTC'

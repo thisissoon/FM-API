@@ -17,6 +17,7 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db
 from fm.models.user import User
+from fm.session import make_session
 from furl import furl
 from oauth2client.client import credentials_from_code
 
@@ -42,9 +43,10 @@ class GoogleConnectView(MethodView):
     def post(self):
         """ Called on a successfull OAuth2 flow. The request should contain
         a JSON body with a single token attribute which will exchanged
-        for a long lived token.
+        for a long lived token. This is our defacto Login resource.
         """
 
+        # Google Plus token validation
         service = build('plus', 'v1')
 
         credentials = credentials_from_code(
@@ -59,6 +61,7 @@ class GoogleConnectView(MethodView):
         grequest = service.people().get(userId='me')
         result = grequest.execute(http=h)
 
+        # Can this user login
         if not result['domain'] in config.GOOGLE_ALLOWED_DOMAINS:
             # Disconnect the App Straight Away
             access_token = credentials.access_token
@@ -70,15 +73,21 @@ class GoogleConnectView(MethodView):
                 'token': ['Only Members of SOON_ or This Here can Login']
             })
 
-        # All is Good
+        # Default headers and response default response class for 200 OK
         headers = {}
         response_class = http.OK
+
+        # Get the user from their Google+ ID
         user = User.query.filter(User.gplus_id == result['id']).first()
+
+        # No User - Create a blank user object, set the response class to be
+        # a 201
         if user is None:
             response_class = http.Created
             user = User()
             db.session.add(user)
 
+        # Update User Date from Google
         user.gplus_id = result['id']
         user.oauth2_credentials = json.loads(credentials.to_json())
         user.email = result['emails'][0]['value']
@@ -87,13 +96,21 @@ class GoogleConnectView(MethodView):
         user.display_name = result['displayName']
         user.avatar_url = furl(result['image']['url']).remove(['sz']).url
 
+        # Save Changes
         db.session.commit()
 
+        # New user - return a Location Header with url to resource
         if response_class == http.Created:
             location = furl(request.url_root) \
                 .set(path=url_for('users.user', pk=user.id))
             headers.update({
                 'Location': location.url
             })
+
+        # Create a session for subsequent requests
+        session_id = make_session(user.id)
+        headers.update({
+            'Auth-Token': session_id
+        })
 
         return response_class(headers=headers)
