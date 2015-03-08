@@ -12,8 +12,11 @@ header.
 from flask import g, request, has_request_context
 from fm.ext import config, redis
 from fm.models.user import User
+from functools import wraps
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug import LocalProxy
+
+from fm.http import Unauthorized
 
 
 SESSION_KEY = 'fm:api:session:{0}'
@@ -21,6 +24,21 @@ USER_SESSION_KEY = 'fm:api:user:session:{0}'
 
 
 current_user = LocalProxy(lambda: user_from_session())
+
+
+def authenticated(function):
+    """ Decorator which requires that the view is accessable only to users
+    with a valid session.
+    """
+
+    @wraps(function)
+    def wrapper(self, *args, **kwargs):
+        user = user_from_session()
+        if user is None:
+            return Unauthorized()
+        return function(*args, **kwargs)
+
+    return wrapper
 
 
 def make_session(pk):

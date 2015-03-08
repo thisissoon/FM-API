@@ -15,6 +15,7 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
+from fm.session import authenticated
 from fm.serializers.player import PlaylistSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
@@ -26,6 +27,7 @@ class PauseView(MethodView):
     POST for pause and DELTETE to unpause the player.
     """
 
+    @authenticated
     def post(self):
         """ Pauses the player.
         """
@@ -34,6 +36,7 @@ class PauseView(MethodView):
 
         return http.Created()
 
+    @authenticated
     def delete(self):
         """ Unapuses the player.
         """
@@ -96,6 +99,7 @@ class PlaylistView(MethodView):
             total=total,
             limit=limit)
 
+    @authenticated
     def post(self):
         """ Allows you to add anew track to the player playlist.
         """
