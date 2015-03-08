@@ -89,12 +89,16 @@ class PlaylistView(MethodView):
         tracks = redis.lrange('playlist', offset, (offset + limit - 1))
         total = redis.llen('playlist')
 
-        rows = Track.query \
-            .filter(Any(Track.spotify_uri, array(tracks))) \
-            .all()
+        response = []
+
+        if total > 0:
+            rows = Track.query \
+                .filter(Any(Track.spotify_uri, array(tracks))) \
+                .all()
+            response = TrackSerialzier().serialize(rows, many=True)
 
         return http.OK(
-            TrackSerialzier().serialize(rows, many=True),
+            response,
             page=kwargs.get('page'),
             total=total,
             limit=limit)
