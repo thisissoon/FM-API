@@ -107,6 +107,55 @@ Event Types
 * ``resume``: Fired when track playback has resumed
 * ``add``: Fired when a track has been added to the playlist, included in the event is the track object
 
+Authentication
+--------------
+
+Authentication is handled via the Google+ OAuth2 Web Flow. The accounts are limited to those defined in
+configuration (``thisissoon.com`` and ``thishe.re``). Login should be performed on initial page load using
+the Google+ OAuth2 web flow, this should pass an authentication token to the ``/oauth2/google/connect``
+resource.
+
+Example Request
+~~~~~~~~~~~~~~~
+
+.. code-block::
+
+    GET /oauth2/google/conenct HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Host: 192.168.59.103:5000
+
+    {
+        "token": "123456abcde"
+    }
+
+The API will validate the token and return an ``Auth-Token`` header to be used for subsequent requests. These
+tokens do not currently expire.
+
+Example Response
+~~~~~~~~~~~~~~~~
+
+If a new user is created in the system the response will be a standard ``201`` else the response will be a ``200``.
+
+.. code-block::
+
+    HTTP/1.0 201 OK
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Auth-Token
+    Access-Control-Allow-Origin: *
+    Auth-Token: 12234fn1uu21euid1nu23f3jn2f
+    Content-Length: 5301
+    Content-Type: application/json; charset=utf-8
+    Date: Mon, 09 Mar 2015 08:01:33 GMT
+    Location: http://192.168.59.103:5000/users/1234-abcde-1421-bfhdsk
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 201 Created
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+Once a valid ``Auth-Token`` has been retrieved this can be used for each subsequent request to protected
+resources. This can be stored in a cookie for example and could bypass the need for Google+ OAuth2 login.
+
 Resources
 ---------
 
@@ -177,6 +226,8 @@ album and artist nested objects.
 
 ``POST``
 ^^^^^^^^
+
+**Note**: Requires valid ``Auth-Token``
 
 Add a track to the playlist. This resource does not return an data. The ``Location`` Header can
 used to then request the track object.
@@ -262,6 +313,8 @@ This resource manages the pausing of the playback and acts as a creatable and de
 ``POST``
 ^^^^^^^^
 
+**Note**: Requires valid ``Auth-Token``
+
 Create a pause event, this will stop the playback.
 
 .. code-block::
@@ -277,6 +330,8 @@ Create a pause event, this will stop the playback.
 
 ``DELETE``
 ^^^^^^^^^^
+
+**Note**: Requires valid ``Auth-Token``
 
 Delete the pause event, this will resume the playback.
 
