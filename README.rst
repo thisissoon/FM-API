@@ -401,10 +401,11 @@ Returns a paginated list of tracks in no particular order.
         ...
     ]
 
-``/tracks/<id>``
+``/tracks/<id_or_uri>``
 ~~~~~~~~~~~~~~~~~~~~~~
 
-This resource operates on specific tracks in the local database.
+This resource operates on specific tracks in the local database. You can pass in a valid primary key
+or Spotify URI to get the track data.
 
 ``GET``
 ^^^^^^^
