@@ -151,5 +151,9 @@ class QueueView(MethodView):
 
         # Add track to the Queue
         redis.rpush(config.PLAYLIST_REDIS_KEY, track.spotify_uri)
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'add',
+            'uri': track.spotify_uri
+        }))
 
         return http.Created(location=url_for('tracks.track', pk=track.id))

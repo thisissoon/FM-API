@@ -89,22 +89,69 @@ Events
 
 The API will publish several events to a Redis Pubsub channel called ``fm:player:channel``. This events
 include pause events and track adding. All events sent by the system are sent as JSON objects with an
-element in the object called ``event`` with the value being the event type:
+element in the object called ``event`` with the value being the event type.
+
+Pause
+~~~~~
+
+The pause event is published from the ``/player/pause`` resource.
+
+.. code-block::
+
+    {
+        'event': 'pause'
+    }
+
+Resume
+~~~~~~
+
+The pause event is published from the ``/player/resume`` resource.
+
+.. code-block::
+
+    {
+        'event': 'resume'
+    }
+
+Add
+~~~
+
+The add event is published from the ``/player/queue`` resource on successful ``POST`` requests which
+indicates a new track has been added to the queue. This event will also include a ``uri`` element
+containing the Spotify URI.
 
 .. code-block::
 
     {
         'event': 'add',
-        'track' {
-            ...
-        }
+        'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
     }
 
-Event Types
-~~~~~~~~~~~
+Play
+~~~~
 
-* ``pause``: Fired when track playback has been paused
-* ``resume``: Fired when track playback has resumed
+This event is fired by the physical player to indicate when track playback begins. This will also contain
+a ``uri`` element containing the Spotify URI.
+
+.. code-block::
+
+    {
+        'event': 'plau',
+        'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
+    }
+
+End
+~~~
+
+This event is fired by the physical player to indicate when track playback ends. This will also contain
+a ``uri`` element containing the Spotify URI.
+
+.. code-block::
+
+    {
+        'event': 'end',
+        'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
+    }
 
 Resources
 ---------
