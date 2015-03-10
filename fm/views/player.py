@@ -156,4 +156,4 @@ class QueueView(MethodView):
             'uri': track.spotify_uri
         }))
 
-        return http.Created(location=url_for('tracks.track', pk=track.id))
+        return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))
