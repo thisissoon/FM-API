@@ -87,7 +87,7 @@ Example
 Events
 ------
 
-The API will publish several events to a Redis Pubsub channel called ``fm:player:channel``. This events
+The API will publish several events to a Redis Pubsub channel called ``fm:events``. This events
 include pause events and track adding. All events sent by the system are sent as JSON objects with an
 element in the object called ``event`` with the value being the event type.
 

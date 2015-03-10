@@ -8,6 +8,7 @@ fm.views.track
 Track resources.
 """
 
+import uuid
 
 from fm.serializers.spotify import TrackSerialzier
 from fm.models.spotify import Track
@@ -41,7 +42,7 @@ class TrackVeiw(MethodView):
     """ Operates on a single track object.
     """
 
-    def get(self, pk):
+    def get(self, pk_or_uri):
         """ Returns a single track object by primary key, if the track does
         not exist a 404 will be returned.
 
@@ -51,7 +52,14 @@ class TrackVeiw(MethodView):
             The track primary key
         """
 
-        track = Track.query.get(pk)
+        try:
+            uuid.UUID(pk_or_uri, version=4)
+        except ValueError:
+            field = Track.spotify_uri
+        else:
+            field = Track.id
+
+        track = Track.query.filter(field == pk_or_uri).first()
         if track is None:
             return http.NotFound()
 
