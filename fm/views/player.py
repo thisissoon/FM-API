@@ -43,7 +43,7 @@ class PauseView(MethodView):
         return http.NoContent()
 
 
-class PlayingView(MethodView):
+class CurrentView(MethodView):
     """ Operates on the currently playing track.
     """
 
@@ -71,7 +71,7 @@ class PlayingView(MethodView):
         return http.OK(TrackSerialzier().serialize(track), headers=headers)
 
 
-class PlaylistView(MethodView):
+class QueueView(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
@@ -149,9 +149,7 @@ class PlaylistView(MethodView):
 
         db.session.commit()
 
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({
-            'event': 'add',
-            'track': TrackSerialzier().serialize(track)
-        }))
+        # Add track to the Queue
+        redis.rpush(config.PLAYLIST_REDIS_KEY, track.spotify_uri)
 
         return http.Created(location=url_for('tracks.track', pk=track.id))

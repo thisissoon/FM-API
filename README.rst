@@ -64,7 +64,7 @@ Example
 
 .. code-block::
 
-    http POST http://localhost/player/playlist uri=spotify:track:
+    http POST http://localhost/player/queue uri=spotify:track:
 
     HTTP/1.0 422 UNPROCESSABLE ENTITY
     Content-Length: 97
@@ -105,15 +105,14 @@ Event Types
 
 * ``pause``: Fired when track playback has been paused
 * ``resume``: Fired when track playback has resumed
-* ``add``: Fired when a track has been added to the playlist, included in the event is the track object
 
 Resources
 ---------
 
-``/player/playlist``
+``/player/queue``
 ~~~~~~~~~~~~~~~~~~~~
 
-Manages the current playlist.
+Manages the current playlist queue - does not include the current playing track.
 
 ``GET``
 ^^^^^^^
@@ -123,13 +122,13 @@ album and artist nested objects.
 
 .. code-block::
 
-    http GET http://localhost/player/playlist\?limit\=5
+    http GET http://localhost/player/queue\?limit\=5
 
     HTTP/1.0 200 OK
     Content-Length: 3811
     Content-Type: application/json; charset=utf-8
     Date: Wed, 04 Mar 2015 13:58:09 GMT
-    Link: <http://localhost/player/playlist?limit=5&page=2>; rel="next", <http://localhost/player/playlist?limit=5&page=4>; rel="last"
+    Link: <http://localhost/player/queue?limit=5&page=2>; rel="next", <http://localhost/player/queue?limit=5&page=4>; rel="last"
     Server: Werkzeug/0.10.1 Python/2.7.3
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
     Total-Count: 17
@@ -183,7 +182,7 @@ used to then request the track object.
 
 .. code-block::
 
-    http POST http://localhost/player/playlist uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
+    http POST http://localhost/player/queue uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
 
     HTTP/1.0 201 CREATED
     Content-Length: 0
@@ -194,7 +193,7 @@ used to then request the track object.
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
 
-``/player/playing``
+``/player/current``
 ~~~~~~~~~~~~~~~~~~~
 
 This resource interacts with the currently playing track.
@@ -208,7 +207,7 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
 
 .. code-block::
 
-    http GET http://$DOCKER_IP:5000/player/playing
+    http GET http://$DOCKER_IP:5000/player/current
 
     HTTP/1.0 200 OK
     Content-Length: 1542
