@@ -153,6 +153,33 @@ a ``uri`` element containing the Spotify URI.
         'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
     }
 
+
+Volume Changed
+~~~~~~~~~~~~~~
+
+Fired by the player when the volume onn the player has been changed. Contains a volume attribute with
+the volume level number between 0 and 100.
+
+.. code-block::
+
+    {
+        'event': 'volume_changed',
+        'volume' 50
+    }
+
+Mute Changed
+~~~~~~~~~~~~
+
+Fired when the mute state changes on the player. Contains a mute attribute with the mute state as a
+boolean.
+
+.. code-block::
+
+    {
+        'event': 'mute_changed',
+        'mute' True
+    }
+
 Resources
 ---------
 
@@ -337,6 +364,151 @@ Delete the pause event, this will resume the playback.
     Server: Werkzeug/0.10.1 Python/2.7.3
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
+
+``/player/volume``
+~~~~~~~~~~~~~~~~~~
+
+Managed the volume on the physical player.
+
+``GET``
+^^^^^^^
+
+Returns the current volume level of the player.
+
+.. code-block::
+
+    http GET http://localhost/player/volume
+
+    HTTP/1.0 200 OK
+    Content-Length: 1542
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:27:39 GMT
+    Paused: 0
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        "volume": 50
+    }
+
+``POST``
+^^^^^^^^
+
+Allows the ability to change the volume. The post data must be a number betweeb 0 and 100 else
+a validation error will be returned.
+
+.. code-block::
+
+    http -jv POST http://localhost/player/volume
+
+    POST /player/volume HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 14
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    {
+        "volume": 80
+    }
+
+    HTTP/1.0 200 OK
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 11 Mar 2015 12:16:45 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 200 OK
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+``/player/mute``
+~~~~~~~~~~~~~~~~
+
+This resource manages the mute state of the player and followa the same convention as the ``/player/pause``
+resource.
+
+``GET``
+^^^^^^^
+
+Returns the current mute state.
+
+.. code-block::
+
+    http GET http://localhost/player/mute
+
+    HTTP/1.0 200 OK
+    Content-Length: 1542
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:27:39 GMT
+    Paused: 0
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        "mute": true
+    }
+
+``POST``
+^^^^^^^^
+
+Sets the player mute state to ``True``.
+
+.. code-block::
+
+    http -jv POST http://localhost/player/mute
+
+    POST /player/mute HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    HTTP/1.0 201 CREATED
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 11 Mar 2015 12:20:10 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 201 Created
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+``DELETE``
+^^^^^^^^^^
+
+Sets the player mute state to ``False``.
+
+.. code-block::
+
+    http -jv DELETE http://localhost/player/mute
+
+    DELETE /player/mute HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    HTTP/1.0 204 NO CONTENT
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 11 Mar 2015 12:21:37 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 204 No Content
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
 ``/tracks``
 ~~~~~~~~~~~

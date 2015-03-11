@@ -76,6 +76,43 @@ class VolumeView(MethodView):
         return http.OK()
 
 
+class MuteView(MethodView):
+    """ Controls mute state of the Player.
+    """
+
+    def get(self):
+        """ Returns the current mute state of the player
+        """
+
+        mute = redis.get('fm:player:mute')
+        if mute is None:
+            mute = 0
+
+        return http.OK({'mute': bool(int(mute))})
+
+    def post(self):
+        """ Set the player mute state to True.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_mute',
+            'mute': True
+        }))
+
+        return http.Created()
+
+    def delete(self):
+        """ Set the player mute state to False.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_mute',
+            'mute': False
+        }))
+
+        return http.NoContent()
+
+
 class CurrentView(MethodView):
     """ Operates on the currently playing track.
     """
