@@ -15,7 +15,7 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
-from fm.serializers.player import PlaylistSerializer
+from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
 from sqlalchemy.dialects.postgresql import Any, array
@@ -39,6 +39,76 @@ class PauseView(MethodView):
         """
 
         redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'resume'}))
+
+        return http.NoContent()
+
+
+class VolumeView(MethodView):
+    """ Contorls Volume on the Physical player.
+    """
+
+    def get(self):
+        """ Retrieve the current volume level for the physical player.
+        """
+
+        volume = redis.get('fm:player:volume')
+        if volume is None:
+            volume = 100
+
+        return http.OK({'volume': volume})
+
+    def post(self):
+        """ Change the volume level for the player.
+        """
+
+        serializer = VolumeSerializer()
+
+        try:
+            data = serializer.marshal(request.json)
+        except MappingErrors as e:
+            return http.UnprocessableEntity(errors=e.message)
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_volume',
+            'volume': data['volume']
+        }))
+
+        return http.OK()
+
+
+class MuteView(MethodView):
+    """ Controls mute state of the Player.
+    """
+
+    def get(self):
+        """ Returns the current mute state of the player
+        """
+
+        mute = redis.get('fm:player:mute')
+        if mute is None:
+            mute = 0
+
+        return http.OK({'mute': bool(int(mute))})
+
+    def post(self):
+        """ Set the player mute state to True.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_mute',
+            'mute': True
+        }))
+
+        return http.Created()
+
+    def delete(self):
+        """ Set the player mute state to False.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_mute',
+            'mute': False
+        }))
 
         return http.NoContent()
 
