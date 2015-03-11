@@ -59,5 +59,8 @@ class VolumeSerializer(Serializer):
             The proposed volume level
         """
 
-        if not value >= 0 and not value <= 100:
-            raise ValidationError('Volume must be between 0 and 100')
+        if not value >= 0:
+            raise ValidationError('Volume must be greater than 0')
+
+        if not value <= 100:
+            raise ValidationError('Volume must be less than 100')
