@@ -15,7 +15,7 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
-from fm.serializers.player import PlaylistSerializer
+from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
 from sqlalchemy.dialects.postgresql import Any, array
@@ -41,6 +41,39 @@ class PauseView(MethodView):
         redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'resume'}))
 
         return http.NoContent()
+
+
+class VolumeView(MethodView):
+    """ Contorls Volume on the Physical player.
+    """
+
+    def get(self):
+        """ Retrieve the current volume level for the physical player.
+        """
+
+        volume = redis.get('fm:player:volume')
+        if volume is None:
+            volume = 100
+
+        return http.OK({'volume': volume})
+
+    def post(self):
+        """ Change the volume level for the player.
+        """
+
+        serializer = VolumeSerializer()
+
+        try:
+            data = serializer.marshal(request.json)
+        except MappingErrors as e:
+            return http.UnprocessableEntity(errors=e.message)
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_volume',
+            'volume': data['volume']
+        }))
+
+        return http.OK()
 
 
 class CurrentView(MethodView):
