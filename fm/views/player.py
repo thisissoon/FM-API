@@ -55,7 +55,7 @@ class VolumeView(MethodView):
         if volume is None:
             volume = 100
 
-        return http.OK({'volume': volume})
+        return http.OK({'volume': int(volume)})
 
     def post(self):
         """ Change the volume level for the player.
