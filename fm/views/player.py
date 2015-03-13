@@ -130,7 +130,7 @@ class CurrentView(MethodView):
             return http.NoContent()
 
         try:
-            paused = int(redis.get('fm:player:state:paused'))
+            paused = int(redis.get('fm:player:paused'))
         except (ValueError, TypeError):
             paused = 0
 
