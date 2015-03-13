@@ -121,7 +121,7 @@ class CurrentView(MethodView):
         """ Returns the currently playing track.
         """
 
-        uri = redis.get('fm:player:playing')
+        uri = redis.get('fm:player:current')
         if uri is None:
             return http.NoContent()
 
