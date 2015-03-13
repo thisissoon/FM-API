@@ -154,7 +154,7 @@ class QueueView(MethodView):
         limit = kwargs.pop('limit')
 
         tracks = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
-        total = redis.llen('playlist')
+        total = redis.llen(config.PLAYLIST_REDIS_KEY)
 
         response = []
 
