@@ -44,4 +44,4 @@ class UUID4(factory.declarations.OrderedDeclaration):
         """ Returns a UUID for use as an object primary key.
         """
 
-        return uuid.uuid4()
+        return unicode(uuid.uuid4())

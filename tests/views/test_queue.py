@@ -8,9 +8,24 @@ tests.views.player.test_queue
 Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
+import unittest
 
-class TestGet(object):
+from fm.app import create
+from fm.ext import db
+from tests.factories.spotify import TrackFactory
+
+
+class TestGet(unittest.TestCase):
     """Player Queue: GET
     """
 
-    pass
+    def setUp(self):
+        self.app = create()
+
+    def test_foo(self):
+        track = TrackFactory()
+
+        db.session.add(track)
+        db.session.commit()
+
+        from nose.tools import set_trace; set_trace()
