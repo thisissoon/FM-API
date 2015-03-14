@@ -19,7 +19,7 @@ from setuptools import setup, find_packages
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(root, 'fm'))
 
-import fm
+import fm  # noqa
 
 
 def read_requirements(filename):

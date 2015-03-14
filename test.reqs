@@ -3,7 +3,7 @@ coverage==3.7.1
 sure==1.2.8
 factory_boy==2.4.1
 
-pytest==2.5.2
-pytest-cov==1.7.0
-pytest-spec==0.2.22
-pytest-flakes==0.2
+pytest
+pytest-cov
+pytest-flakes
+pytest-pep8
