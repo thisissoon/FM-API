@@ -162,7 +162,10 @@ class QueueView(MethodView):
             rows = Track.query \
                 .filter(Any(Track.spotify_uri, array(tracks))) \
                 .all()
-            response = TrackSerialzier().serialize(rows, many=True)
+
+            for uri in tracks:
+                obj = filter(lambda o: o.spotify_uri == uri, rows)[0]
+                response.append(TrackSerialzier().serialize(obj))
 
         return http.OK(
             response,
