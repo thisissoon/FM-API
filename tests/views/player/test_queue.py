@@ -8,24 +8,35 @@ tests.views.player.test_queue
 Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
-import unittest
+import mock
 
-from fm.app import create
 from fm.ext import db
+from flask import url_for
 from tests.factories.spotify import TrackFactory
 
 
-class TestGet(unittest.TestCase):
+class TestGetQueue(object):
     """Player Queue: GET
     """
 
-    def setUp(self):
-        self.app = create()
+    def setup(self):
+        patch = mock.patch('fm.views.player.redis')
+        self.redis = patch.start()
+        self.addPatchCleanup(patch)
 
-    def test_foo(self):
-        track = TrackFactory()
+    def ensure_same_track_is_not_grouped(self):
+        tracks = [TrackFactory(), TrackFactory(), TrackFactory()]
 
-        db.session.add(track)
+        db.session.add_all(tracks)
         db.session.commit()
 
-        from nose.tools import set_trace; set_trace()
+        # Each track is in the queue twice
+        queue = [t.spotify_uri for t in tracks] + [t.spotify_uri for t in tracks]
+
+        self.redis.lrange.return_value = queue
+        self.redis.llen.return_value = len(tracks)
+
+        url = url_for('player.queue')
+        response = self.client.get(url)
+
+        assert len(response.json) == 6
