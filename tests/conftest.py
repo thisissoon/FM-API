@@ -94,3 +94,28 @@ def session(request, db, app):
         transaction.rollback()
         connection.close()
         session.remove()
+
+
+class PatchCleanup(object):
+
+    def __init__(self):
+        self.patches = []
+
+    def addPatchCleanup(self, patch):
+        self.patches.append(patch)
+
+    def cleanUpPatches(self):
+        for p in reversed(self.patches):
+            p.stop()
+
+        self.patches[:] = []
+
+
+@pytest.yield_fixture(scope='function', autouse=True)
+def cleanup(request, db, app):
+    cleanup = PatchCleanup()
+    request.instance.addPatchCleanup = cleanup.addPatchCleanup
+
+    yield cleanup
+
+    cleanup.cleanUpPatches()
