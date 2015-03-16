@@ -1,6 +1,8 @@
 FM-API
 ======
 
+|circle|
+
 Simple Flask API Interface to the physical FM Player via Redis Pub Sub.
 
 All examples use ``HTTPie`` - http://httpie.org
@@ -630,3 +632,6 @@ Returns the specific track object.
         "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
         "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
+
+.. |circle| image:: https://circleci.com/gh/thisissoon/FM-API/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/thisissoon/FM-API/tree/master
