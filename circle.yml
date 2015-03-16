@@ -9,7 +9,7 @@ machine:
   environment:
     REPO: soon/fm-api
     TAG: $(sed 's/master/latest/;s/\//\-/' <<<$CIRCLE_BRANCH)
-    SQLALCHEMY_TEST_DATABASE_URI: postgres://ubuntu@localhost:5432/circle_test
+    SQLALCHEMY_DATABASE_URI: postgres://ubuntu@localhost:5432/circle_test
 
 dependencies:
   override:
