@@ -51,11 +51,12 @@ class VolumeView(MethodView):
         """ Retrieve the current volume level for the physical player.
         """
 
-        volume = redis.get('fm:player:volume')
-        if volume is None:
+        try:
+            volume = int(redis.get('fm:player:volume'))
+        except ValueError:
             volume = 100
 
-        return http.OK({'volume': int(volume)})
+        return http.OK({'volume': volume})
 
     def post(self):
         """ Change the volume level for the player.
