@@ -88,7 +88,12 @@ class MuteView(MethodView):
         if mute is None:
             mute = 0
 
-        return http.OK({'mute': bool(int(mute))})
+        try:
+            value = bool(int(mute))
+        except ValueError:
+            value = False
+
+        return http.OK({'mute': value})
 
     def post(self):
         """ Set the player mute state to True.

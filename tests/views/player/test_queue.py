@@ -17,8 +17,6 @@ from tests.factories.spotify import TrackFactory
 
 
 class TestGetQueue(object):
-    """Player Queue: GET
-    """
 
     def setup(self):
         patch = mock.patch('fm.views.player.redis')
