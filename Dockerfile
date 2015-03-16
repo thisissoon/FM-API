@@ -18,7 +18,6 @@ WORKDIR /fm
 COPY . /fm
 
 RUN pip install -r install.reqs
-RUN pip install -r test.reqs
 
 EXPOSE 5000
 
