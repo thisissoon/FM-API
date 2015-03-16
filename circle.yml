@@ -17,4 +17,4 @@ dependencies:
 
 test:
   override:
-    - docker run -it --net=host -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG py.test
+    - docker run -it --net=host -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG python setup.py test
