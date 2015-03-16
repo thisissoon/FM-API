@@ -8,6 +8,7 @@ tests.views.player.test_must
 Unit tests for the ``fm.views.player.MuteView`` class.
 """
 
+import json
 import mock
 
 from flask import url_for
@@ -53,9 +54,29 @@ class TestGetMute(BaseMuteTest):
 
 class TestPostMute(BaseMuteTest):
 
-    pass
+    def should_fire_redis_mute_event(self):
+        url = url_for('player.mute')
+        response = self.client.post(url)
+
+        assert response.status_code == 201
+        self.redis.publish.assert_called_once_with(
+            self.app.config.get('PLAYER_CHANNEL'),
+            json.dumps({
+                'event': 'set_mute',
+                'mute': True
+            }))
 
 
 class TestDeleteMute(BaseMuteTest):
 
-    pass
+    def should_fire_redis_unmute_event(self):
+        url = url_for('player.mute')
+        response = self.client.delete(url)
+
+        assert response.status_code == 204
+        self.redis.publish.assert_called_once_with(
+            self.app.config.get('PLAYER_CHANNEL'),
+            json.dumps({
+                'event': 'set_mute',
+                'mute': False
+            }))
