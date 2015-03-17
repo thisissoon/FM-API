@@ -109,6 +109,14 @@ class Track(db.Model):
     #: Duration in miliseconds
     duration = db.Column(db.Integer)
 
+    #: Total number of times the track has been played
+    play_count = db.Column(
+        db.Integer,
+        default=0,
+        server_default='0',
+        nullable=False,
+        index=True)
+
     #
     # Relations
     #
