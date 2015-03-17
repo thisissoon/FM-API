@@ -52,7 +52,11 @@ class Response(ResponseBase):
         headers['Pragma'] = 'no-cache'
         headers['Expires'] = '0'
 
-        if response is not None:
+        if response is None:
+            response = json.dumps({
+                'message': self._status
+            })
+        else:
             response = json.dumps(response)
 
         return super(ResponseBase, self).__init__(
