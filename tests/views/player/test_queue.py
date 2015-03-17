@@ -12,7 +12,7 @@ import json
 import mock
 
 from fm.ext import db
-from fm.models.spotify import Album
+from fm.models.spotify import Album, Artist
 from fm.serializers.spotify import TrackSerialzier
 from flask import url_for
 from spotipy import SpotifyException
@@ -175,3 +175,18 @@ class TestQueuePost(QueueTest):
         assert album.name == TRACK_DATA['album']['name']
         assert album.images == TRACK_DATA['album']['images']
         assert album.spotify_uri == TRACK_DATA['album']['uri']
+
+    def should_create_artist(self):
+        assert Artist.query.count() == 0
+
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': 'foo'
+        }))
+
+        artist = Artist.query.first()
+
+        assert response.status_code == 201
+        assert artist is not None
+        assert artist.name == TRACK_DATA['artists'][0]['name']
+        assert artist.spotify_uri == TRACK_DATA['artists'][0]['uri']
