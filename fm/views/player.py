@@ -225,6 +225,7 @@ class QueueView(MethodView):
         track.spotify_uri = data['uri']
         track.duration = data['duration_ms']
         track.album_id = album.id
+        track.play_count += 1
 
         db.session.commit()
 
