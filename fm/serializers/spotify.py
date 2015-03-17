@@ -47,6 +47,7 @@ class TrackSerialzier(SQASerializer):
     name = Field(t.String)
     duration = Field(t.Integer)
     spotify_uri = Field(t.String)
+    play_count = Field(t.Integer, read_only=True)
 
     #
     # Relations
