@@ -47,6 +47,11 @@ class Response(ResponseBase):
         headers.update(self.default_headers)
         headers['Status'] = self.status
 
+        # Never Cache
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        headers['Pragma'] = 'no-cache'
+        headers['Expires'] = '0'
+
         if response is not None:
             response = json.dumps(response)
 
