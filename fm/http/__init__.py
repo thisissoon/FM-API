@@ -25,7 +25,10 @@ class Response(ResponseBase):
 
     default_mimetype = 'application/json; charset=utf-8'
     default_headers = {
-        'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload'
+        'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
     }
 
     def __init__(self, response=None, *args, **kwargs):
@@ -46,11 +49,6 @@ class Response(ResponseBase):
         # Update passed headers with the default headers
         headers.update(self.default_headers)
         headers['Status'] = self.status
-
-        # Never Cache
-        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        headers['Pragma'] = 'no-cache'
-        headers['Expires'] = '0'
 
         if response is None:
             response = json.dumps({
