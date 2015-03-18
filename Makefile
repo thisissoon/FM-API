@@ -34,8 +34,7 @@ develop:
 
 test:
 	pip install -r test.reqs
-	py.test
-	coverage run --source=fm
+	coverage run setup.py test
 	coveralls
 
 sdist: clean
