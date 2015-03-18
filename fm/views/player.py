@@ -179,6 +179,7 @@ class QueueView(MethodView):
             total=total,
             limit=limit)
 
+    # TODO: Refactor this resource, its getting a tad large
     def post(self):
         """ Allows you to add anew track to the player playlist.
         """
@@ -225,6 +226,12 @@ class QueueView(MethodView):
         track.spotify_uri = data['uri']
         track.duration = data['duration_ms']
         track.album_id = album.id
+
+        # If a track is skipped we should decrement the play count
+        try:
+            track.play_count += 1
+        except TypeError as e:
+            track.play_count = 1
 
         db.session.commit()
 

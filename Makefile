@@ -33,7 +33,12 @@ develop:
 	bash -c 'pip install -e .[develop] --process-dependency-links'
 
 test:
-	python setup.py nosetests
+	pip install -r test.reqs
+	python setup.py test
+
+circleci:
+	$(MAKE) test
+	coveralls
 
 sdist: clean
 	python setup.py sdist
