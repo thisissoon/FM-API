@@ -18,4 +18,4 @@ dependencies:
 test:
   override:
     - docker run -it --name test --net=host -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG python setup.py test
-    - docker exec -it --net=host test coveralls
+    - docker exec -i test coveralls
