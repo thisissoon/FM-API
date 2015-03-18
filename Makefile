@@ -38,7 +38,7 @@ test:
 
 circleci:
 	$(MAKE) test
-	cd /fm && coveralls
+	coveralls
 
 sdist: clean
 	python setup.py sdist
