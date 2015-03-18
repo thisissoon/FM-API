@@ -123,15 +123,35 @@ class CurrentView(MethodView):
     """ Operates on the currently playing track.
     """
 
-    def get(self):
-        """ Returns the currently playing track.
+    def get_current_track(self):
+        """ Returns the currently playing track from redis.
+
+        Returns
+        -------
+        fm.models.spotify.Teack
+            The currently playing track or None
         """
 
         uri = redis.get('fm:player:current')
         if uri is None:
-            return http.NoContent()
+            return None
 
         track = Track.query.filter(Track.spotify_uri == uri).first()
+        if track is None:
+            return None
+
+        return track
+
+    def get(self):
+        """ Returns the currently playing track.
+
+        Returns
+        -------
+        http.Response
+            A http response instance, 204 or 200
+        """
+
+        track = self.get_current_track()
         if track is None:
             return http.NoContent()
 
@@ -145,6 +165,28 @@ class CurrentView(MethodView):
         }
 
         return http.OK(TrackSerialzier().serialize(track), headers=headers)
+
+    def delete(self):
+        """ Skips the currently playing track.
+
+        Returns
+        -------
+        http.Response
+            A http response intance, in this case it should always be a 204
+        """
+
+        track = self.get_current_track()
+        if track is None:
+            return http.NoContent()
+
+        redis.publish(
+            config.PLAYER_CHANNEL,
+            json.dumps({
+                'event': 'stop'
+            })
+        )
+
+        return http.NoContent()
 
 
 class QueueView(MethodView):
