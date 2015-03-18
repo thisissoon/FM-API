@@ -633,9 +633,8 @@ Returns the specific track object.
         "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
 
-.. |circle| image:: https://circleci.com/gh/thisissoon/FM-API/tree/master.svg?style=svg
+.. |circle| image:: https://img.shields.io/circleci/project/thisissoon/FM-API/master.svg?style=flat
     :target: https://circleci.com/gh/thisissoon/FM-API/tree/master
 
-
-.. |coveralls| image:: https://coveralls.io/repos/thisissoon/FM-API/badge.svg?branch=master
+.. |coveralls| image:: https://img.shields.io/coveralls/thisissoon/FM-API/master.svg?style=flat
   :target: https://coveralls.io/r/thisissoon/FM-API?branch=master
