@@ -329,6 +329,41 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
         "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
 
+
+``DELETE``
+^^^^^^^^^^
+
+Issuing a ``DELETE`` to the current track resource will result in the track being skipped and the
+next track in the queue being played. This resource will always return a ``204``.
+
+.. code-block::
+
+    http -jv DELETE http://localhost/player/current
+
+    DELETE /player/current HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    HTTP/1.0 204 NO CONTENT
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 18 Mar 2015 13:24:29 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 204 No Content
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+
 ``/player/pause``
 ~~~~~~~~~~~~~~~~~
 
