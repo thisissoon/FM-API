@@ -1,7 +1,7 @@
 FM-API
 ======
 
-|circle|
+|circle| |coveralls|
 
 Simple Flask API Interface to the physical FM Player via Redis Pub Sub.
 
@@ -635,3 +635,7 @@ Returns the specific track object.
 
 .. |circle| image:: https://circleci.com/gh/thisissoon/FM-API/tree/master.svg?style=svg
     :target: https://circleci.com/gh/thisissoon/FM-API/tree/master
+
+
+.. |coveralls| image:: https://coveralls.io/repos/thisissoon/FM-API/badge.svg?branch=master
+  :target: https://coveralls.io/r/thisissoon/FM-API?branch=master
