@@ -3,8 +3,6 @@
 #
 
 machine:
-  python:
-    version: 2.7.9
   services:
     - postgresql
     - docker
@@ -14,13 +12,9 @@ machine:
     SQLALCHEMY_DATABASE_URI: postgres://ubuntu@localhost:5432/circle_test
 
 dependencies:
-  pre:
-    - pip install coveralls
   override:
     - docker build -t $REPO:$TAG .
 
 test:
   override:
-    - docker run -it --name test --net=host -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG python setup.py test
-  post:
-    - coveralls
+    - docker run -it --name test --net=host -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG make test
