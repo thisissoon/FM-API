@@ -12,7 +12,7 @@ import json
 import mock
 
 from fm.ext import db
-from fm.models.spotify import Album, Artist
+from fm.models.spotify import Album, Artist, Track
 from fm.serializers.spotify import TrackSerialzier
 from flask import url_for
 from spotipy import SpotifyException
@@ -190,3 +190,30 @@ class TestQueuePost(QueueTest):
         assert artist is not None
         assert artist.name == TRACK_DATA['artists'][0]['name']
         assert artist.spotify_uri == TRACK_DATA['artists'][0]['uri']
+
+    def ensure_new_track_play_count_is_one(self):
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': 'foo'
+        }))
+
+        track = Track.query.first()
+
+        assert response.status_code == 201
+        assert track.play_count == 1
+
+    def should_increment_existing_track_play_count(self):
+        t = TrackFactory(spotify_uri=TRACK_DATA['uri'], play_count=5)
+
+        db.session.add(t)
+        db.session.commit()
+
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': t.spotify_uri
+        }))
+
+        track = Track.query.first()
+
+        assert response.status_code == 201
+        assert track.play_count == 6
