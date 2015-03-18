@@ -34,7 +34,7 @@ develop:
 
 test:
 	pip install -r test.reqs
-	coverage run setup.py test
+	python setup.py test
 	coveralls
 
 sdist: clean

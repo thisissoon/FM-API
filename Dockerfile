@@ -4,6 +4,7 @@ ADD https://bootstrap.pypa.io/get-pip.py /get-pip.py
 
 RUN apt-get update && apt-get install -y \
         build-essential \
+        git \
         libpq-dev \
         python-dev \
     && apt-get clean \
