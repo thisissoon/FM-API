@@ -35,6 +35,9 @@ develop:
 test:
 	pip install -r test.reqs
 	python setup.py test
+
+circleci:
+	$(MAKE) test
 	coveralls
 
 sdist: clean

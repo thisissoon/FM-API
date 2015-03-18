@@ -17,4 +17,4 @@ dependencies:
 
 test:
   override:
-    - docker run -it --name test --net=host -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG make test
+    - docker run -it --name test --net=host -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG make circleci
