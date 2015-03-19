@@ -10,6 +10,7 @@ Unit tests for the ``fm.views.player.VolumeView`` class.
 
 import json
 import mock
+import pytest
 
 from flask import url_for
 
@@ -43,7 +44,15 @@ class TestVolumeGet(BaseVolumeTest):
         assert response.json['volume'] == 70
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestVolumePost(BaseVolumeTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.mute')
+        response = self.client.delete(url)
+
+        assert response.status_code == 401
 
     def must_not_be_over_100(self):
         url = url_for('player.volume')

@@ -10,10 +10,9 @@ Unit tests for the ``fm.views.player.PauseView`` class.
 
 import json
 import mock
+import pytest
 
-from flask import g, url_for
-from fm.ext import db
-from tests.factories.user import UserFactory
+from flask import url_for
 
 
 class BasePauseTest(object):
@@ -24,18 +23,12 @@ class BasePauseTest(object):
         self.redis = patch.start()
         self.addPatchCleanup(patch)
 
-        # Fake User
-        self.user = UserFactory()
-        db.session.add(self.user)
-        db.session.commit()
-        g.user = self.user
 
-
+@pytest.mark.usefixtures("authenticated")
 class TestPausePost(BasePauseTest):
 
+    @pytest.mark.usefixtures("unauthenticated")
     def must_be_authenticated(self):
-        del g.user
-
         url = url_for('player.pause')
         response = self.client.post(url)
 
@@ -53,11 +46,11 @@ class TestPausePost(BasePauseTest):
             }))
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestPauseDelete(BasePauseTest):
 
+    @pytest.mark.usefixtures("unauthenticated")
     def must_be_authenticated(self):
-        del g.user
-
         url = url_for('player.pause')
         response = self.client.delete(url)
 
