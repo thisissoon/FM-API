@@ -213,13 +213,6 @@ album and artist nested objects.
     [
         {
             "album": {
-                "artists": [
-                    {
-                        "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                        "name": "Nightwish",
-                        "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                    }
-                ],
                 "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
                 "images": [
                     {
@@ -239,12 +232,19 @@ album and artist nested objects.
                     }
                 ],
                 "name": "Showtime, Storytime",
-                "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+                "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
             },
+            "artists": [
+                {
+                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                    "name": "Nightwish",
+                    "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+                }
+            ],
             "duration": 272906,
             "id": "4b170737-017c-4e85-965c-47b8a158c789",
             "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-            "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+            "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
         },
         ...
     ]
@@ -295,13 +295,6 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
 
     {
         "album": {
-            "artists": [
-                {
-                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                    "name": "Nightwish",
-                    "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                }
-            ],
             "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
             "images": [
                 {
@@ -321,12 +314,19 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
                 }
             ],
             "name": "Showtime, Storytime",
-            "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+            "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
         },
+        "artists": [
+            {
+                "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                "name": "Nightwish",
+                "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+            }
+        ],
         "duration": 272906,
         "id": "4b170737-017c-4e85-965c-47b8a158c789",
         "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-        "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+        "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
 
 
@@ -574,13 +574,6 @@ Returns a paginated list of tracks in no particular order.
     [
         {
             "album": {
-                "artists": [
-                    {
-                        "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                        "name": "Nightwish",
-                        "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                    }
-                ],
                 "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
                 "images": [
                     {
@@ -600,12 +593,19 @@ Returns a paginated list of tracks in no particular order.
                     }
                 ],
                 "name": "Showtime, Storytime",
-                "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+                "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
             },
+            "artists": [
+                {
+                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                    "name": "Nightwish",
+                    "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+                }
+            ],
             "duration": 272906,
             "id": "4b170737-017c-4e85-965c-47b8a158c789",
             "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-            "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+            "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
         },
         ...
     ]
@@ -634,13 +634,6 @@ Returns the specific track object.
 
     {
         "album": {
-            "artists": [
-                {
-                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                    "name": "Nightwish",
-                    "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                }
-            ],
             "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
             "images": [
                 {
@@ -660,12 +653,19 @@ Returns the specific track object.
                 }
             ],
             "name": "Showtime, Storytime",
-            "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+            "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
         },
+        "artists": [
+            {
+                "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                "name": "Nightwish",
+                "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+            }
+        ],
         "duration": 272906,
         "id": "4b170737-017c-4e85-965c-47b8a158c789",
         "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-        "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+        "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
 
 .. |circle| image:: https://img.shields.io/circleci/project/thisissoon/FM-API/master.svg?style=flat
