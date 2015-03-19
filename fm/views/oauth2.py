@@ -30,7 +30,7 @@ class GoogleTestClientView(MethodView):
         """ Renders a HTML test client for testing google OAuth2 Flow
         """
 
-        if current_app.debug == False:
+        if current_app.debug is False:
             return http.NotFound()
 
         return render_template('oauth2/google.html')
