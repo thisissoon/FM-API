@@ -57,7 +57,7 @@ def runserver(ssl=False, host='0.0.0.0', port=5000, migrate=False):
     if ssl:
         kwagrs['ssl_context'] = 'adhoc'
 
-    # app.run(**kwagrs)
+    app.run(**kwagrs)
 
 
 manager.add_command('db', MigrateCommand)
