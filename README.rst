@@ -792,6 +792,56 @@ Returns the specific track object.
         "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
 
+``/users/authenticated``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This resource handles the current user.
+
+``GET``
+^^^^^^^
+
+This will return the currently authenitcated user (``200``) else a ``401`` will be returned.
+
+Example Request
+***************
+
+.. code-block::
+
+    GET /users/authenticated HTTP/1.1
+    Accept: */*
+    Accept-Encoding: gzip, deflate
+    Auth-Token: IjgyNThiZTZiLWVlNTMtNDE4Ni04YmJkLTU1YmMwYTNhNmYyNCI.B-xObA.dvEM7STtNIJhgrQdfBmGwBrVV-Q
+    Connection: keep-alive
+    Host: localhost
+    User-Agent: HTTPie/0.8.0
+
+Example Response
+****************
+
+.. code-block::
+
+    HTTP/1.0 200 OK
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Auth-Token
+    Access-Control-Allow-Origin: *
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Length: 236
+    Content-Type: application/json; charset=utf-8
+    Date: Thu, 19 Mar 2015 12:46:45 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 200 OK
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        "avatar_url": "https://lh5.googleusercontent.com/-8zjhd-e4yZA/AAAAAAAAAAI/AAAAAAAAAFU/NiS1oH4gAKo/photo.jpg",
+        "display_name": "Chris Reeves",
+        "family_name": "Reeves",
+        "given_name": "Chris",
+        "id": "8258be6b-ee53-4186-8bbd-55bc0a3a6f24"
+    }
+
 .. |circle| image:: https://img.shields.io/circleci/project/thisissoon/FM-API/master.svg?style=flat
     :target: https://circleci.com/gh/thisissoon/FM-API/tree/master
 

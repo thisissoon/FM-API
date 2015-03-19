@@ -14,6 +14,8 @@ from fm.views import user
 
 
 routes = [
+    # /users/current
+    Pluggable('/authenticated', user.UserAuthenticatedView, 'authenticated'),
     # /users/{id}
     Pluggable('/<pk>', user.UserView, 'user')
 ]

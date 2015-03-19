@@ -12,7 +12,20 @@ Views for working with User objects.
 from flask.views import MethodView
 from fm import http
 from fm.models.user import User
+from fm.session import authenticated, current_user
 from fm.serializers.user import UserSeerialzer
+
+
+class UserAuthenticatedView(MethodView):
+    """ Authenticated User Resource - returns the currently authenticated user.
+    """
+
+    @authenticated
+    def get(self):
+        """ Returns the currently authenticated user
+        """
+
+        return http.OK(UserSeerialzer().serialize(current_user))
 
 
 class UserView(MethodView):
