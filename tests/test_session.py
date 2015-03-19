@@ -13,9 +13,28 @@ import uuid
 
 from flask import g
 from fm.ext import db
-from fm.session import validate_session, user_from_session
+from fm.session import (
+    SESSION_KEY,
+    USER_SESSION_KEY,
+    make_session,
+    validate_session,
+    user_from_session)
 from itsdangerous import URLSafeTimedSerializer
 from tests.factories.user import UserFactory
+
+
+class TestMakeSession(object):
+
+    @mock.patch('fm.session.URLSafeTimedSerializer')
+    @mock.patch('fm.session.redis')
+    def tests_makes_session(self, redis, URLSafeTimedSerializer):
+        serializer = mock.MagicMock()
+        serializer.dumps.return_value = 'foobar'
+        URLSafeTimedSerializer.return_value = serializer
+
+        assert make_session('1234') == 'foobar'
+        redis.set.assert_has_call(SESSION_KEY.format('foobar'), '1234')
+        redis.set.assert_has_call(USER_SESSION_KEY.format('1234'), 'foobar')
 
 
 class TestValidateSession(object):
