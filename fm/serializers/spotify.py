@@ -12,6 +12,7 @@ import kim.types as t
 
 from kim.fields import Field
 from kim.contrib.sqa import SQASerializer
+from kim.roles import blacklist
 
 
 class ArtistSerializer(SQASerializer):
@@ -20,7 +21,7 @@ class ArtistSerializer(SQASerializer):
 
     id = Field(t.String, read_only=True)
     name = Field(t.String)
-    spotify_uri = Field(t.String)
+    uri = Field(t.String, source='spotify_uri')
 
 
 class AlbumSerializer(SQASerializer):
@@ -29,7 +30,7 @@ class AlbumSerializer(SQASerializer):
 
     id = Field(t.String, read_only=True)
     name = Field(t.String)
-    spotify_uri = Field(t.String)
+    uri = Field(t.String, source='spotify_uri')
     images = Field(t.BaseType)
 
     #
@@ -46,11 +47,14 @@ class TrackSerialzier(SQASerializer):
     id = Field(t.String, read_only=True)
     name = Field(t.String)
     duration = Field(t.Integer)
-    spotify_uri = Field(t.String)
+    uri = Field(t.String, source='spotify_uri')
     play_count = Field(t.Integer, read_only=True)
 
     #
     # Relations
     #
 
-    album = Field(t.Nested(AlbumSerializer))
+    album = Field(t.Nested(AlbumSerializer, role=blacklist('artists')))
+    artists = Field(t.Collection(
+        t.Nested(ArtistSerializer)),
+        source='album.artists')
