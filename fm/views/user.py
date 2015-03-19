@@ -8,6 +8,8 @@ fm.views.user
 Views for working with User objects.
 """
 
+import uuid
+
 
 from flask.views import MethodView
 from fm import http
@@ -41,7 +43,13 @@ class UserView(MethodView):
             The user primary key UUID
         """
 
-        user = User.query.get(pk)
+        try:
+            uuid.UUID(pk, version=4)
+        except ValueError:
+            user = None
+        else:
+            user = User.query.get(pk)
+
         if user is None:
             return http.NotFound()
 
