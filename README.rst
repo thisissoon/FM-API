@@ -234,8 +234,68 @@ resources. This can be stored in a cookie for example and could bypass the need 
 Resources
 ---------
 
+``/oauth2/google/connect``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This resource handles authentication using Google+ OAuth2 Web Flow tokens.
+
+``POST``
+^^^^^^^^
+
+Call this resource with a ``POST`` method to authenticate a user. This resource will return a ``200``
+for existing users and a ``201`` for newly created users. The request body should contain a JSON object
+which contains the OAuth2 token returned by the OAuth2 webflow.
+
+On a successful response an ``Auth-Token`` header will be returned which can be used to authenticate
+each subsequent request to protected resources.
+
+Example Request
+***************
+
+.. code-block::
+
+    POST /oauth2/google/connect HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Auth-Token: abcde1234
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: localhost
+    User-Agent: HTTPie/0.8.0
+
+    {
+        token: "google-oauth2-token"
+    }
+
+Example Response
+****************
+
+.. code-block::
+
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Auth-Token
+    Access-Control-Allow-Origin: *
+    Auth-Token: IjgyNThiZTZiLWVlNTMtNDE4Ni04YmJkLTU1YmMwYTNhNmYyNCI.B-xObA.dvEM7STtNIJhgrQdfBmGwBrVV-Q
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Length: 21
+    Content-Type: application/json; charset=utf-8
+    Date: Thu, 19 Mar 2015 12:11:24 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 200 OK
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+``/oauth2/google/client``
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Note**: Only available when in ``DEBUG`` mode
+
+This page can be accessed in your web browser and is an OAuth2 Test Client.
+
 ``/player/queue``
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 Manages the current playlist queue - does not include the current playing track.
 
@@ -384,6 +444,8 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
 ``DELETE``
 ^^^^^^^^^^
 
+**Note**: Requires valid ``Auth-Token``
+
 Issuing a ``DELETE`` to the current track resource will result in the track being skipped and the
 next track in the queue being played. This resource will always return a ``204``.
 
@@ -394,6 +456,7 @@ next track in the queue being played. This resource will always return a ``204``
     DELETE /player/current HTTP/1.1
     Accept: application/json
     Accept-Encoding: gzip, deflate
+    Auth-Token: abcde1234
     Connection: keep-alive
     Content-Length: 0
     Content-Type: application/json; charset=utf-8
@@ -486,6 +549,8 @@ Returns the current volume level of the player.
 ``POST``
 ^^^^^^^^
 
+**Note**: Requires valid ``Auth-Token``
+
 Allows the ability to change the volume. The post data must be a number betweeb 0 and 100 else
 a validation error will be returned.
 
@@ -547,6 +612,8 @@ Returns the current mute state.
 ``POST``
 ^^^^^^^^
 
+**Note**: Requires valid ``Auth-Token``
+
 Sets the player mute state to ``True``.
 
 .. code-block::
@@ -575,6 +642,8 @@ Sets the player mute state to ``True``.
 
 ``DELETE``
 ^^^^^^^^^^
+
+**Note**: Requires valid ``Auth-Token``
 
 Sets the player mute state to ``False``.
 
