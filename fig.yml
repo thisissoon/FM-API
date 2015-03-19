@@ -1,6 +1,6 @@
 player:
   image: soon/fm-player
-  command: manage.py runserver
+  command: manage.py runserver --migrate
   ports:
     - "5000:5000"
   links:

@@ -37,20 +37,27 @@ def reset():
 
 
 @manager.command
-def runserver(ssl=False, host='0.0.0.0', port=5000):
+def runserver(ssl=False, host='0.0.0.0', port=5000, migrate=False):
     """ Customised run server function so we can run the development server
     with custom arguments.
     """
 
+    # Run migrations before server start
+    if migrate:
+        config = _get_config(None)
+        alembic.command.upgrade(config, 'head')
+
+    # Host / Port Config
     kwagrs = {
         'host': host,
         'port': int(port)
     }
 
+    # Run with SSL?
     if ssl:
         kwagrs['ssl_context'] = 'adhoc'
 
-    app.run(**kwagrs)
+    # app.run(**kwagrs)
 
 
 manager.add_command('db', MigrateCommand)
