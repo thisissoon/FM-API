@@ -3,3 +3,5 @@ docs
 dist
 *.py[cod]
 .env
+.pyc
+.cache

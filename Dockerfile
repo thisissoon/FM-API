@@ -1,16 +1,11 @@
 FROM debian:wheezy
 
 ADD https://bootstrap.pypa.io/get-pip.py /get-pip.py
-ADD https://apt.mopidy.com/mopidy.gpg /mopidy.gpg
-ADD https://apt.mopidy.com/mopidy.list /etc/apt/sources.list.d/mopidy.list
-
-RUN cat /mopidy.gpg | apt-key add -
 
 RUN apt-get update && apt-get install -y \
         build-essential \
+        git \
         libpq-dev \
-        libffi-dev \
-        libspotify-dev \
         python-dev \
     && apt-get clean \
     && apt-get autoclean \
@@ -21,13 +16,12 @@ RUN chmod +x /get-pip.py
 RUN /get-pip.py
 
 WORKDIR /fm
-
-ADD install.reqs /fm/install.reqs
+COPY . /fm
 
 RUN pip install -r install.reqs
 
 EXPOSE 5000
 
-ADD . /fm
-
 RUN python setup.py install
+
+CMD gunicorn -b $GUNICORN_HOST:$GUNICORN_PORT -e FM_SETTINGS_MODULE=$FM_SETTINGS_MODULE -w $GUNICORN_WORKERS fm.wsgi:app

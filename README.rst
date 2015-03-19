@@ -1,6 +1,8 @@
 FM-API
 ======
 
+|circle| |coveralls|
+
 Simple Flask API Interface to the physical FM Player via Redis Pub Sub.
 
 All examples use ``HTTPie`` - http://httpie.org
@@ -64,7 +66,7 @@ Example
 
 .. code-block::
 
-    http POST http://localhost/player/playlist uri=spotify:track:
+    http POST http://localhost/player/queue uri=spotify:track:
 
     HTTP/1.0 422 UNPROCESSABLE ENTITY
     Content-Length: 97
@@ -87,25 +89,98 @@ Example
 Events
 ------
 
-The API will publish several events to a Redis Pubsub channel called ``fm:player:channel``. This events
+The API will publish several events to a Redis Pubsub channel called ``fm:events``. This events
 include pause events and track adding. All events sent by the system are sent as JSON objects with an
-element in the object called ``event`` with the value being the event type:
+element in the object called ``event`` with the value being the event type.
+
+Pause
+~~~~~
+
+The pause event is published from the ``/player/pause`` resource.
+
+.. code-block::
+
+    {
+        'event': 'pause'
+    }
+
+Resume
+~~~~~~
+
+The pause event is published from the ``/player/resume`` resource.
+
+.. code-block::
+
+    {
+        'event': 'resume'
+    }
+
+Add
+~~~
+
+The add event is published from the ``/player/queue`` resource on successful ``POST`` requests which
+indicates a new track has been added to the queue. This event will also include a ``uri`` element
+containing the Spotify URI.
 
 .. code-block::
 
     {
         'event': 'add',
-        'track' {
-            ...
-        }
+        'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
     }
 
-Event Types
-~~~~~~~~~~~
+Play
+~~~~
 
-* ``pause``: Fired when track playback has been paused
-* ``resume``: Fired when track playback has resumed
-* ``add``: Fired when a track has been added to the playlist, included in the event is the track object
+This event is fired by the physical player to indicate when track playback begins. This will also contain
+a ``uri`` element containing the Spotify URI.
+
+.. code-block::
+
+    {
+        'event': 'plau',
+        'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
+    }
+
+End
+~~~
+
+This event is fired by the physical player to indicate when track playback ends. This will also contain
+a ``uri`` element containing the Spotify URI.
+
+.. code-block::
+
+    {
+        'event': 'end',
+        'uri' 'spotify:track:3Esqxo3D31RCjmdgwBPbOO'
+    }
+
+
+Volume Changed
+~~~~~~~~~~~~~~
+
+Fired by the player when the volume onn the player has been changed. Contains a volume attribute with
+the volume level number between 0 and 100.
+
+.. code-block::
+
+    {
+        'event': 'volume_changed',
+        'volume' 50
+    }
+
+Mute Changed
+~~~~~~~~~~~~
+
+Fired when the mute state changes on the player. Contains a mute attribute with the mute state as a
+boolean.
+
+.. code-block::
+
+    {
+        'event': 'mute_changed',
+        'mute' True
+    }
 
 Authentication
 --------------
@@ -159,10 +234,10 @@ resources. This can be stored in a cookie for example and could bypass the need 
 Resources
 ---------
 
-``/player/playlist``
+``/player/queue``
 ~~~~~~~~~~~~~~~~~~~~
 
-Manages the current playlist.
+Manages the current playlist queue - does not include the current playing track.
 
 ``GET``
 ^^^^^^^
@@ -172,13 +247,13 @@ album and artist nested objects.
 
 .. code-block::
 
-    http GET http://localhost/player/playlist\?limit\=5
+    http GET http://localhost/player/queue\?limit\=5
 
     HTTP/1.0 200 OK
     Content-Length: 3811
     Content-Type: application/json; charset=utf-8
     Date: Wed, 04 Mar 2015 13:58:09 GMT
-    Link: <http://localhost/player/playlist?limit=5&page=2>; rel="next", <http://localhost/player/playlist?limit=5&page=4>; rel="last"
+    Link: <http://localhost/player/queue?limit=5&page=2>; rel="next", <http://localhost/player/queue?limit=5&page=4>; rel="last"
     Server: Werkzeug/0.10.1 Python/2.7.3
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
     Total-Count: 17
@@ -187,13 +262,6 @@ album and artist nested objects.
     [
         {
             "album": {
-                "artists": [
-                    {
-                        "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                        "name": "Nightwish",
-                        "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                    }
-                ],
                 "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
                 "images": [
                     {
@@ -213,12 +281,19 @@ album and artist nested objects.
                     }
                 ],
                 "name": "Showtime, Storytime",
-                "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+                "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
             },
+            "artists": [
+                {
+                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                    "name": "Nightwish",
+                    "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+                }
+            ],
             "duration": 272906,
             "id": "4b170737-017c-4e85-965c-47b8a158c789",
             "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-            "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+            "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
         },
         ...
     ]
@@ -234,7 +309,7 @@ used to then request the track object.
 
 .. code-block::
 
-    http POST http://localhost/player/playlist uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
+    http POST http://localhost/player/queue uri=spotify:track:6cBnzMuhvD0911UfSkNHIN
 
     HTTP/1.0 201 CREATED
     Content-Length: 0
@@ -245,7 +320,7 @@ used to then request the track object.
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
 
-``/player/playing``
+``/player/current``
 ~~~~~~~~~~~~~~~~~~~
 
 This resource interacts with the currently playing track.
@@ -259,7 +334,7 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
 
 .. code-block::
 
-    http GET http://$DOCKER_IP:5000/player/playing
+    http GET http://$DOCKER_IP:5000/player/current
 
     HTTP/1.0 200 OK
     Content-Length: 1542
@@ -271,13 +346,6 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
 
     {
         "album": {
-            "artists": [
-                {
-                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                    "name": "Nightwish",
-                    "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                }
-            ],
             "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
             "images": [
                 {
@@ -297,13 +365,55 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
                 }
             ],
             "name": "Showtime, Storytime",
-            "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+            "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
         },
+        "artists": [
+            {
+                "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                "name": "Nightwish",
+                "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+            }
+        ],
         "duration": 272906,
         "id": "4b170737-017c-4e85-965c-47b8a158c789",
         "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-        "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+        "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
+
+
+``DELETE``
+^^^^^^^^^^
+
+Issuing a ``DELETE`` to the current track resource will result in the track being skipped and the
+next track in the queue being played. This resource will always return a ``204``.
+
+.. code-block::
+
+    http -jv DELETE http://localhost/player/current
+
+    DELETE /player/current HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    HTTP/1.0 204 NO CONTENT
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 18 Mar 2015 13:24:29 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 204 No Content
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
 
 ``/player/pause``
 ~~~~~~~~~~~~~~~~~
@@ -347,6 +457,151 @@ Delete the pause event, this will resume the playback.
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
 
+``/player/volume``
+~~~~~~~~~~~~~~~~~~
+
+Managed the volume on the physical player.
+
+``GET``
+^^^^^^^
+
+Returns the current volume level of the player.
+
+.. code-block::
+
+    http GET http://localhost/player/volume
+
+    HTTP/1.0 200 OK
+    Content-Length: 1542
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:27:39 GMT
+    Paused: 0
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        "volume": 50
+    }
+
+``POST``
+^^^^^^^^
+
+Allows the ability to change the volume. The post data must be a number betweeb 0 and 100 else
+a validation error will be returned.
+
+.. code-block::
+
+    http -jv POST http://localhost/player/volume
+
+    POST /player/volume HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 14
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    {
+        "volume": 80
+    }
+
+    HTTP/1.0 200 OK
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 11 Mar 2015 12:16:45 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 200 OK
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+``/player/mute``
+~~~~~~~~~~~~~~~~
+
+This resource manages the mute state of the player and followa the same convention as the ``/player/pause``
+resource.
+
+``GET``
+^^^^^^^
+
+Returns the current mute state.
+
+.. code-block::
+
+    http GET http://localhost/player/mute
+
+    HTTP/1.0 200 OK
+    Content-Length: 1542
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:27:39 GMT
+    Paused: 0
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        "mute": true
+    }
+
+``POST``
+^^^^^^^^
+
+Sets the player mute state to ``True``.
+
+.. code-block::
+
+    http -jv POST http://localhost/player/mute
+
+    POST /player/mute HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    HTTP/1.0 201 CREATED
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 11 Mar 2015 12:20:10 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 201 Created
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+``DELETE``
+^^^^^^^^^^
+
+Sets the player mute state to ``False``.
+
+.. code-block::
+
+    http -jv DELETE http://localhost/player/mute
+
+    DELETE /player/mute HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: 192.168.59.103:5000
+    User-Agent: HTTPie/0.8.0
+
+    HTTP/1.0 204 NO CONTENT
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count
+    Access-Control-Allow-Origin: *
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 11 Mar 2015 12:21:37 GMT
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 204 No Content
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
 ``/tracks``
 ~~~~~~~~~~~
 
@@ -374,13 +629,6 @@ Returns a paginated list of tracks in no particular order.
     [
         {
             "album": {
-                "artists": [
-                    {
-                        "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                        "name": "Nightwish",
-                        "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                    }
-                ],
                 "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
                 "images": [
                     {
@@ -400,20 +648,28 @@ Returns a paginated list of tracks in no particular order.
                     }
                 ],
                 "name": "Showtime, Storytime",
-                "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+                "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
             },
+            "artists": [
+                {
+                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                    "name": "Nightwish",
+                    "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+                }
+            ],
             "duration": 272906,
             "id": "4b170737-017c-4e85-965c-47b8a158c789",
             "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-            "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+            "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
         },
         ...
     ]
 
-``/tracks/<id>``
+``/tracks/<id_or_uri>``
 ~~~~~~~~~~~~~~~~~~~~~~
 
-This resource operates on specific tracks in the local database.
+This resource operates on specific tracks in the local database. You can pass in a valid primary key
+or Spotify URI to get the track data.
 
 ``GET``
 ^^^^^^^
@@ -433,13 +689,6 @@ Returns the specific track object.
 
     {
         "album": {
-            "artists": [
-                {
-                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                    "name": "Nightwish",
-                    "spotify_uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                }
-            ],
             "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
             "images": [
                 {
@@ -459,10 +708,23 @@ Returns the specific track object.
                 }
             ],
             "name": "Showtime, Storytime",
-            "spotify_uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+            "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
         },
+        "artists": [
+            {
+                "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                "name": "Nightwish",
+                "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+            }
+        ],
         "duration": 272906,
         "id": "4b170737-017c-4e85-965c-47b8a158c789",
         "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-        "spotify_uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+        "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
     }
+
+.. |circle| image:: https://img.shields.io/circleci/project/thisissoon/FM-API/master.svg?style=flat
+    :target: https://circleci.com/gh/thisissoon/FM-API/tree/master
+
+.. |coveralls| image:: https://img.shields.io/coveralls/thisissoon/FM-API/master.svg?style=flat
+  :target: https://coveralls.io/r/thisissoon/FM-API?branch=master

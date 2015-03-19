@@ -17,5 +17,5 @@ routes = [
     # /tracks
     Pluggable('', track.TracksView, 'collection'),
     # /tracks/{id}
-    Pluggable('/<pk>', track.TrackVeiw, 'track')
+    Pluggable('/<pk_or_uri>', track.TrackVeiw, 'track')
 ]

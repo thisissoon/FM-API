@@ -42,3 +42,25 @@ class PlaylistSerializer(Serializer):
         if 'GB' not in self.track['available_markets']:
             raise ValidationError(
                 '{0} cannot be played in the GB region'.format(self.track['name']))
+
+
+class VolumeSerializer(Serializer):
+    """ Validates altering the player volume.
+    """
+
+    volume = Field(t.Integer, required=True)
+
+    def validate_volume(self, value):
+        """ Validates the Volume level, must be between 0 and 100.
+
+        Arguments
+        ---------
+        value : int
+            The proposed volume level
+        """
+
+        if not value >= 0:
+            raise ValidationError('Volume must be greater than 0')
+
+        if not value <= 100:
+            raise ValidationError('Volume must be less than 100')

@@ -1,7 +1,12 @@
-# Nose
-
-nose==1.3.4
+mock==1.0.1
 coverage==3.7.1
-specloud==0.4.5
 sure==1.2.8
-pinocchio==0.3
+factory_boy==2.4.1
+
+pytest==2.6.4
+pytest-cache==1.0
+pytest-cov==1.8.1
+pytest-flakes==0.2
+pytest-pep8==1.0.6
+
+coveralls==1.0a2

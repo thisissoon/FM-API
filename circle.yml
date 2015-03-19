@@ -1,0 +1,20 @@
+#
+# CircleCI Configuration
+#
+
+machine:
+  services:
+    - postgresql
+    - docker
+  environment:
+    REPO: soon/fm-api
+    TAG: $(sed 's/master/latest/;s/\//\-/' <<<$CIRCLE_BRANCH)
+    SQLALCHEMY_DATABASE_URI: postgres://ubuntu@localhost:5432/circle_test
+
+dependencies:
+  override:
+    - docker build -t $REPO:$TAG .
+
+test:
+  override:
+    - docker run -it --name test --net=host --volume="`pwd`/.git:/fm/.git" -e CIRCLE_BRANCH=$CIRCLE_BRANCH -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG make circleci

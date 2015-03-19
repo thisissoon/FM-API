@@ -31,7 +31,8 @@ CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
 # Player
 
-PLAYER_CHANNEL = os.environ.get('PLAYER_CHANNEL', 'fm:player:channel')
+PLAYER_CHANNEL = os.environ.get('PLAYER_CHANNEL', 'fm:events')
+PLAYLIST_REDIS_KEY = os.environ.get('PLAYLIST_KEY', 'fm:player:queue')
 
 # Via
 

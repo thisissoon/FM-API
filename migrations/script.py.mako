@@ -10,9 +10,11 @@ Create Date: ${create_date}
 revision = ${repr(up_revision)}
 down_revision = ${repr(down_revision)}
 
-from alembic import op  # noqa
-import sqlalchemy as sa  # noqa
 import fm  # noqa
+import sqlalchemy as sa  # noqa
+
+from alembic import op  # noqa
+from fm.ext import db  # noqa
 ${imports if imports else ""}
 
 def upgrade():

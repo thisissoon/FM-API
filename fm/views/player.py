@@ -16,7 +16,7 @@ from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
 from fm.session import authenticated
-from fm.serializers.player import PlaylistSerializer
+from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
 from sqlalchemy.dialects.postgresql import Any, array
@@ -46,24 +46,120 @@ class PauseView(MethodView):
         return http.NoContent()
 
 
-class PlayingView(MethodView):
-    """ Operates on the currently playing track.
+class VolumeView(MethodView):
+    """ Contorls Volume on the Physical player.
     """
 
     def get(self):
-        """ Returns the currently playing track.
+        """ Retrieve the current volume level for the physical player.
         """
 
-        uri = redis.get('fm:player:state:playing')
+        try:
+            volume = int(redis.get('fm:player:volume'))
+        except ValueError:
+            volume = 100
+
+        return http.OK({'volume': volume})
+
+    def post(self):
+        """ Change the volume level for the player.
+        """
+
+        serializer = VolumeSerializer()
+
+        try:
+            data = serializer.marshal(request.json)
+        except MappingErrors as e:
+            return http.UnprocessableEntity(errors=e.message)
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_volume',
+            'volume': data['volume']
+        }))
+
+        return http.OK()
+
+
+class MuteView(MethodView):
+    """ Controls mute state of the Player.
+    """
+
+    def get(self):
+        """ Returns the current mute state of the player
+        """
+
+        mute = redis.get('fm:player:mute')
+        if mute is None:
+            mute = 0
+
+        try:
+            value = bool(int(mute))
+        except ValueError:
+            value = False
+
+        return http.OK({'mute': value})
+
+    def post(self):
+        """ Set the player mute state to True.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_mute',
+            'mute': True
+        }))
+
+        return http.Created()
+
+    def delete(self):
+        """ Set the player mute state to False.
+        """
+
+        redis.publish(config.PLAYER_CHANNEL, json.dumps({
+            'event': 'set_mute',
+            'mute': False
+        }))
+
+        return http.NoContent()
+
+
+class CurrentView(MethodView):
+    """ Operates on the currently playing track.
+    """
+
+    def get_current_track(self):
+        """ Returns the currently playing track from redis.
+
+        Returns
+        -------
+        fm.models.spotify.Teack
+            The currently playing track or None
+        """
+
+        uri = redis.get('fm:player:current')
         if uri is None:
-            return http.NoContent()
+            return None
 
         track = Track.query.filter(Track.spotify_uri == uri).first()
+        if track is None:
+            return None
+
+        return track
+
+    def get(self):
+        """ Returns the currently playing track.
+
+        Returns
+        -------
+        http.Response
+            A http response instance, 204 or 200
+        """
+
+        track = self.get_current_track()
         if track is None:
             return http.NoContent()
 
         try:
-            paused = int(redis.get('fm:player:state:paused'))
+            paused = int(redis.get('fm:player:paused'))
         except (ValueError, TypeError):
             paused = 0
 
@@ -73,8 +169,30 @@ class PlayingView(MethodView):
 
         return http.OK(TrackSerialzier().serialize(track), headers=headers)
 
+    def delete(self):
+        """ Skips the currently playing track.
 
-class PlaylistView(MethodView):
+        Returns
+        -------
+        http.Response
+            A http response intance, in this case it should always be a 204
+        """
+
+        track = self.get_current_track()
+        if track is None:
+            return http.NoContent()
+
+        redis.publish(
+            config.PLAYER_CHANNEL,
+            json.dumps({
+                'event': 'stop'
+            })
+        )
+
+        return http.NoContent()
+
+
+class QueueView(MethodView):
     """ The Track resource allows for the management of the playlist.
     """
 
@@ -86,8 +204,8 @@ class PlaylistView(MethodView):
         offset = kwargs.pop('offset')
         limit = kwargs.pop('limit')
 
-        tracks = redis.lrange('playlist', offset, (offset + limit - 1))
-        total = redis.llen('playlist')
+        tracks = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
+        total = redis.llen(config.PLAYLIST_REDIS_KEY)
 
         response = []
 
@@ -95,7 +213,10 @@ class PlaylistView(MethodView):
             rows = Track.query \
                 .filter(Any(Track.spotify_uri, array(tracks))) \
                 .all()
-            response = TrackSerialzier().serialize(rows, many=True)
+
+            for uri in tracks:
+                obj = filter(lambda o: o.spotify_uri == uri, rows)[0]
+                response.append(TrackSerialzier().serialize(obj))
 
         return http.OK(
             response,
@@ -103,6 +224,7 @@ class PlaylistView(MethodView):
             total=total,
             limit=limit)
 
+    # TODO: Refactor this resource, its getting a tad large
     @authenticated
     def post(self):
         """ Allows you to add anew track to the player playlist.
@@ -151,11 +273,19 @@ class PlaylistView(MethodView):
         track.duration = data['duration_ms']
         track.album_id = album.id
 
+        # If a track is skipped we should decrement the play count
+        try:
+            track.play_count += 1
+        except TypeError as e:
+            track.play_count = 1
+
         db.session.commit()
 
+        # Add track to the Queue
+        redis.rpush(config.PLAYLIST_REDIS_KEY, track.spotify_uri)
         redis.publish(config.PLAYER_CHANNEL, json.dumps({
             'event': 'add',
-            'track': TrackSerialzier().serialize(track)
+            'uri': track.spotify_uri
         }))
 
-        return http.Created(location=url_for('tracks.track', pk=track.id))
+        return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))

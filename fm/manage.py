@@ -8,8 +8,10 @@ fm.manage
 FM Management Command Scripts.
 """
 
-from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.script import Manager
+import alembic
+
+from flask.ext.migrate import Migrate, MigrateCommand, _get_config
+from flask.ext.script import Manager, prompt_bool
 from fm import app
 from fm.ext import db
 
@@ -18,7 +20,20 @@ app = app.create()
 manager = Manager(app)
 migrate = Migrate(app, db)
 
-manager.add_command('db', MigrateCommand)
+
+@MigrateCommand.command
+def reset():
+    """ Reset the current DB
+    """
+
+    drop = prompt_bool('Drop all tables? All data will be lost...')
+    if drop:
+        db.drop_all()
+        db.session.commit()
+
+        config = _get_config(None)
+        alembic.command.stamp(config, 'base')
+        alembic.command.upgrade(config, 'head')
 
 
 @manager.command
@@ -36,6 +51,9 @@ def runserver(ssl=False, host='0.0.0.0', port=5000):
         kwagrs['ssl_context'] = 'adhoc'
 
     app.run(**kwagrs)
+
+
+manager.add_command('db', MigrateCommand)
 
 
 def run():
