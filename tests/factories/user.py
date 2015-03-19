@@ -9,6 +9,7 @@ SQLAlchemy Factories for User models.
 """
 
 import factory
+import json
 
 from factory import fuzzy
 from fm.models.user import User
@@ -23,9 +24,10 @@ class UserFactory(Factory):
         model = User
 
     id = UUID4()
-    name = factory.LazyAttribute(lambda o: u'User {0}'.format(o.id))
     gplus_id = fuzzy.FuzzyInteger(1000, 10000)
-    oauth2_credentials = factory.LazyAttribute
+    oauth2_credentials = factory.LazyAttribute(lambda o: json.dumps({
+        'foo': 'bar'
+    }))
     email = factory.LazyAttribute(lambda o: u'{0}@thisissoon.com'.format(
         o.given_name))
     given_name = fuzzy.FuzzyText(length=6)

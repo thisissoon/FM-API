@@ -14,9 +14,10 @@ import mock
 from fm.ext import db
 from fm.models.spotify import Album, Artist, Track
 from fm.serializers.spotify import TrackSerialzier
-from flask import url_for
+from flask import g, url_for
 from spotipy import SpotifyException
 from tests.factories.spotify import TrackFactory
+from tests.factories.user import UserFactory
 
 
 # Example response from Spotify Track API
@@ -142,12 +143,30 @@ class TestQueuePost(QueueTest):
 
     def setup(self):
         super(TestQueuePost, self).setup()
+
+        # Patch Spotipy
         patch = mock.patch('fm.serializers.player.spotipy.Spotify')
         self.spotify = mock.MagicMock()
         self.spotify.track.return_value = TRACK_DATA
         spotipy = patch.start()
         spotipy.return_value = self.spotify
         self.addPatchCleanup(patch)
+
+        # Fake User
+        self.user = UserFactory()
+        db.session.add(self.user)
+        db.session.commit()
+        g.user = self.user
+
+    def must_be_authenticated(self):
+        del g.user
+
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': 'foo'
+        }))
+
+        assert response.status_code == 401
 
     def must_post_valid_spotify_uri(self):
         self.spotify.track.side_effect = SpotifyException(404, 'foo', 'bar')

@@ -32,7 +32,7 @@ def authenticated(function):
     """
 
     @wraps(function)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(*args, **kwargs):
         user = user_from_session()
         if user is None:
             return Unauthorized()
