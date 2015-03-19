@@ -30,3 +30,6 @@ google-api-python-client==1.3.2
 
 # Production Web Service
 gunicorn==19.3.0
+
+# SSL
+pyOpenSSL==0.14

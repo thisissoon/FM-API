@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y \
         build-essential \
         git \
         libpq-dev \
+        libssl-dev \
+        libffi-dev \
         python-dev \
     && apt-get clean \
     && apt-get autoclean \
