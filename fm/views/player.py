@@ -61,6 +61,7 @@ class VolumeView(MethodView):
 
         return http.OK({'volume': volume})
 
+    @authenticated
     def post(self):
         """ Change the volume level for the player.
         """
@@ -99,6 +100,7 @@ class MuteView(MethodView):
 
         return http.OK({'mute': value})
 
+    @authenticated
     def post(self):
         """ Set the player mute state to True.
         """
@@ -110,6 +112,7 @@ class MuteView(MethodView):
 
         return http.Created()
 
+    @authenticated
     def delete(self):
         """ Set the player mute state to False.
         """
@@ -169,6 +172,7 @@ class CurrentView(MethodView):
 
         return http.OK(TrackSerialzier().serialize(track), headers=headers)
 
+    @authenticated
     def delete(self):
         """ Skips the currently playing track.
 
