@@ -13,14 +13,39 @@ import uuid
 
 from flask import g
 from fm.ext import db
+from fm.http import Unauthorized
 from fm.session import (
     SESSION_KEY,
     USER_SESSION_KEY,
+    authenticated,
     make_session,
     validate_session,
     user_from_session)
 from itsdangerous import URLSafeTimedSerializer
 from tests.factories.user import UserFactory
+
+
+class TestAuthenticated(object):
+
+    @authenticated
+    def i_am_protected(self):
+        return True
+
+    @mock.patch('fm.session.user_from_session')
+    def should_return_unauthorized_on_failure(self, user_from_session):
+        user_from_session.return_value = None
+
+        response = self.i_am_protected()
+
+        assert type(response) == Unauthorized
+
+    @mock.patch('fm.session.user_from_session')
+    def should_allow_access(self, user_from_session):
+        user_from_session.return_value = mock.MagicMock()
+
+        response = self.i_am_protected()
+
+        assert response is True
 
 
 class TestMakeSession(object):
