@@ -8,10 +8,10 @@ fm.views.oauth2
 Views for the Google OAUTH2 authentication.
 """
 
+import apiclient as google
 import httplib2
 import json
 
-from apiclient.discovery import build
 from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
 from fm import http
@@ -47,7 +47,7 @@ class GoogleConnectView(MethodView):
         """
 
         # Google Plus token validation
-        service = build('plus', 'v1')
+        service = google.discovery.build('plus', 'v1')
 
         credentials = credentials_from_code(
             config.GOOGLE_CLIENT_ID,
