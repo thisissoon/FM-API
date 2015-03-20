@@ -13,6 +13,7 @@ import mock
 
 from flask import url_for
 from fm.models.user import User
+from oauth2client.client import FlowExchangeError
 
 
 class TestGoogleConnectPost(object):
@@ -99,3 +100,16 @@ class TestGoogleConnectPost(object):
         assert User.query.count() == 1
         assert response.headers['Auth-Token'] == '123456.abcdefg'
         assert 'Location' in response.headers
+
+    @mock.patch('fm.views.oauth2.credentials_from_code')
+    @mock.patch('fm.views.oauth2.google')
+    def should_catch_flow_exceptions(self, google, credentials_from_code):
+        credentials_from_code.return_value = mock.MagicMock(access_token='foo')
+        credentials_from_code.side_effect = FlowExchangeError('some_error')
+
+        url = url_for('oauth2.google.connect')
+        response = self.client.post(url, data=json.dumps({
+            'code': 'foo'
+        }))
+
+        assert response.status_code == 422

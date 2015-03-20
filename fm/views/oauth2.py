@@ -46,8 +46,6 @@ class GoogleConnectView(MethodView):
         for a long lived token. This is our defacto Login resource.
         """
 
-        from pdb import set_trace; set_trace()
-
         # Google Plus token validation
         service = google.discovery.build('plus', 'v1')
 
