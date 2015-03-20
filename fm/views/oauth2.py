@@ -53,7 +53,7 @@ class GoogleConnectView(MethodView):
             config.GOOGLE_CLIENT_ID,
             config.GOOGLE_CLIENT_SECRET,
             '',
-            request.json['token'])
+            request.json['code'])
 
         h = httplib2.Http()
         h = credentials.authorize(h)
