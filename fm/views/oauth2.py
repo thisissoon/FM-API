@@ -19,7 +19,7 @@ from fm.ext import config, db
 from fm.models.user import User
 from fm.session import make_session
 from furl import furl
-from oauth2client.client import credentials_from_code
+from oauth2client.client import credentials_from_code, FlowExchangeError
 
 
 class GoogleTestClientView(MethodView):
@@ -46,14 +46,23 @@ class GoogleConnectView(MethodView):
         for a long lived token. This is our defacto Login resource.
         """
 
+        from pdb import set_trace; set_trace()
+
         # Google Plus token validation
         service = google.discovery.build('plus', 'v1')
 
-        credentials = credentials_from_code(
-            config.GOOGLE_CLIENT_ID,
-            config.GOOGLE_CLIENT_SECRET,
-            '',
-            request.json['code'])
+        try:
+            credentials = credentials_from_code(
+                config.GOOGLE_CLIENT_ID,
+                config.GOOGLE_CLIENT_SECRET,
+                '',
+                request.json['code'],
+                redirect_uri=config.GOOGLE_REDIRECT_URI)
+        except FlowExchangeError as e:
+            return http.UnprocessableEntity(errors={
+                'code': ['Unable to authenticate with Google: {0}'.format(
+                    e.message)]
+            })
 
         h = httplib2.Http()
         h = credentials.authorize(h)
@@ -70,7 +79,7 @@ class GoogleConnectView(MethodView):
             h.request(url, 'GET')
             # Return a sane error
             return http.UnprocessableEntity(errors={
-                'token': ['Only Members of SOON_ or This Here can Login']
+                'code': ['Only Members of SOON_ or This Here can Login']
             })
 
         # Default headers and response default response class for 200 OK
