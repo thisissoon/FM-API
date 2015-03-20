@@ -98,7 +98,7 @@ class TestGoogleConnectPost(object):
 
         assert response.status_code == 201
         assert User.query.count() == 1
-        assert response.headers['Auth-Token'] == '123456.abcdefg'
+        assert response.json['access_token'] == '123456.abcdefg'
         assert 'Location' in response.headers
 
     @mock.patch('fm.views.oauth2.credentials_from_code')

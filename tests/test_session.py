@@ -115,7 +115,7 @@ class TestUserFromSession(object):
             self,
             request,
             validate_session):
-        request.headers = {'Auth-Token': 'foo'}
+        request.headers = {'Access-Token': 'foo'}
         validate_session.return_value = None
 
         assert user_from_session() is None
@@ -123,7 +123,7 @@ class TestUserFromSession(object):
     @mock.patch('fm.session.validate_session')
     @mock.patch('fm.session.request')
     def ensure_user_exists(self, request, validate_session):
-        request.headers = {'Auth-Token': 'foo'}
+        request.headers = {'Access-Token': 'foo'}
         validate_session.return_value = unicode(uuid.uuid4())
 
         assert user_from_session() is None
@@ -136,7 +136,7 @@ class TestUserFromSession(object):
         db.session.add(user)
         db.session.commit()
 
-        request.headers = {'Auth-Token': 'foo'}
+        request.headers = {'Access-Token': 'foo'}
         validate_session.return_value = user.id
 
         assert user_from_session() == user

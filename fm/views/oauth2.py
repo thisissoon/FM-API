@@ -116,8 +116,9 @@ class GoogleConnectView(MethodView):
 
         # Create a session for subsequent requests
         session_id = make_session(user.id)
-        headers.update({
-            'Auth-Token': session_id
-        })
 
-        return response_class(headers=headers)
+        return response_class(
+            {
+                'access_token': session_id
+            },
+            headers=headers)

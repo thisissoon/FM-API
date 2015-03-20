@@ -5,7 +5,7 @@
 fm.session
 ==========
 
-Session handling functionality for user authentication using the `Auth-Token`
+Session handling functionality for user authentication using the `Access-Token`
 header.
 """
 
@@ -101,7 +101,7 @@ def user_from_session():
     """ Loads the user object from the request session.
     """
 
-    auth_token_header = 'Auth-Token'
+    auth_token_header = 'Access-Token'
 
     # If the request has context and the user is not part of the request
     # stack we load the user

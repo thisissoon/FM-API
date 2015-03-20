@@ -205,7 +205,7 @@ Example Request
         "token": "123456abcde"
     }
 
-The API will validate the token and return an ``Auth-Token`` header to be used for subsequent requests. These
+The API will validate the token and return an ``Access-Token`` header to be used for subsequent requests. These
 tokens do not currently expire.
 
 Example Response
@@ -217,9 +217,9 @@ If a new user is created in the system the response will be a standard ``201`` e
 
     HTTP/1.0 201 OK
     Access-Control-Allow-Credentials: true
-    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Auth-Token
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Access-Token
     Access-Control-Allow-Origin: *
-    Auth-Token: 12234fn1uu21euid1nu23f3jn2f
+    Access-Token: 12234fn1uu21euid1nu23f3jn2f
     Content-Length: 5301
     Content-Type: application/json; charset=utf-8
     Date: Mon, 09 Mar 2015 08:01:33 GMT
@@ -228,7 +228,7 @@ If a new user is created in the system the response will be a standard ``201`` e
     Status: 201 Created
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
-Once a valid ``Auth-Token`` has been retrieved this can be used for each subsequent request to protected
+Once a valid ``Access-Token`` has been retrieved this can be used for each subsequent request to protected
 resources. This can be stored in a cookie for example and could bypass the need for Google+ OAuth2 login.
 
 Resources
@@ -246,7 +246,7 @@ Call this resource with a ``POST`` method to authenticate a user. This resource 
 for existing users and a ``201`` for newly created users. The request body should contain a JSON object
 which contains the OAuth2 token returned by the OAuth2 webflow.
 
-On a successful response an ``Auth-Token`` header will be returned which can be used to authenticate
+On a successful response an ``Access-Token`` header will be returned which can be used to authenticate
 each subsequent request to protected resources.
 
 Example Request
@@ -257,7 +257,7 @@ Example Request
     POST /oauth2/google/connect HTTP/1.1
     Accept: application/json
     Accept-Encoding: gzip, deflate
-    Auth-Token: abcde1234
+    Access-Token: abcde1234
     Connection: keep-alive
     Content-Length: 0
     Content-Type: application/json; charset=utf-8
@@ -274,9 +274,8 @@ Example Response
 .. code-block::
 
     Access-Control-Allow-Credentials: true
-    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Auth-Token
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Access-Token
     Access-Control-Allow-Origin: *
-    Auth-Token: IjgyNThiZTZiLWVlNTMtNDE4Ni04YmJkLTU1YmMwYTNhNmYyNCI.B-xObA.dvEM7STtNIJhgrQdfBmGwBrVV-Q
     Cache-Control: no-cache, no-store, must-revalidate
     Content-Length: 21
     Content-Type: application/json; charset=utf-8
@@ -286,6 +285,10 @@ Example Response
     Server: Werkzeug/0.10.1 Python/2.7.3
     Status: 200 OK
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    {
+        access_token: "IjgyNThiZTZiLWVlNTMtNDE4Ni04YmJkLTU1YmMwYTNhNmYyNCI.B-xObA.dvEM7STtNIJhgrQdfBmGwBrVV-Q"
+    }
 
 ``/oauth2/google/client``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -362,7 +365,7 @@ album and artist nested objects.
 ``POST``
 ^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Add a track to the playlist. This resource does not return an data. The ``Location`` Header can
 used to then request the track object.
@@ -444,7 +447,7 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
 ``DELETE``
 ^^^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Issuing a ``DELETE`` to the current track resource will result in the track being skipped and the
 next track in the queue being played. This resource will always return a ``204``.
@@ -456,7 +459,7 @@ next track in the queue being played. This resource will always return a ``204``
     DELETE /player/current HTTP/1.1
     Accept: application/json
     Accept-Encoding: gzip, deflate
-    Auth-Token: abcde1234
+    Access-Token: abcde1234
     Connection: keep-alive
     Content-Length: 0
     Content-Type: application/json; charset=utf-8
@@ -486,7 +489,7 @@ This resource manages the pausing of the playback and acts as a creatable and de
 ``POST``
 ^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Create a pause event, this will stop the playback.
 
@@ -504,7 +507,7 @@ Create a pause event, this will stop the playback.
 ``DELETE``
 ^^^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Delete the pause event, this will resume the playback.
 
@@ -549,7 +552,7 @@ Returns the current volume level of the player.
 ``POST``
 ^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Allows the ability to change the volume. The post data must be a number betweeb 0 and 100 else
 a validation error will be returned.
@@ -612,7 +615,7 @@ Returns the current mute state.
 ``POST``
 ^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Sets the player mute state to ``True``.
 
@@ -643,7 +646,7 @@ Sets the player mute state to ``True``.
 ``DELETE``
 ^^^^^^^^^^
 
-**Note**: Requires valid ``Auth-Token``
+**Note**: Requires valid ``Access-Token``
 
 Sets the player mute state to ``False``.
 
@@ -810,7 +813,7 @@ Example Request
     GET /users/authenticated HTTP/1.1
     Accept: */*
     Accept-Encoding: gzip, deflate
-    Auth-Token: IjgyNThiZTZiLWVlNTMtNDE4Ni04YmJkLTU1YmMwYTNhNmYyNCI.B-xObA.dvEM7STtNIJhgrQdfBmGwBrVV-Q
+    Access-Token: IjgyNThiZTZiLWVlNTMtNDE4Ni04YmJkLTU1YmMwYTNhNmYyNCI.B-xObA.dvEM7STtNIJhgrQdfBmGwBrVV-Q
     Connection: keep-alive
     Host: localhost
     User-Agent: HTTPie/0.8.0
@@ -822,7 +825,7 @@ Example Response
 
     HTTP/1.0 200 OK
     Access-Control-Allow-Credentials: true
-    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Auth-Token
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Access-Token
     Access-Control-Allow-Origin: *
     Cache-Control: no-cache, no-store, must-revalidate
     Content-Length: 236
