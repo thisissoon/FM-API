@@ -124,15 +124,15 @@ def authenticate_oauth_code(code):
 
     Returns
     -------
-    dict
-        The user data from Google+
+    tuple
+        The user data from Google+ and Credentials instance
     """
 
-    credentils = get_credentials(code)
-    user = user_from_credentials(credentils)
+    credentials = get_credentials(code)
+    user = user_from_credentials(credentials)
 
     if not user['domain'] in config.GOOGLE_ALLOWED_DOMAINS:
-        disconnect(credentils.access_token)
+        disconnect(credentials.access_token)
         raise GoogleOAuth2Exception('You need be a member of SOON_ or This Here')
 
-    return user
+    return user, credentials

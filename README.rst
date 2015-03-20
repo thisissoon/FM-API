@@ -202,7 +202,7 @@ Example Request
     Host: 192.168.59.103:5000
 
     {
-        "token": "123456abcde"
+        "code": "123456abcde"
     }
 
 The API will validate the token and return an ``Access-Token`` header to be used for subsequent requests. These

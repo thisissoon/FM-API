@@ -8,18 +8,16 @@ fm.views.oauth2
 Views for the Google OAUTH2 authentication.
 """
 
-import apiclient as google
-import httplib2
 import json
 
 from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
 from fm import http
-from fm.ext import config, db
+from fm.ext import db
+from fm.google import authenticate_oauth_code, GoogleOAuth2Exception
 from fm.models.user import User
 from fm.session import make_session
 from furl import furl
-from oauth2client.client import credentials_from_code, FlowExchangeError
 
 
 class GoogleTestClientView(MethodView):
@@ -46,38 +44,12 @@ class GoogleConnectView(MethodView):
         for a long lived token. This is our defacto Login resource.
         """
 
-        # Google Plus token validation
-        service = google.discovery.build('plus', 'v1')
-
+        # OAuth Code Validation
         try:
-            credentials = credentials_from_code(
-                config.GOOGLE_CLIENT_ID,
-                config.GOOGLE_CLIENT_SECRET,
-                '',
-                request.json['code'],
-                redirect_uri=config.GOOGLE_REDIRECT_URI)
-        except FlowExchangeError as e:
+            result, credentials = authenticate_oauth_code(request.json['code'])
+        except GoogleOAuth2Exception as e:
             return http.UnprocessableEntity(errors={
-                'code': ['Unable to authenticate with Google: {0}'.format(
-                    e.message)]
-            })
-
-        h = httplib2.Http()
-        h = credentials.authorize(h)
-
-        grequest = service.people().get(userId='me')
-        result = grequest.execute(http=h)
-
-        # Can this user login
-        if not result['domain'] in config.GOOGLE_ALLOWED_DOMAINS:
-            # Disconnect the App Straight Away
-            access_token = credentials.access_token
-            url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
-            h = httplib2.Http()
-            h.request(url, 'GET')
-            # Return a sane error
-            return http.UnprocessableEntity(errors={
-                'code': ['Only Members of SOON_ or This Here can Login']
+                'code': e.message
             })
 
         # Default headers and response default response class for 200 OK
