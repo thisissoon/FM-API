@@ -17,6 +17,7 @@ spotipy==2.3.0
 
 # Asynchronous
 celery==3.1.17
+gevent==1.0.1
 
 # Serialization
 py-kim==0.1.6

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
         git \
         libpq-dev \
         python-dev \
+        libevent-dev \
     && apt-get clean \
     && apt-get autoclean \
     && apt-get autoremove -y \
