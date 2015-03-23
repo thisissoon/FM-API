@@ -16,6 +16,7 @@ import json
 from fm.app import create
 from fm.ext import config, db, redis
 from fm.models.spotify import Track, PlaylistHistory
+from gevent.monkey import patch_all
 
 
 def add_playlist_history(uri):
@@ -72,6 +73,8 @@ def listener():
     redis pubsub channel. This is the entrypoint for
     ``manage.py runeventlistener``.
     """
+
+    patch_all()
 
     pubsub = redis.pubsub()
     pubsub.subscribe(config.PLAYER_CHANNEL)
