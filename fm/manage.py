@@ -8,17 +8,33 @@ fm.manage
 FM Management Command Scripts.
 """
 
-import alembic
 
+from gevent.monkey import patch_all
+patch_all()  # noqa
+
+from alembic import command
 from flask.ext.migrate import Migrate, MigrateCommand, _get_config
 from flask.ext.script import Manager, Server, prompt_bool
 from fm import app
+from fm.events.listener import listener
 from fm.ext import db
+
 
 app = app.create()
 
 manager = Manager(app)
 migrate = Migrate(app, db)
+
+
+@manager.command
+def runeventlistener():
+    """ Run the Redis Event Listener. This will spawn a Gevent Greenlet.
+    """
+
+    try:
+        listener()
+    except KeyboardInterrupt:
+        print 'Exited'
 
 
 @MigrateCommand.command
@@ -32,8 +48,8 @@ def reset():
         db.session.commit()
 
         config = _get_config(None)
-        alembic.command.stamp(config, 'base')
-        alembic.command.upgrade(config, 'head')
+        command.stamp(config, 'base')
+        command.upgrade(config, 'head')
 
 
 manager.add_command("runserver", Server(host='0.0.0.0'))
