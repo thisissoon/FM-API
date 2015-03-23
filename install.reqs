@@ -6,6 +6,7 @@ Flask-Script==2.0.5
 webargs==0.10.0
 
 # Data Stores
+alembic==0.7.4
 psycopg2==2.6
 SQLAlchemy==0.9.8
 Flask-SQLAlchemy==2.0
