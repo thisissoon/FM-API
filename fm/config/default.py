@@ -14,6 +14,10 @@ import os
 
 DEBUG = True
 
+# Server Name
+
+SERVER_NAME = os.environ.get('SERVER_NAME')
+
 # Secret
 
 SECRET_KEY = 'CHANGEME'  # Changed for other environments

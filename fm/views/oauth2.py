@@ -80,10 +80,8 @@ class GoogleConnectView(MethodView):
 
         # New user - return a Location Header with url to resource
         if response_class == http.Created:
-            location = furl(request.url_root) \
-                .set(path=url_for('users.user', pk=user.id))
             headers.update({
-                'Location': location.url
+                'Location': url_for('users.user', pk=user.id, _external=True)
             })
 
         # Create a session for subsequent requests
