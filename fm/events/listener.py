@@ -14,6 +14,7 @@ import json
 
 
 from fm.ext import config, redis
+from gevent.monkey import patch_all
 
 
 def handle_event(event):
@@ -44,6 +45,8 @@ def listener():
     """ Redis event listener. Spawns a Gevent Greenlet which listens on the
     redis pubsub channel.
     """
+
+    patch_all()
 
     pubsub = redis.pubsub()
     pubsub.subscribe(config.PLAYER_CHANNEL)

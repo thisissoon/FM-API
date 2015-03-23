@@ -9,9 +9,6 @@ FM Management Command Scripts.
 """
 
 
-from gevent.monkey import patch_all
-patch_all()  # noqa
-
 from alembic import command
 from flask.ext.migrate import Migrate, MigrateCommand, _get_config
 from flask.ext.script import Manager, Server, prompt_bool
