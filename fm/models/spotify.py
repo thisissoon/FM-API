@@ -122,3 +122,16 @@ class Track(db.Model):
     #
 
     album = db.relation('Album', backref='tracks')
+
+
+class PlaylistHistory(db.Model):
+    """ Holds the playlist history
+    """
+
+    __tablename__ = 'playlist_history'
+
+    #: Primary Key
+    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
+
+    #: Track ID
+    track_id = db.Column(db.ForeignKey('track.id'), nullable=False, index=True)
