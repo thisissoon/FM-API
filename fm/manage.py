@@ -8,8 +8,8 @@ fm.manage
 FM Management Command Scripts.
 """
 
+import alembic
 
-from alembic import command
 from flask.ext.migrate import Migrate, MigrateCommand, _get_config
 from flask.ext.script import Manager, prompt_bool
 from fm import app
@@ -45,8 +45,8 @@ def reset():
         db.session.commit()
 
         config = _get_config(None)
-        command.stamp(config, 'base')
-        command.upgrade(config, 'head')
+        alembic.command.stamp(config, 'base')
+        alembic.command.upgrade(config, 'head')
 
 
 @manager.command
