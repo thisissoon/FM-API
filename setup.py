@@ -100,6 +100,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     # Dependencies
+    dependency_links=[
+        'git+https://github.com/gevent/gevent.git@1.0.2#egg=gevent-1.0'
+    ],
     install_requires=INSTALL_REQS,
     extras_require={
         'develop': DEVELOP_REQS
