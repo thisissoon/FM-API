@@ -12,7 +12,7 @@ import factory
 import json
 
 from factory import fuzzy
-from fm.models.spotify import Album, Artist, Track
+from fm.models.spotify import Album, Artist, PlaylistHistory, Track
 from tests.factories import Factory, UUID4
 
 
@@ -74,3 +74,14 @@ class TrackFactory(Factory):
     name = factory.LazyAttribute(lambda o: u'Album {0}'.format(o.id))
     album = factory.SubFactory(AlbumWithArtist)
     duration = fuzzy.FuzzyInteger(1000, 10000)
+
+
+class PlaylistHistoryFactory(Factory):
+    """ Factory for generating Playlist Hisotry entries
+    """
+
+    class Meta:
+        model = PlaylistHistory
+
+    id = UUID4()
+    track = factory.SubFactory(TrackFactory)
