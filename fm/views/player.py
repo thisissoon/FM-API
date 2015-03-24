@@ -15,6 +15,7 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
+from fm.session import authenticated
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
@@ -26,6 +27,7 @@ class PauseView(MethodView):
     POST for pause and DELTETE to unpause the player.
     """
 
+    @authenticated
     def post(self):
         """ Pauses the player.
         """
@@ -34,6 +36,7 @@ class PauseView(MethodView):
 
         return http.Created()
 
+    @authenticated
     def delete(self):
         """ Unapuses the player.
         """
@@ -58,6 +61,7 @@ class VolumeView(MethodView):
 
         return http.OK({'volume': volume})
 
+    @authenticated
     def post(self):
         """ Change the volume level for the player.
         """
@@ -96,6 +100,7 @@ class MuteView(MethodView):
 
         return http.OK({'mute': value})
 
+    @authenticated
     def post(self):
         """ Set the player mute state to True.
         """
@@ -107,6 +112,7 @@ class MuteView(MethodView):
 
         return http.Created()
 
+    @authenticated
     def delete(self):
         """ Set the player mute state to False.
         """
@@ -166,6 +172,7 @@ class CurrentView(MethodView):
 
         return http.OK(TrackSerialzier().serialize(track), headers=headers)
 
+    @authenticated
     def delete(self):
         """ Skips the currently playing track.
 
@@ -222,6 +229,7 @@ class QueueView(MethodView):
             limit=limit)
 
     # TODO: Refactor this resource, its getting a tad large
+    @authenticated
     def post(self):
         """ Allows you to add anew track to the player playlist.
         """

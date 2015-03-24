@@ -9,3 +9,4 @@ SQLAlchemy models.
 """
 
 from fm.models import spotify  # noqa
+from fm.models import user  # noqa

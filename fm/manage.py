@@ -8,10 +8,10 @@ fm.manage
 FM Management Command Scripts.
 """
 
+import alembic
 
-from alembic import command
 from flask.ext.migrate import Migrate, MigrateCommand, _get_config
-from flask.ext.script import Manager, Server, prompt_bool
+from flask.ext.script import Manager, prompt_bool
 from fm import app
 from fm.events.listener import listener
 from fm.ext import db
@@ -45,11 +45,34 @@ def reset():
         db.session.commit()
 
         config = _get_config(None)
-        command.stamp(config, 'base')
-        command.upgrade(config, 'head')
+        alembic.command.stamp(config, 'base')
+        alembic.command.upgrade(config, 'head')
 
 
-manager.add_command("runserver", Server(host='0.0.0.0'))
+@manager.command
+def runserver(ssl=False, host='0.0.0.0', port=5000, migrate=False):
+    """ Customised run server function so we can run the development server
+    with custom arguments.
+    """
+
+    # Run migrations before server start
+    if migrate:
+        config = _get_config(None)
+        alembic.command.upgrade(config, 'head')
+
+    # Host / Port Config
+    kwagrs = {
+        'host': host,
+        'port': int(port)
+    }
+
+    # Run with SSL?
+    if ssl:
+        kwagrs['ssl_context'] = 'adhoc'
+
+    app.run(**kwagrs)
+
+
 manager.add_command('db', MigrateCommand)
 
 

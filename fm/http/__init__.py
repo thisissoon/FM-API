@@ -143,6 +143,21 @@ class BadRequest(Response):
     _status = u'400 Bad Request'
 
 
+class Unauthorized(Response):
+    """ Returns a standard HTTP 401 Response. This is used when a resource
+    requires user authentication but none was given.
+
+    Example
+    -------
+        >>> from fm import http
+        >>> response = http.Unauthorized()
+
+    """
+
+    default_status = 401
+    _status = u'401 Unauthorized'
+
+
 class NotFound(Response):
     """ Returns a standard HTTP 404 Response. This should be used when a pgae
     foes not exist.

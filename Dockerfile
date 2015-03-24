@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y \
         git \
         python-dev \
         libpq-dev \
+        libssl-dev \
+        libffi-dev \
         libc6-dev \
         libevent-dev \
     && apt-get clean \

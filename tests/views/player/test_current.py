@@ -10,6 +10,7 @@ Unit tests for the ``fm.views.player.CurrentView`` class.
 
 import json
 import mock
+import pytest
 
 from fm.ext import db
 from fm.views.player import CurrentView
@@ -26,7 +27,7 @@ class BaseCurrentTest(object):
         self.addPatchCleanup(patch)
 
 
-class TestGerCurrentTrack(BaseCurrentTest):
+class TestGetCurrentTrack(BaseCurrentTest):
 
     def should_return_none_no_current_track_in_redis(self):
         self.redis.get.return_value = None
@@ -66,7 +67,15 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.json == TrackSerialzier().serialize(track)
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestCurrentDelete(BaseCurrentTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.mute')
+        response = self.client.delete(url)
+
+        assert response.status_code == 401
 
     def should_fire_stop_event(self):
         track = TrackFactory()
