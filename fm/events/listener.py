@@ -48,7 +48,7 @@ def handle_event(message):
         The event data
     """
 
-    if message['event'] == 'play':
+    if message['event'] == 'end':
         add_playlist_history(message['uri'])
 
 
