@@ -1,5 +1,5 @@
-player:
-  image: soon/fm-player
+api:
+  image: soon/fm-api:develop
   command: manage.py runserver --migrate
   ports:
     - "5000:5000"
@@ -9,6 +9,10 @@ player:
   environment:
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@FMAPI_postgres_1:5432/soonfm
     - REDIS_SERVER_URI=redis://FMAPI_redis_1:6379/
+    - GOOGLE_REDIRECT_URI=http://localhost:8000/
+    - CORS_ACA_ORIGIN=http://localhost:8000
+    - GOOGLE_CLIENT_ID
+    - GOOGLE_CLIENT_SECRET
 socket:
   image: soon/fm-socket
   command: forever -w server.js
