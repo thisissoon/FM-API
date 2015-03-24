@@ -19,6 +19,7 @@ from fm.session import authenticated
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
+from sqlalchemy import desc
 from sqlalchemy.dialects.postgresql import Any, array
 
 
@@ -209,7 +210,7 @@ class HisotryView(MethodView):
 
         rows = db.session.query(Track, PlaylistHistory) \
             .join(PlaylistHistory, Track.id == PlaylistHistory.track_id) \
-            .order_by(PlaylistHistory.created) \
+            .order_by(desc(PlaylistHistory.created)) \
             .limit(kwargs.get('limit')) \
             .offset(kwargs.get('offset')) \
             .all()
