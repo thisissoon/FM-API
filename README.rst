@@ -674,6 +674,69 @@ Sets the player mute state to ``False``.
     Status: 204 No Content
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
+``/player/history``
+~~~~~~~~~~~~~~~~~~~
+
+This resource handles retrieving player history.
+
+``GET``
+^^^^^^^
+
+Get a paginated list of the playlist history, most recent first.
+
+.. code-block::
+
+    http GET http://localhost/player/history\?limit\=2
+
+    HTTP/1.0 200 OK
+    Content-Length: 1542
+    Content-Type: application/json; charset=utf-8
+    Date: Wed, 04 Mar 2015 14:27:39 GMT
+    Link: <http://localhost/player/history?limit=2&page=2>; rel="next", <http://localhost/player/history?limit=2&page=5>; rel="last"
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+    Total-Count: 10
+    Total-Pages: 5
+
+    [
+        {
+            "album": {
+                "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/7928fc9bd902b917aae0ef1bee41cb51598a2d27",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/e80cb4d324d16881e2f7653abdbd70497bbab68d",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/bf567406035a8e2b162c6a23470c6cdd5dd560f3",
+                        "width": 64
+                    }
+                ],
+                "name": "Showtime, Storytime",
+                "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+            },
+            "artists": [
+                {
+                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
+                    "name": "Nightwish",
+                    "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
+                }
+            ],
+            "duration": 272906,
+            "id": "4b170737-017c-4e85-965c-47b8a158c789",
+            "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
+            "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
+        },
+        ...
+    ]
+
 ``/tracks``
 ~~~~~~~~~~~
 
