@@ -10,6 +10,7 @@ Unit tests for the ``fm.views.player.MuteView`` class.
 
 import json
 import mock
+import pytest
 
 from flask import url_for
 
@@ -52,7 +53,15 @@ class TestGetMute(BaseMuteTest):
         assert response.json['mute'] == False
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestPostMute(BaseMuteTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.mute')
+        response = self.client.post(url)
+
+        assert response.status_code == 401
 
     def should_fire_redis_mute_event(self):
         url = url_for('player.mute')
@@ -67,7 +76,15 @@ class TestPostMute(BaseMuteTest):
             }))
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestDeleteMute(BaseMuteTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.mute')
+        response = self.client.delete(url)
+
+        assert response.status_code == 401
 
     def should_fire_redis_unmute_event(self):
         url = url_for('player.mute')

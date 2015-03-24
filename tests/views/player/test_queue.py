@@ -10,6 +10,7 @@ Unit tests for the ``fm.views.player.QueueView`` class.
 
 import json
 import mock
+import pytest
 
 from fm.ext import db
 from fm.models.spotify import Album, Artist, Track
@@ -138,16 +139,28 @@ class TestGetQueue(QueueTest):
         assert expected == response.json
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestQueuePost(QueueTest):
 
     def setup(self):
         super(TestQueuePost, self).setup()
+
+        # Patch Spotipy
         patch = mock.patch('fm.serializers.player.spotipy.Spotify')
         self.spotify = mock.MagicMock()
         self.spotify.track.return_value = TRACK_DATA
         spotipy = patch.start()
         spotipy.return_value = self.spotify
         self.addPatchCleanup(patch)
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': 'foo'
+        }))
+
+        assert response.status_code == 401
 
     def must_post_valid_spotify_uri(self):
         self.spotify.track.side_effect = SpotifyException(404, 'foo', 'bar')

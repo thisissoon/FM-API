@@ -10,10 +10,10 @@ Track resources.
 
 import uuid
 
-from fm.serializers.spotify import TrackSerialzier
-from fm.models.spotify import Track
 from flask.views import MethodView
 from fm import http
+from fm.models.spotify import Track
+from fm.serializers.spotify import TrackSerialzier
 
 
 class TracksView(MethodView):

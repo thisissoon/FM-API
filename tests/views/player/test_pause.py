@@ -10,6 +10,7 @@ Unit tests for the ``fm.views.player.PauseView`` class.
 
 import json
 import mock
+import pytest
 
 from flask import url_for
 
@@ -17,12 +18,21 @@ from flask import url_for
 class BasePauseTest(object):
 
     def setup(self):
+        # Patch Redis
         patch = mock.patch('fm.views.player.redis')
         self.redis = patch.start()
         self.addPatchCleanup(patch)
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestPausePost(BasePauseTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.pause')
+        response = self.client.post(url)
+
+        assert response.status_code == 401
 
     def should_fire_pause_event(self):
         url = url_for('player.pause')
@@ -36,7 +46,15 @@ class TestPausePost(BasePauseTest):
             }))
 
 
+@pytest.mark.usefixtures("authenticated")
 class TestPauseDelete(BasePauseTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.pause')
+        response = self.client.delete(url)
+
+        assert response.status_code == 401
 
     def should_fire_resume_event(self):
         url = url_for('player.pause')

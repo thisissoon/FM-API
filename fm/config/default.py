@@ -14,6 +14,14 @@ import os
 
 DEBUG = True
 
+# Server Name
+
+SERVER_NAME = os.environ.get('SERVER_NAME')
+
+# Secret
+
+SECRET_KEY = 'CHANGEME'  # Changed for other environments
+
 # Celery
 
 CELERY_TIMEZONE = 'UTC'
@@ -50,5 +58,15 @@ SQLALCHEMY_DATABASE_URI = os.environ.get(
 
 # CORS
 
-CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count']
-CORS_ACA_HEADERS = ['Content-Type']
+CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count', 'Access-Token']
+CORS_ACA_HEADERS = ['Content-Type', 'Access-Token']
+CORS_ACA_ORIGIN = os.environ.get('CORS_ACA_ORIGIN', '*')
+
+# Google OAuth
+GOOGLE_ALLOWED_DOMAINS = [
+    'thisissoon.com',
+    'thishe.re'
+]
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', None)
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', None)
+GOOGLE_REDIRECT_URI = os.environ.get('GOOGLE_REDIRECT_URI', 'postmessage')

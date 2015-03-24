@@ -1,8 +1,10 @@
 import json
 import pytest
 
+from flask import g
 from fm.app import create
 from fm.ext import db as _db
+from tests.factories.user import UserFactory
 
 
 class Response(object):
@@ -119,3 +121,19 @@ def cleanup(request, db, app):
     yield cleanup
 
     cleanup.cleanUpPatches()
+
+
+@pytest.fixture()
+def authenticated(request, db, app):
+    if not getattr(request.instance, 'unauthenticated', False):
+        user = UserFactory()
+
+        db.session.add(user)
+        db.session.commit()
+
+        g.user = user
+
+
+@pytest.fixture()
+def unauthenticated(request, db, app):
+    request.instance.unauthenticated = True
