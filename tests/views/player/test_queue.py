@@ -14,10 +14,12 @@ import pytest
 
 from fm.ext import db
 from fm.models.spotify import Album, Artist, Track
-from fm.serializers.spotify import TrackSerialzier
+from fm.serializers.spotify import TrackSerializer
+from fm.serializers.user import UserSerializer
 from flask import url_for
 from spotipy import SpotifyException
 from tests.factories.spotify import TrackFactory
+from tests.factories.user import UserFactory
 
 
 # Example response from Spotify Track API
@@ -94,12 +96,20 @@ class TestGetQueue(QueueTest):
 
     def ensure_same_track_is_not_grouped(self):
         tracks = [TrackFactory(), TrackFactory(), TrackFactory()]
+        users = [UserFactory(), UserFactory(), UserFactory()]
 
-        db.session.add_all(tracks)
+        db.session.add_all(tracks + users)
         db.session.commit()
 
         # Each track is in the queue twice
-        queue = [t.spotify_uri for t in tracks] + [t.spotify_uri for t in tracks]
+        queue = []
+        for i, t in enumerate(tracks):
+            queue.append(json.dumps({
+                'uri': t.spotify_uri,
+                'user': users[i].id
+            }))
+
+        queue = queue + queue
 
         self.redis.lrange.return_value = queue
         self.redis.llen.return_value = len(tracks)
@@ -107,6 +117,7 @@ class TestGetQueue(QueueTest):
         url = url_for('player.queue')
         response = self.client.get(url)
 
+        assert response.status_code == 200
         assert len(response.json) == 6
 
     def must_return_empty_list_when_no_queue(self):
@@ -116,16 +127,23 @@ class TestGetQueue(QueueTest):
         url = url_for('player.queue')
         response = self.client.get(url)
 
+        assert response.status_code == 200
         assert len(response.json) == 0
 
     def should_return_200_ok(self):
         tracks = [TrackFactory(), TrackFactory(), TrackFactory()]
+        users = [UserFactory(), UserFactory(), UserFactory()]
 
-        db.session.add_all(tracks)
+        db.session.add_all(tracks + users)
         db.session.commit()
 
         # Each track is in the queue twice
-        queue = [t.spotify_uri for t in tracks]
+        queue = []
+        for i, t in enumerate(tracks):
+            queue.append(json.dumps({
+                'uri': t.spotify_uri,
+                'user': users[i].id
+            }))
 
         self.redis.lrange.return_value = queue
         self.redis.llen.return_value = len(tracks)
@@ -133,7 +151,13 @@ class TestGetQueue(QueueTest):
         url = url_for('player.queue')
         response = self.client.get(url)
 
-        expected = TrackSerialzier().serialize(tracks, many=True)
+        expected = []
+        for i, track in enumerate(tracks):
+            user = users[i]
+            expected.append({
+                'track': TrackSerializer().serialize(track),
+                'user': UserSerializer().serialize(user)
+            })
 
         assert response.status_code == 200
         assert expected == response.json

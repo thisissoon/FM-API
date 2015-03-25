@@ -14,7 +14,7 @@ import pytest
 
 from fm.ext import db
 from fm.views.player import CurrentView
-from fm.serializers.spotify import TrackSerialzier
+from fm.serializers.spotify import TrackSerializer
 from flask import url_for
 from tests.factories.spotify import TrackFactory
 
@@ -64,7 +64,7 @@ class TestCurrentGet(BaseCurrentTest):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json == TrackSerialzier().serialize(track)
+        assert response.json == TrackSerializer().serialize(track)
 
 
 @pytest.mark.usefixtures("authenticated")

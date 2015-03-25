@@ -15,11 +15,12 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
+from fm.models.user import User
 from fm.session import authenticated, current_user
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
-from fm.serializers.spotify import TrackSerialzier
+from fm.serializers.spotify import TrackSerializer
+from fm.serializers.user import UserSerializer
 from kim.exceptions import MappingErrors
-from sqlalchemy.dialects.postgresql import Any, array
 
 
 class PauseView(MethodView):
@@ -170,7 +171,7 @@ class CurrentView(MethodView):
             'Paused': paused
         }
 
-        return http.OK(TrackSerialzier().serialize(track), headers=headers)
+        return http.OK(TrackSerializer().serialize(track), headers=headers)
 
     @authenticated
     def delete(self):
@@ -208,19 +209,21 @@ class QueueView(MethodView):
         offset = kwargs.pop('offset')
         limit = kwargs.pop('limit')
 
-        tracks = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
+        queue = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
         total = redis.llen(config.PLAYLIST_REDIS_KEY)
 
         response = []
 
         if total > 0:
-            rows = Track.query \
-                .filter(Any(Track.spotify_uri, array(tracks))) \
-                .all()
-
-            for uri in tracks:
-                obj = filter(lambda o: o.spotify_uri == uri, rows)[0]
-                response.append(TrackSerialzier().serialize(obj))
+            for item in queue:
+                item = json.loads(item)
+                track = Track.query.filter(Track.spotify_uri == item['uri']).first()
+                user = User.query.filter(User.id == item['user']).first()
+                if track is not None and user is not None:
+                    response.append({
+                        'track': TrackSerializer().serialize(track),
+                        'user': UserSerializer().serialize(user)
+                    })
 
         return http.OK(
             response,
