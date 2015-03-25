@@ -139,15 +139,16 @@ class CurrentView(MethodView):
             The currently playing track or None
         """
 
-        uri = redis.get('fm:player:current')
-        if uri is None:
-            return None
+        current = redis.get('fm:player:current')
+        if current is None:
+            return None, None
+
+        uri, user = json.loads(current).values()
 
         track = Track.query.filter(Track.spotify_uri == uri).first()
-        if track is None:
-            return None
+        user = User.query.filter(User.id == user).first()
 
-        return track
+        return track, user
 
     def get(self):
         """ Returns the currently playing track.
@@ -158,8 +159,8 @@ class CurrentView(MethodView):
             A http response instance, 204 or 200
         """
 
-        track = self.get_current_track()
-        if track is None:
+        track, user = self.get_current_track()
+        if track is None or user is None:
             return http.NoContent()
 
         try:
@@ -171,7 +172,12 @@ class CurrentView(MethodView):
             'Paused': paused
         }
 
-        return http.OK(TrackSerializer().serialize(track), headers=headers)
+        response = {
+            'track': TrackSerializer().serialize(track),
+            'user': UserSerializer().serialize(user),
+        }
+
+        return http.OK(response, headers=headers)
 
     @authenticated
     def delete(self):
