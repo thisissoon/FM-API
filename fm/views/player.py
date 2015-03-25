@@ -302,7 +302,8 @@ class QueueView(MethodView):
         # Publish the Add event
         redis.publish(config.PLAYER_CHANNEL, json.dumps({
             'event': 'add',
-            'uri': track.spotify_uri
+            'uri': track.spotify_uri,
+            'user': current_user.id
         }))
 
         return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))
