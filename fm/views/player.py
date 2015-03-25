@@ -15,7 +15,7 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, Track
-from fm.session import authenticated
+from fm.session import authenticated, current_user
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import TrackSerialzier
 from kim.exceptions import MappingErrors
@@ -285,8 +285,12 @@ class QueueView(MethodView):
 
         db.session.commit()
 
-        # Add track to the Queue
-        redis.rpush(config.PLAYLIST_REDIS_KEY, track.spotify_uri)
+        # Add track to the Queue - Also storing the current user ID
+        redis.rpush(config.PLAYLIST_REDIS_KEY, json.dumps({
+            'uri': track.spotify_uri,
+            'user': current_user.id}))
+
+        # Publish the Add event
         redis.publish(config.PLAYER_CHANNEL, json.dumps({
             'event': 'add',
             'uri': track.spotify_uri
