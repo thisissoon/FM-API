@@ -15,7 +15,7 @@ from kim.fields import Field
 from kim.serializers import Serializer
 
 
-class UserSeerialzer(Serializer):
+class UserSerializer(Serializer):
     """ Serializer for the User SQLAlchemy Model
     """
 

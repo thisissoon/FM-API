@@ -40,7 +40,7 @@ class AlbumSerializer(SQASerializer):
     artists = Field(t.Collection(t.Nested(ArtistSerializer)))
 
 
-class TrackSerialzier(SQASerializer):
+class TrackSerializer(SQASerializer):
     """
     """
 

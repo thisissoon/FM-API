@@ -15,7 +15,7 @@ from flask.views import MethodView
 from fm import http
 from fm.models.user import User
 from fm.session import authenticated, current_user
-from fm.serializers.user import UserSeerialzer
+from fm.serializers.user import UserSerializer
 
 
 class UserAuthenticatedView(MethodView):
@@ -27,7 +27,7 @@ class UserAuthenticatedView(MethodView):
         """ Returns the currently authenticated user
         """
 
-        return http.OK(UserSeerialzer().serialize(current_user))
+        return http.OK(UserSerializer().serialize(current_user))
 
 
 class UserView(MethodView):
@@ -53,4 +53,4 @@ class UserView(MethodView):
         if user is None:
             return http.NotFound()
 
-        return http.OK(UserSeerialzer().serialize(user))
+        return http.OK(UserSerializer().serialize(user))

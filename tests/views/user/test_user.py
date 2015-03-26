@@ -12,7 +12,7 @@ import uuid
 
 from flask import url_for
 from fm.ext import db
-from fm.serializers.user import UserSeerialzer
+from fm.serializers.user import UserSerializer
 from tests.factories.user import UserFactory
 
 
@@ -39,7 +39,7 @@ class TestUserGet(object):
         url = url_for('users.user', pk=user.id)
         response = self.client.get(url)
 
-        expected = UserSeerialzer().serialize(user)
+        expected = UserSerializer().serialize(user)
 
         assert response.status_code == 200
         assert response.json == expected
