@@ -74,13 +74,9 @@ class TestValidateSession(object):
 
         assert validate_session('foo') is None
 
-    def ensure_no_user_session_key_returns_none(self):
-        self.redis.get.side_effect = ['1234', None]
-
-        assert validate_session('foo') is None
-
-    def ensure_session_user_id_user_id_session_match(self):
-        self.redis.get.side_effect = ['1234', '4567']
+    def ensure_session_id_in_user_sessions(self):
+        self.redis.get.return_value = '1234',
+        self.redis.smembers.return_value = set(['4567'])
 
         assert validate_session('foo') is None
 
@@ -88,7 +84,8 @@ class TestValidateSession(object):
         serializer = URLSafeTimedSerializer(self.app.config['SECRET_KEY'])
         session_id = serializer.dumps('1234')
 
-        self.redis.get.side_effect = ['4567', session_id]
+        self.redis.get.return_value = '4567'
+        self.redis.smembers.return_value = set([session_id])
 
         assert validate_session(session_id) is None
 
@@ -96,7 +93,8 @@ class TestValidateSession(object):
         serializer = URLSafeTimedSerializer(self.app.config['SECRET_KEY'])
         session_id = serializer.dumps('1234')
 
-        self.redis.get.side_effect = ['1234', session_id]
+        self.redis.get.return_value = '1234'
+        self.redis.smembers.return_value = set([session_id])
 
         assert validate_session(session_id) is '1234'
 

@@ -80,14 +80,22 @@ def validate_session(session_id):
         User primary key or None if session is not valid
     """
 
+    # Get the user id from the session in redis
     user_id = redis.get(SESSION_KEY.format(session_id))
     if user_id is None:
         return None
 
-    user_session_id = redis.get(USER_SESSION_KEY.format(user_id))
-    if user_session_id is None:
-        return None
-    if not user_session_id == session_id:
+    user_key = USER_SESSION_KEY.format(user_id)
+
+    # Convert fm:api:user:session:<user_id> to a set if a string
+    if redis.type(user_key) == 'string':
+        value = redis.get(user_key)
+        redis.delete(user_key)
+        redis.sadd(user_key, value)
+
+    # Is the session id in the users sessions
+    user_sessions = redis.smembers(user_key)
+    if session_id not in user_sessions:
         return None
 
     serializer = URLSafeTimedSerializer(config.SECRET_KEY)
