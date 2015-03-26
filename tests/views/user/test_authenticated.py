@@ -10,7 +10,7 @@ Unit tests for the ``fm.views.user.UserAuthenticatedView`` class.
 
 from flask import g, url_for
 from fm.ext import db
-from fm.serializers.user import UserSeerialzer
+from fm.serializers.user import UserSerializer
 from tests.factories.user import UserFactory
 
 
@@ -35,7 +35,7 @@ class TestUserAuthenticatedGet(object):
         url = url_for('users.authenticated')
         response = self.client.get(url)
 
-        expected = UserSeerialzer().serialize(self.user)
+        expected = UserSerializer().serialize(self.user)
 
         assert response.status_code == 200
         assert response.json == expected
