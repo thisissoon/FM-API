@@ -16,26 +16,29 @@ import json
 from fm.app import create
 from fm.ext import config, db, redis
 from fm.models.spotify import Track, PlaylistHistory
+from fm.models.user import User
 from gevent.monkey import patch_all
 
 
-def add_playlist_history(uri):
+def add_playlist_history(uri, user):
     """ Adds a track to the playlist history on a play event.
 
     Arguments
     ---------
     uri : str
         Spotify URI of the playing track
+    user : str
+        The Users primary key
     """
 
-    # Create Flask Application
-    app = create()
-
-    with app.app_context():
-        track = Track.query.filter(Track.spotify_uri == uri).first()
-        if track is not None:
-            db.session.add(PlaylistHistory(track_id=track.id))
-            db.session.commit()
+    track = Track.query.filter(Track.spotify_uri == uri).first()
+    user = User.query.filter(User.id == user).first()
+    if track is not None and User is not None:
+        db.session.add(PlaylistHistory(
+            track_id=track.id,
+            user_id=user.id
+        ))
+        db.session.commit()
 
 
 def handle_event(message):
@@ -48,8 +51,12 @@ def handle_event(message):
         The event data
     """
 
-    if message['event'] == 'end':
-        add_playlist_history(message['uri'])
+    # Create Flask Application
+    app = create()
+
+    with app.app_context():
+        if message['event'] == 'end':
+            add_playlist_history(message['uri'], message['user'])
 
 
 def listen(pubsub):
