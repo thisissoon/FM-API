@@ -14,13 +14,14 @@ from flask import request, url_for
 from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
-from fm.models.spotify import Album, Artist, Track
-from fm.models.user import User
+from fm.models.spotify import Album, Artist, PlaylistHistory, Track
 from fm.session import authenticated, current_user
+from fm.models.user import User
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
-from fm.serializers.spotify import TrackSerializer
+from fm.serializers.spotify import TrackSerializer, HistorySerializer
 from fm.serializers.user import UserSerializer
 from kim.exceptions import MappingErrors
+from sqlalchemy import desc
 
 
 class PauseView(MethodView):
@@ -201,6 +202,30 @@ class CurrentView(MethodView):
         )
 
         return http.NoContent()
+
+
+class HisotryView(MethodView):
+    """ Playlist History Resource for tracking the hisotry of played tracks.
+    """
+
+    @http.pagination.paginate()
+    def get(self, *args, **kwargs):
+        """ Returns a paginated play list history.
+        """
+
+        total = PlaylistHistory.query.count()
+
+        rows = db.session.query(PlaylistHistory) \
+            .order_by(desc(PlaylistHistory.created)) \
+            .limit(kwargs.get('limit')) \
+            .offset(kwargs.get('offset')) \
+            .all()
+
+        return http.OK(
+            HistorySerializer().serialize(rows, many=True),
+            limit=kwargs.get('limit'),
+            page=kwargs.get('page'),
+            total=total)
 
 
 class QueueView(MethodView):
