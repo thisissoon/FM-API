@@ -55,7 +55,7 @@ def handle_event(message):
     app = create()
 
     with app.app_context():
-        if message['event'] == 'end':
+        if message['event'] == 'play':
             add_playlist_history(message['uri'], message['user'])
 
 
