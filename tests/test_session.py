@@ -98,6 +98,19 @@ class TestValidateSession(object):
 
         assert validate_session(session_id) is '1234'
 
+    def test_converts_string_to_set(self):
+        serializer = URLSafeTimedSerializer(self.app.config['SECRET_KEY'])
+        session_id = serializer.dumps('1234')
+
+        self.redis.type.return_value = 'string'
+        self.redis.get.side_effect = ['1234', session_id]
+        self.redis.smembers.return_value = set([session_id])
+
+        assert validate_session(session_id) is '1234'
+        self.redis.get.assert_has_call('fm:api:user:session:1234')
+        self.redis.delete.assert_has_call('fm:api:user:session:1234')
+        self.redis.sadd.assert_has_call('fm:api:user:session:1234', session_id)
+
 
 class TestUserFromSession(object):
 
