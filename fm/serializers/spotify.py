@@ -10,6 +10,7 @@ Kim serializers for `fm.models.spotify` models.
 
 import kim.types as t
 
+from fm.serializers.user import UserSerializer
 from kim.fields import Field
 from kim.contrib.sqa import SQASerializer
 from kim.roles import blacklist
@@ -58,3 +59,12 @@ class TrackSerialzier(SQASerializer):
     artists = Field(t.Collection(
         t.Nested(ArtistSerializer)),
         source='album.artists')
+
+
+class HistorySerializer(SQASerializer):
+    """
+    """
+
+    id = Field(t.String, read_only=True)
+    track = Field(t.Nested(TrackSerialzier))
+    user = Field(t.Nested(UserSerializer))
