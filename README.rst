@@ -706,53 +706,68 @@ Get a paginated list of the playlist history, most recent first.
 
     http GET http://localhost/player/history\?limit\=2
 
-    HTTP/1.0 200 OK
-    Content-Length: 1542
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Access-Token
+    Access-Control-Allow-Origin: *
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Length: 1101
     Content-Type: application/json; charset=utf-8
-    Date: Wed, 04 Mar 2015 14:27:39 GMT
-    Link: <http://localhost/player/history?limit=2&page=2>; rel="next", <http://localhost/player/history?limit=2&page=5>; rel="last"
-    Server: Werkzeug/0.10.1 Python/2.7.3
+    Date: Fri, 27 Mar 2015 10:25:19 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.9
+    Status: 200 OK
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
-    Total-Count: 10
-    Total-Pages: 5
+    Total-Count: 1
+    Total-Pages: 1
 
     [
         {
-            "album": {
-                "id": "7f8bda77-5364-4902-9a98-208f1cdd7643",
-                "images": [
+            "id": "efc965f2-4131-4e90-acd8-784b6ebeea75",
+            "track": {
+                "album": {
+                    "id": "8e7f2eb9-4a3c-4805-94c1-6eff64dc4b8b",
+                    "images": [
+                        {
+                            "height": 640,
+                            "url": "https://i.scdn.co/image/4204c11e3055cd980c987ecb4658a0fe447b8156",
+                            "width": 640
+                        },
+                        {
+                            "height": 300,
+                            "url": "https://i.scdn.co/image/b12fb1a96dbf2ffeef0dcf831935428ad8dc8d2d",
+                            "width": 300
+                        },
+                        {
+                            "height": 64,
+                            "url": "https://i.scdn.co/image/302e4c7ad2b69c2ae52c796b835b336d0ff4cc8f",
+                            "width": 64
+                        }
+                    ],
+                    "name": "Album 8e7f2eb9-4a3c-4805-94c1-6eff64dc4b8b",
+                    "uri": "spotify:album:8e7f2eb9-4a3c-4805-94c1-6eff64dc4b8b"
+                },
+                "artists": [
                     {
-                        "height": 640,
-                        "url": "https://i.scdn.co/image/7928fc9bd902b917aae0ef1bee41cb51598a2d27",
-                        "width": 640
-                    },
-                    {
-                        "height": 300,
-                        "url": "https://i.scdn.co/image/e80cb4d324d16881e2f7653abdbd70497bbab68d",
-                        "width": 300
-                    },
-                    {
-                        "height": 64,
-                        "url": "https://i.scdn.co/image/bf567406035a8e2b162c6a23470c6cdd5dd560f3",
-                        "width": 64
+                        "id": "7bbeecd1-bdcb-4711-b1b4-3cf12622a302",
+                        "name": "Artist 7bbeecd1-bdcb-4711-b1b4-3cf12622a302",
+                        "uri": "spotify:artist:7bbeecd1-bdcb-4711-b1b4-3cf12622a302"
                     }
                 ],
-                "name": "Showtime, Storytime",
-                "uri": "spotify:album:1tZlCjdI2dcfBXP8iSDsSI"
+                "duration": 2112,
+                "id": "39478481-3e1f-4531-b62e-164e4ff2f03e",
+                "name": "Album 39478481-3e1f-4531-b62e-164e4ff2f03e",
+                "play_count": 0,
+                "uri": "spotify:track:39478481-3e1f-4531-b62e-164e4ff2f03e"
             },
-            "artists": [
-                {
-                    "id": "26556f7e-3304-4e51-8243-dd2199fcf6fa",
-                    "name": "Nightwish",
-                    "uri": "spotify:artist:2NPduAUeLVsfIauhRwuft1"
-                }
-            ],
-            "duration": 272906,
-            "id": "4b170737-017c-4e85-965c-47b8a158c789",
-            "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
-            "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
-        },
-        ...
+            "user": {
+                "avatar_url": "http://RoJdxH.jpg",
+                "display_name": "OnMbki",
+                "family_name": "fxqcbEaT",
+                "given_name": "RoJdxH",
+                "id": "9a75f584-3353-440d-a57b-d1b524efced7"
+            }
+        }
     ]
 
 ``/tracks``
