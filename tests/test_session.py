@@ -59,7 +59,7 @@ class TestMakeSession(object):
 
         assert make_session('1234') == 'foobar'
         redis.set.assert_has_call(SESSION_KEY.format('foobar'), '1234')
-        redis.set.assert_has_call(USER_SESSION_KEY.format('1234'), 'foobar')
+        redis.sadd.assert_has_call(USER_SESSION_KEY.format('1234'), 'foobar')
 
 
 class TestValidateSession(object):

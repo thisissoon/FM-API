@@ -60,7 +60,7 @@ def make_session(pk):
     session_id = serializer.dumps(pk)
 
     redis.set(SESSION_KEY.format(session_id), pk)
-    redis.set(USER_SESSION_KEY.format(pk), session_id)
+    redis.sadd(USER_SESSION_KEY.format(pk), session_id)
 
     return session_id
 
