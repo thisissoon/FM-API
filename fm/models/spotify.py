@@ -56,8 +56,8 @@ class ArtistAlbumAssociation(db.Model):
     # Relations
     #
 
-    artist = db.relationship('Artist', backref='album_associations')
-    album = db.relationship('Album', backref='artist_associations')
+    artist = db.relationship('Artist', backref='album_associations', lazy='joined')
+    album = db.relationship('Album', backref='artist_associations', lazy='joined')
 
 
 class Album(db.Model):
@@ -121,4 +121,27 @@ class Track(db.Model):
     # Relations
     #
 
-    album = db.relation('Album', backref='tracks')
+    album = db.relation('Album', backref='tracks', lazy='joined')
+
+
+class PlaylistHistory(db.Model):
+    """ Holds the playlist history
+    """
+
+    __tablename__ = 'playlist_history'
+
+    #: Primary Key
+    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
+
+    #: Track ID
+    track_id = db.Column(db.ForeignKey('track.id'), nullable=False, index=True)
+
+    #: User ID
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
+
+    #
+    # Relations
+    #
+
+    track = db.relation('Track', lazy='joined')
+    user = db.relation('User', lazy='joined')

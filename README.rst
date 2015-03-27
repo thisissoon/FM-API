@@ -692,6 +692,84 @@ Sets the player mute state to ``False``.
     Status: 204 No Content
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
+``/player/history``
+~~~~~~~~~~~~~~~~~~~
+
+This resource handles retrieving player history.
+
+``GET``
+^^^^^^^
+
+Get a paginated list of the playlist history, most recent first.
+
+.. code-block::
+
+    http GET http://localhost/player/history\?limit\=2
+
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Access-Token
+    Access-Control-Allow-Origin: *
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Length: 1101
+    Content-Type: application/json; charset=utf-8
+    Date: Fri, 27 Mar 2015 10:25:19 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.9
+    Status: 200 OK
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+    Total-Count: 1
+    Total-Pages: 1
+
+    [
+        {
+            "id": "efc965f2-4131-4e90-acd8-784b6ebeea75",
+            "track": {
+                "album": {
+                    "id": "8e7f2eb9-4a3c-4805-94c1-6eff64dc4b8b",
+                    "images": [
+                        {
+                            "height": 640,
+                            "url": "https://i.scdn.co/image/4204c11e3055cd980c987ecb4658a0fe447b8156",
+                            "width": 640
+                        },
+                        {
+                            "height": 300,
+                            "url": "https://i.scdn.co/image/b12fb1a96dbf2ffeef0dcf831935428ad8dc8d2d",
+                            "width": 300
+                        },
+                        {
+                            "height": 64,
+                            "url": "https://i.scdn.co/image/302e4c7ad2b69c2ae52c796b835b336d0ff4cc8f",
+                            "width": 64
+                        }
+                    ],
+                    "name": "Album 8e7f2eb9-4a3c-4805-94c1-6eff64dc4b8b",
+                    "uri": "spotify:album:8e7f2eb9-4a3c-4805-94c1-6eff64dc4b8b"
+                },
+                "artists": [
+                    {
+                        "id": "7bbeecd1-bdcb-4711-b1b4-3cf12622a302",
+                        "name": "Artist 7bbeecd1-bdcb-4711-b1b4-3cf12622a302",
+                        "uri": "spotify:artist:7bbeecd1-bdcb-4711-b1b4-3cf12622a302"
+                    }
+                ],
+                "duration": 2112,
+                "id": "39478481-3e1f-4531-b62e-164e4ff2f03e",
+                "name": "Album 39478481-3e1f-4531-b62e-164e4ff2f03e",
+                "play_count": 0,
+                "uri": "spotify:track:39478481-3e1f-4531-b62e-164e4ff2f03e"
+            },
+            "user": {
+                "avatar_url": "http://RoJdxH.jpg",
+                "display_name": "OnMbki",
+                "family_name": "fxqcbEaT",
+                "given_name": "RoJdxH",
+                "id": "9a75f584-3353-440d-a57b-d1b524efced7"
+            }
+        }
+    ]
+
 ``/tracks``
 ~~~~~~~~~~~
 

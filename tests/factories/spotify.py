@@ -9,11 +9,11 @@ SQLAlchemy Factories for Spotify models.
 """
 
 import factory
-import json
 
 from factory import fuzzy
-from fm.models.spotify import Album, Artist, Track
+from fm.models.spotify import Album, Artist, PlaylistHistory, Track
 from tests.factories import Factory, UUID4
+from tests.factories.user import UserFactory
 
 
 class ArtistFactory(Factory):
@@ -38,7 +38,7 @@ class AlbumFactory(Factory):
     id = UUID4()
     spotify_uri = factory.LazyAttribute(lambda o: 'spotify:album:{0}'.format(o.id))
     name = factory.LazyAttribute(lambda o: u'Album {0}'.format(o.id))
-    images = factory.LazyAttribute(lambda o: json.dumps([
+    images = factory.LazyAttribute(lambda o: [
         {
             "url": "https://i.scdn.co/image/4204c11e3055cd980c987ecb4658a0fe447b8156",
             "width": 640,
@@ -52,7 +52,7 @@ class AlbumFactory(Factory):
             "width": 64,
             "height": 64
         }
-    ]))
+    ])
 
 
 class AlbumWithArtist(AlbumFactory):
@@ -74,3 +74,15 @@ class TrackFactory(Factory):
     name = factory.LazyAttribute(lambda o: u'Album {0}'.format(o.id))
     album = factory.SubFactory(AlbumWithArtist)
     duration = fuzzy.FuzzyInteger(1000, 10000)
+
+
+class PlaylistHistoryFactory(Factory):
+    """ Factory for generating Playlist Hisotry entries
+    """
+
+    class Meta:
+        model = PlaylistHistory
+
+    id = UUID4()
+    track = factory.LazyAttribute(lambda o: TrackFactory())
+    user = factory.LazyAttribute(lambda o: UserFactory())
