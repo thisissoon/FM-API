@@ -136,8 +136,12 @@ class PlaylistHistory(db.Model):
     #: Track ID
     track_id = db.Column(db.ForeignKey('track.id'), nullable=False, index=True)
 
+    #: User ID
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
+
     #
     # Relations
     #
 
     track = db.relation('Track', lazy='joined')
+    user = db.relation('User', lazy='joined')
