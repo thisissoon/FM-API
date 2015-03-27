@@ -34,5 +34,5 @@ class TestGetHistory(object):
 
         assert response.status_code == 200
         assert len(response.json) == 2
-        assert entries[0].track.id == response.json[1]['id']
-        assert entries[1].track.id == response.json[0]['id']
+        assert entries[0].track.id == response.json[1]['track']['id']
+        assert entries[1].track.id == response.json[0]['track']['id']
