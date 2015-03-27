@@ -13,7 +13,7 @@ import uuid
 from flask.views import MethodView
 from fm import http
 from fm.models.spotify import Track
-from fm.serializers.spotify import TrackSerialzier
+from fm.serializers.spotify import TrackSerializer
 
 
 class TracksView(MethodView):
@@ -32,7 +32,7 @@ class TracksView(MethodView):
             .all()
 
         return http.OK(
-            TrackSerialzier().serialize(rows, many=True),
+            TrackSerializer().serialize(rows, many=True),
             limit=kwargs.get('limit'),
             page=kwargs.get('page'),
             total=total)
@@ -63,4 +63,4 @@ class TrackVeiw(MethodView):
         if track is None:
             return http.NotFound()
 
-        return http.OK(TrackSerialzier().serialize(track))
+        return http.OK(TrackSerializer().serialize(track))

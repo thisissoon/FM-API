@@ -15,12 +15,13 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.models.spotify import Album, Artist, PlaylistHistory, Track
-from fm.session import authenticated
+from fm.session import authenticated, current_user
+from fm.models.user import User
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
-from fm.serializers.spotify import TrackSerialzier
+from fm.serializers.spotify import TrackSerializer, HistorySerializer
+from fm.serializers.user import UserSerializer
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
-from sqlalchemy.dialects.postgresql import Any, array
 
 
 class PauseView(MethodView):
@@ -139,15 +140,16 @@ class CurrentView(MethodView):
             The currently playing track or None
         """
 
-        uri = redis.get('fm:player:current')
-        if uri is None:
-            return None
+        current = redis.get('fm:player:current')
+        if current is None:
+            return None, None
+
+        uri, user = json.loads(current).values()
 
         track = Track.query.filter(Track.spotify_uri == uri).first()
-        if track is None:
-            return None
+        user = User.query.filter(User.id == user).first()
 
-        return track
+        return track, user
 
     def get(self):
         """ Returns the currently playing track.
@@ -158,8 +160,8 @@ class CurrentView(MethodView):
             A http response instance, 204 or 200
         """
 
-        track = self.get_current_track()
-        if track is None:
+        track, user = self.get_current_track()
+        if track is None or user is None:
             return http.NoContent()
 
         try:
@@ -171,7 +173,12 @@ class CurrentView(MethodView):
             'Paused': paused
         }
 
-        return http.OK(TrackSerialzier().serialize(track), headers=headers)
+        response = {
+            'track': TrackSerializer().serialize(track),
+            'user': UserSerializer().serialize(user),
+        }
+
+        return http.OK(response, headers=headers)
 
     @authenticated
     def delete(self):
@@ -208,15 +215,14 @@ class HisotryView(MethodView):
 
         total = PlaylistHistory.query.count()
 
-        rows = db.session.query(Track, PlaylistHistory) \
-            .join(PlaylistHistory, Track.id == PlaylistHistory.track_id) \
+        rows = db.session.query(PlaylistHistory) \
             .order_by(desc(PlaylistHistory.created)) \
             .limit(kwargs.get('limit')) \
             .offset(kwargs.get('offset')) \
             .all()
 
         return http.OK(
-            TrackSerialzier().serialize([t for t, h in rows], many=True),
+            HistorySerializer().serialize(rows, many=True),
             limit=kwargs.get('limit'),
             page=kwargs.get('page'),
             total=total)
@@ -234,19 +240,21 @@ class QueueView(MethodView):
         offset = kwargs.pop('offset')
         limit = kwargs.pop('limit')
 
-        tracks = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
+        queue = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
         total = redis.llen(config.PLAYLIST_REDIS_KEY)
 
         response = []
 
         if total > 0:
-            rows = Track.query \
-                .filter(Any(Track.spotify_uri, array(tracks))) \
-                .all()
-
-            for uri in tracks:
-                obj = filter(lambda o: o.spotify_uri == uri, rows)[0]
-                response.append(TrackSerialzier().serialize(obj))
+            for item in queue:
+                item = json.loads(item)
+                track = Track.query.filter(Track.spotify_uri == item['uri']).first()
+                user = User.query.filter(User.id == item['user']).first()
+                if track is not None and user is not None:
+                    response.append({
+                        'track': TrackSerializer().serialize(track),
+                        'user': UserSerializer().serialize(user)
+                    })
 
         return http.OK(
             response,
@@ -311,11 +319,16 @@ class QueueView(MethodView):
 
         db.session.commit()
 
-        # Add track to the Queue
-        redis.rpush(config.PLAYLIST_REDIS_KEY, track.spotify_uri)
+        # Add track to the Queue - Also storing the current user ID
+        redis.rpush(config.PLAYLIST_REDIS_KEY, json.dumps({
+            'uri': track.spotify_uri,
+            'user': current_user.id}))
+
+        # Publish the Add event
         redis.publish(config.PLAYER_CHANNEL, json.dumps({
             'event': 'add',
-            'uri': track.spotify_uri
+            'uri': track.spotify_uri,
+            'user': current_user.id
         }))
 
         return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))

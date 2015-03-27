@@ -49,7 +49,9 @@ class GoogleConnectView(MethodView):
             result, credentials = authenticate_oauth_code(request.json['code'])
         except GoogleOAuth2Exception as e:
             return http.UnprocessableEntity(errors={
-                'code': e.message
+                'code': [
+                    e.message
+                ]
             })
 
         # Default headers and response default response class for 200 OK

@@ -41,7 +41,7 @@ class AlbumSerializer(SQASerializer):
     artists = Field(t.Collection(t.Nested(ArtistSerializer)))
 
 
-class TrackSerialzier(SQASerializer):
+class TrackSerializer(SQASerializer):
     """
     """
 
@@ -66,5 +66,5 @@ class HistorySerializer(SQASerializer):
     """
 
     id = Field(t.String, read_only=True)
-    track = Field(t.Nested(TrackSerialzier))
+    track = Field(t.Nested(TrackSerializer))
     user = Field(t.Nested(UserSerializer))
