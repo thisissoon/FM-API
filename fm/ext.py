@@ -12,11 +12,11 @@ from fm.db.sqla import FMSQLAlchemy
 from flask.ext.via import Via
 from fm.config import ConfigProxy
 from fm.db.nosql import Redis
-from fm.tasks import celery as _celery
+from fm.tasks import Celery
 from werkzeug import LocalProxy
 
 # Celery
-celery = LocalProxy(lambda: _celery())
+celery = Celery()
 
 # Flask-Via for Routing Modules
 via = Via()

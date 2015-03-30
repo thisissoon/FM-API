@@ -28,9 +28,7 @@ CELERY_TIMEZONE = 'UTC'
 CELERY_BROKER_URL = os.environ.get(
     'CELERY_BROKER_URL',
     'amqp://guest:guest@localhost:5672//')
-CELERY_IMPORTS = (
-    'fm.tasks.add',
-)
+CELERY_IMPORTS = ()
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
 # Player

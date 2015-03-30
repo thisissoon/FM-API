@@ -12,7 +12,7 @@ import os
 import traceback
 
 from flask import Flask, request
-from fm.ext import db, redis, via
+from fm.ext import celery, db, redis, via
 from fm import models  # noqa
 from fm import http
 from fm.http.cors import CORS
@@ -105,6 +105,9 @@ def create(config=None):
 
     # Configure
     configure(app, config=config)
+
+    # Celery
+    celery.init_app(app)
 
     # Reids
     redis.init_app(app)
