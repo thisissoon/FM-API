@@ -22,6 +22,7 @@ from fm.serializers.spotify import TrackSerializer, HistorySerializer
 from fm.serializers.user import UserSerializer
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
+from fm.logic.player import Queue
 
 
 class PauseView(MethodView):
@@ -319,16 +320,8 @@ class QueueView(MethodView):
 
         db.session.commit()
 
-        # Add track to the Queue - Also storing the current user ID
-        redis.rpush(config.PLAYLIST_REDIS_KEY, json.dumps({
-            'uri': track.spotify_uri,
-            'user': current_user.id}))
+        Queue.add(track, current_user)
+        return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))
 
-        # Publish the Add event
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({
-            'event': 'add',
-            'uri': track.spotify_uri,
-            'user': current_user.id
-        }))
 
         return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))
