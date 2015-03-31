@@ -1,8 +1,8 @@
 import unittest
 
+from fm.ext import db
 from fm.logic.player import Random
 from tests.factories.spotify import TrackFactory
-from fm.ext import db
 
 
 class TestQueue(unittest.TestCase):
