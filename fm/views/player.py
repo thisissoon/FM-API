@@ -204,7 +204,7 @@ class CurrentView(MethodView):
         return http.NoContent()
 
 
-class HisotryView(MethodView):
+class HistoryView(MethodView):
     """ Playlist History Resource for tracking the hisotry of played tracks.
     """
 
