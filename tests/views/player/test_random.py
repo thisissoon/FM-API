@@ -11,9 +11,13 @@ Unit tests for the ``fm.views.player.RandomView`` class.
 import httplib
 import json
 
+import mock
+
 import pytest
 from flask import url_for
 from fm.ext import db
+from fm.logic.player import Queue
+from mockredis import mock_redis_client
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
 
@@ -30,6 +34,7 @@ class TestRandom(object):
         response = self.client.post(url_for('player.random'))
         assert response.status_code == httplib.BAD_REQUEST
 
+    @mock.patch('fm.logic.player.redis', mock_redis_client())
     def add_some_tracks_into_queue(self):
         tracks = [TrackFactory(), TrackFactory(), TrackFactory()]
         users = [UserFactory(), UserFactory(), UserFactory()]
@@ -43,3 +48,4 @@ class TestRandom(object):
         )
 
         assert response.status_code == httplib.CREATED
+        assert Queue.length() == 2
