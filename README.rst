@@ -392,6 +392,104 @@ used to then request the track object.
     Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
 
 
+``/player/random``
+~~~~~~~~~~~~~~~~~~
+
+This resource handles random generation of tracks.
+
+``POST``
+^^^^^^^^
+
+Add a number of tracks to the playlist. Returns a list of randomly generated
+tracks, which have been added into the playlist.
+
+- For unauthenticated user returns error 401 (Unauthorized).
+- For requests without number of trucks in body returns 400 (Bad request).
+
+Example Request
+***************
+
+.. code-block::
+
+    POST /player/random HTTP/1.1
+    Accept: application/json
+    Accept-Encoding: gzip, deflate
+    Access-Token: abcde1234
+    Connection: keep-alive
+    Content-Length: 0
+    Content-Type: application/json; charset=utf-8
+    Host: localhost
+    User-Agent: HTTPie/0.8.0
+
+    {"tracks": 2}
+
+Example Response
+***************
+
+.. code-block::
+
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Expose-Headers: Link, Total-Pages, Total-Count, Access-Token
+    Access-Control-Allow-Origin: *
+    Cache-Control: no-cache, no-store, must-revalidate
+    Content-Type: application/json; charset=utf-8
+    Date: Thu, 19 Mar 2015 12:11:24 GMT
+    Expires: 0
+    Pragma: no-cache
+    Server: Werkzeug/0.10.1 Python/2.7.3
+    Status: 201 Created
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+
+    [
+        {
+            "track": {
+              "album": {
+                "images": [
+                  {
+                    "url": "https://i.scdn.co/image/4204c11e3055cd980c987ecb4658a0fe447b8156",
+                    "width": 640,
+                    "height": 640
+                  },
+                  {
+                    "url": "https://i.scdn.co/image/b12fb1a96dbf2ffeef0dcf831935428ad8dc8d2d",
+                    "width": 300,
+                    "height": 300
+                  },
+                  {
+                    "url": "https://i.scdn.co/image/302e4c7ad2b69c2ae52c796b835b336d0ff4cc8f",
+                    "width": 64,
+                    "height": 64
+                  }
+                ],
+                "uri": "spotify:album:b495f294-8421-4e53-a800-7297bf01994b",
+                "id": "b495f294-8421-4e53-a800-7297bf01994b",
+                "name": "Album b495f294-8421-4e53-a800-7297bf01994b"
+              },
+              "name": "Album a9a1b011-40a2-47e6-ae1f-b6f16579aa9d",
+              "uri": "spotify:track:a9a1b011-40a2-47e6-ae1f-b6f16579aa9d",
+              "play_count": 0,
+              "artists": [
+                {
+                  "id": "e333b9bd-32f8-45d9-9ebe-3deaccc37b1a",
+                  "name": "Artist e333b9bd-32f8-45d9-9ebe-3deaccc37b1a",
+                  "uri": "spotify:artist:e333b9bd-32f8-45d9-9ebe-3deaccc37b1a"
+                }
+              ],
+              "duration": 1065,
+              "id": "a9a1b011-40a2-47e6-ae1f-b6f16579aa9d"
+            },
+            "user": {
+              "family_name": "UgIVidee",
+              "avatar_url": "http://UeMRui.jpg",
+              "display_name": "YFOLMH",
+              "id": "2a3aedf3-d211-4f13-b918-d664a2cff663",
+              "given_name": "UeMRui"
+            }
+        },
+        ....
+    ]
+
+
 ``/player/current``
 ~~~~~~~~~~~~~~~~~~~
 
