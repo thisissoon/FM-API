@@ -12,11 +12,13 @@ import json
 
 from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
+
 from fm import http
 from fm.ext import db
-from fm.google import authenticate_oauth_code, GoogleOAuth2Exception
+from fm.google import GoogleOAuth2Exception, authenticate_oauth_code
 from fm.models.user import User
-from fm.session import make_session
+from fm.oauth2.spotify import SpotifyOAuth2
+from fm.session import authenticated, current_user, make_session
 from furl import furl
 
 
@@ -94,3 +96,18 @@ class GoogleConnectView(MethodView):
                 'access_token': session_id
             },
             headers=headers)
+
+
+class SpotifyConnectView(MethodView):
+
+    @authenticated
+    def get(self):
+        user, credentials = SpotifyOAuth2.authenticate_oauth_code(
+            request.args.get('code')
+        )
+        spotify_id = user['id']
+        current_user.spotify_id = spotify_id
+        current_user.spotify_credentials = credentials
+        db.session.add(current_user)
+        db.session.commit()
+        return ''
