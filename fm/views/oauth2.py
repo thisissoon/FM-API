@@ -8,6 +8,7 @@ fm.views.oauth2
 Views for the Google OAUTH2 authentication.
 """
 
+import httplib
 import json
 
 from flask import current_app, render_template, request, url_for
@@ -17,7 +18,7 @@ from fm import http
 from fm.ext import db
 from fm.google import GoogleOAuth2Exception, authenticate_oauth_code
 from fm.models.user import User
-from fm.oauth2.spotify import SpotifyOAuth2
+from fm.oauth2.spotify import SpotifyOAuth2, SpotifyOAuth2Exception
 from fm.session import authenticated, current_user, make_session
 from furl import furl
 
@@ -102,9 +103,15 @@ class SpotifyConnectView(MethodView):
 
     @authenticated
     def get(self):
-        user, credentials = SpotifyOAuth2.authenticate_oauth_code(
-            request.args.get('code')
-        )
+        try:
+            user, credentials = SpotifyOAuth2.authenticate_oauth_code(
+                request.args['code']
+            )
+        except KeyError:
+            return '', httplib.BAD_REQUEST
+        except SpotifyOAuth2Exception:
+            return '', httplib.UNAUTHORIZED
+
         spotify_id = user['id']
         current_user.spotify_id = spotify_id
         current_user.spotify_credentials = credentials
