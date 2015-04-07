@@ -24,7 +24,7 @@ class SpotifyOAuth2Exception(Exception):
 class SpotifyOAuth2(object):
 
     @staticmethod
-    def get_credentials(code):
+    def get_tokens(code):
         response = requests.post(
             'https://accounts.spotify.com/api/token',
             auth=(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_CLIENT_SECRET),
@@ -36,8 +36,7 @@ class SpotifyOAuth2(object):
             })
         if response.status_code != httplib.OK:
             raise SpotifyOAuth2Exception(response.text)
-        data = response.json()
-        return data['token_type'], data['access_token']
+        return response.json()
 
     @staticmethod
     def user_from_credentials(credentials):
@@ -47,7 +46,7 @@ class SpotifyOAuth2(object):
         )
         if response.status_code != httplib.OK:
             raise SpotifyOAuth2Exception(response.text)
-        return response.json(), credentials
+        return response.json()
 
     @staticmethod
     def disconnect(access_token):
@@ -55,6 +54,7 @@ class SpotifyOAuth2(object):
 
     @staticmethod
     def authenticate_oauth_code(code):
-        credentials = SpotifyOAuth2.get_credentials(code)
-        user, credentials = SpotifyOAuth2.user_from_credentials(credentials)
-        return user, credentials
+        tokens = SpotifyOAuth2.get_tokens(code)
+        credentials = (tokens['token_type'], tokens['access_token'])
+        user = SpotifyOAuth2.user_from_credentials(credentials)
+        return user, tokens

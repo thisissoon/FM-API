@@ -39,8 +39,8 @@ class MockRequestsResponse(object):
 class TestSpotifyConnectPost(object):
 
     def setup(self):
-        self.app.config['SPOTIFY_CLIENT_ID'] = '65f7ds56f4ds3f46'
-        self.app.config['SPOTIFY_CLIENT_SECRET'] = '4fsd4f5ds67fsd65'
+        self.app.config['SPOTIFY_CLIENT_ID'] = 'b6385af099a541188bee1e9fef4a2f'
+        self.app.config['SPOTIFY_CLIENT_SECRET'] = 'b167743713c74af48051d06972'
 
         self.requests_get_patcher = mock.patch('requests.get')
         self.requests_get_mock = self.requests_get_patcher.start()
@@ -62,17 +62,18 @@ class TestSpotifyConnectPost(object):
     def test_add_users_spotify_credentials(self):
         call_back_url = url_for('oauth2.spotify.connect') + '?' + \
             urllib.urlencode({
-                'code': 'callback_code',
+                'code': 'AQD3dEZwPgjXdvDRzS3_WKMVXNYyKMNHeT1g_iHj2N9gTdT_1IQt',
                 'state': '34fFs29kd09',
             })
 
+        tokens_responce = {
+            "access_token": "access_token",
+            "token_type": "Bearer",
+            "expires_in": 3600,
+            "refresh_token": "refresh_token"
+        }
         self.requests_post_mock.return_value = MockRequestsResponse(
-            json.dumps({
-                "access_token": "access_token",
-                "token_type": "Bearer",
-                "expires_in": 3600,
-                "refresh_token": "refresh_token"
-            })
+            json.dumps(tokens_responce)
         )
         self.requests_get_mock.return_value = MockRequestsResponse(
             json.dumps({
@@ -102,7 +103,7 @@ class TestSpotifyConnectPost(object):
         response = self.client.get(call_back_url)
         assert response.status_code == httplib.OK
         assert g.user.spotify_id == '135687956'
-        assert g.user.spotify_credentials == ['Bearer', 'access_token', ]
+        assert g.user.spotify_credentials == tokens_responce
 
     def test_cannt_get_correct_credentials(self):
         call_back_url = url_for('oauth2.spotify.connect') + '?' + \
@@ -111,14 +112,14 @@ class TestSpotifyConnectPost(object):
                 'state': '34fFs29kd09',
             })
 
+        tokens_responce = {
+            "access_token": "access_token",
+            "token_type": "Bearer",
+            "expires_in": 3600,
+            "refresh_token": "refresh_token"
+        }
         self.requests_post_mock.return_value = MockRequestsResponse(
-            json.dumps({
-                "access_token": "access_token",
-                "token_type": "Bearer",
-                "expires_in": 3600,
-                "refresh_token": "refresh_token"
-            }),
-            code=httplib.BAD_REQUEST
+            json.dumps(tokens_responce), code=httplib.BAD_REQUEST
         )
         response = self.client.get(call_back_url)
         assert response.status_code == httplib.UNAUTHORIZED

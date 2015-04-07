@@ -109,8 +109,8 @@ class SpotifyConnectView(MethodView):
             )
         except KeyError:
             return '', httplib.BAD_REQUEST
-        except SpotifyOAuth2Exception:
-            return '', httplib.UNAUTHORIZED
+        except SpotifyOAuth2Exception as e:
+            return http.Unauthorized(e.message)
 
         spotify_id = user['id']
         current_user.spotify_id = spotify_id
