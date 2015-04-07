@@ -42,6 +42,17 @@ class Queue(object):
             'user': user.id
         }))
 
+    @staticmethod
+    def length():
+        """ Return list of messages in a redis playlist queue
+
+        Return
+        ------
+        int
+            number of items in a playlist queue
+        """
+        return redis.llen(config.PLAYLIST_REDIS_KEY)
+
 
 class Random(object):
     """

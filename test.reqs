@@ -2,6 +2,7 @@ mock==1.0.1
 coverage==3.7.1
 sure==1.2.8
 factory_boy==2.4.1
+mockredispy==2.9.0.10
 
 pytest==2.6.4
 pytest-cache==1.0
