@@ -19,7 +19,7 @@ class SpotifyURI(t.String):
             raise ValidationError('Unable to get track data from Spotify')
 
         if not response.status_code == 200:
-            raise ValidationError('Invalid Spotify URI')
+            raise ValidationError('Invalid Spotify URI: {0}'.format(value))
 
         try:
             track = response.json()

@@ -271,22 +271,22 @@ class QueueView(MethodView):
 
         serializer = PlaylistSerializer()
         try:
-            track = serializer.marshal(request.json)
+            data = serializer.marshal(request.json)
         except MappingErrors as e:
             return http.UnprocessableEntity(errors=e.message)
 
-        album = Album.query.filter(Album.spotify_uri == track['track']['album']['uri']).first()
+        album = Album.query.filter(Album.spotify_uri == data['track']['album']['uri']).first()
         if album is None:
             album = Album()
             db.session.add(album)
 
-        album.name = data['album']['name']
-        album.images = data['album']['images']
-        album.spotify_uri = data['album']['uri']
+        album.name = data['track']['album']['name']
+        album.images = data['track']['album']['images']
+        album.spotify_uri = data['track']['album']['uri']
 
         db.session.commit()
 
-        for item in data['artists']:
+        for item in data['track']['artists']:
             artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
             if artist is None:
                 artist = Artist()
@@ -300,14 +300,14 @@ class QueueView(MethodView):
 
             db.session.commit()
 
-        track = Track.query.filter(Track.spotify_uri == data['uri']).first()
+        track = Track.query.filter(Track.spotify_uri == data['track']['uri']).first()
         if track is None:
             track = Track()
             db.session.add(track)
 
-        track.name = data['name']
-        track.spotify_uri = data['uri']
-        track.duration = data['duration_ms']
+        track.name = data['track']['name']
+        track.spotify_uri = data['track']['uri']
+        track.duration = data['track']['duration_ms']
         track.album_id = album.id
 
         # If a track is skipped we should decrement the play count

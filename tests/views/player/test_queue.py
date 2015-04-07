@@ -11,13 +11,13 @@ Unit tests for the ``fm.views.player.QueueView`` class.
 import json
 import mock
 import pytest
+import requests
 
 from fm.ext import db
 from fm.models.spotify import Album, Artist, Track
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
 from flask import url_for
-from spotipy import SpotifyException
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
 
@@ -169,40 +169,62 @@ class TestQueuePost(QueueTest):
     def setup(self):
         super(TestQueuePost, self).setup()
 
-        # Patch Spotipy
-        patch = mock.patch('fm.serializers.player.spotipy.Spotify')
-        self.spotify = mock.MagicMock()
-        self.spotify.track.return_value = TRACK_DATA
-        spotipy = patch.start()
-        spotipy.return_value = self.spotify
+        self.requests = mock.MagicMock()
+        self.requests.get.return_value = mock.MagicMock(
+            status_code=200,
+            json=mock.MagicMock(return_value=TRACK_DATA))
+        self.requests.ConnectionError = requests.ConnectionError
+
+        # Patch Requests to Spotify
+        patch = mock.patch(
+            'fm.serializers.types.spotify.requests',
+            new_callable=mock.PropertyMock(return_value=self.requests))
+
+        patch.start()
+
+        self.addPatchCleanup(patch)
+
+        patch = mock.patch('fm.views.player.Queue')
+        patch.start()
         self.addPatchCleanup(patch)
 
     @pytest.mark.usefixtures("unauthenticated")
     def must_be_authenticated(self):
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'uri': 'foo'
+            'track': 'foo'
         }))
 
         assert response.status_code == 401
 
-    def must_post_valid_spotify_uri(self):
-        self.spotify.track.side_effect = SpotifyException(404, 'foo', 'bar')
+    def should_catch_connection_error(self):
+        self.requests.get.side_effect = requests.ConnectionError()
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'uri': 'foo'
+            'track': 'foo'
         }))
 
         assert response.status_code == 422
-        assert 'Invalid Spotify Track URI: foo' in response.json['errors']['uri']
+        assert 'Unable to get track data from Spotify' in response.json['errors']['track']
+
+    def ensure_valid_spotify_uri(self):
+        self.requests.get.return_value = mock.MagicMock(status_code=404)
+
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'track': 'foo'
+        }))
+
+        assert response.status_code == 422
+        assert 'Invalid Spotify URI: foo' in response.json['errors']['track']
 
     def should_create_new_album(self):
         assert Album.query.count() == 0
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'uri': 'foo'
+            'track': 'foo'
         }))
 
         album = Album.query.first()
@@ -218,7 +240,7 @@ class TestQueuePost(QueueTest):
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'uri': 'foo'
+            'track': 'foo'
         }))
 
         artist = Artist.query.first()
@@ -231,7 +253,7 @@ class TestQueuePost(QueueTest):
     def ensure_new_track_play_count_is_one(self):
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'uri': 'foo'
+            'track': 'foo'
         }))
 
         track = Track.query.first()
@@ -247,7 +269,7 @@ class TestQueuePost(QueueTest):
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'uri': t.spotify_uri
+            'track': t.spotify_uri
         }))
 
         track = Track.query.first()
