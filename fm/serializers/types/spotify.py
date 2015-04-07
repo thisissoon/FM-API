@@ -7,6 +7,8 @@ from simplejson import JSONDecodeError
 
 class SpotifyURI(t.String):
 
+    track = None
+
     def marshal_value(self, value):
         return self.track
 
