@@ -10,12 +10,11 @@ Views for working with User objects.
 
 import uuid
 
-
 from flask.views import MethodView
 from fm import http
 from fm.models.user import User
-from fm.session import authenticated, current_user
 from fm.serializers.user import UserSerializer
+from fm.session import authenticated, current_user
 
 
 class UserAuthenticatedView(MethodView):
@@ -54,3 +53,16 @@ class UserView(MethodView):
             return http.NotFound()
 
         return http.OK(UserSerializer().serialize(user))
+
+
+class UserSpotifyPlaylistView(MethodView):
+
+    def get(self, pk):
+        """ Get a serialized user object.
+
+        Arguments
+        ---------
+        pk : str
+            The user primary key UUID
+        """
+        return http.OK()

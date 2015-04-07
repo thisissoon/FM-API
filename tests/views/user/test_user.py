@@ -43,3 +43,26 @@ class TestUserGet(object):
 
         assert response.status_code == 200
         assert response.json == expected
+
+    def test_user_has_authorized_on_spotify(self):
+        user = UserFactory()
+        user.spotify_id = '54774645'
+
+        db.session.add(user)
+        db.session.commit()
+
+        url = url_for('users.user', pk=user.id)
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert response.json['spotify_playlists'].startswith('http')
+
+    def test_user_has_not_authorized_on_spotify(self):
+        user = UserFactory()
+
+        db.session.add(user)
+        db.session.commit()
+
+        url = url_for('users.user', pk=user.id)
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert response.json['spotify_playlists'] is None
