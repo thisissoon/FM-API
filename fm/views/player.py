@@ -270,13 +270,11 @@ class QueueView(MethodView):
 
         serializer = PlaylistSerializer()
         try:
-            serializer.marshal(request.json)
+            track = serializer.marshal(request.json)
         except MappingErrors as e:
             return http.UnprocessableEntity(errors=e.message)
 
-        data = serializer.track
-
-        album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
+        album = Album.query.filter(Album.spotify_uri == track['track']['album']['uri']).first()
         if album is None:
             album = Album()
             db.session.add(album)
