@@ -16,7 +16,7 @@ from flask.views import MethodView
 
 from fm import http
 from fm.ext import db
-from fm.google import GoogleOAuth2Exception, authenticate_oauth_code
+from fm.oauth2.google import GoogleOAuth2Exception, authenticate_oauth_code
 from fm.models.user import User
 from fm.oauth2.spotify import SpotifyOAuth2, SpotifyOAuth2Exception
 from fm.session import authenticated, current_user, make_session

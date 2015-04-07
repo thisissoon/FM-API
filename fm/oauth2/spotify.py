@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 """
-fm.spotify
+fm.oauth2.spotify
 =========
 
 Spotify oAuth2 Connection helper methods.
