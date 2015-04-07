@@ -16,5 +16,6 @@ routes = [
     Pluggable('/google/client', oauth2.GoogleTestClientView, 'google.test'),
     Pluggable('/google/connect', oauth2.GoogleConnectView, 'google.connect'),
 
+    Pluggable('/spotify/client', oauth2.SpotifyTestClientView, 'spotify.test'),
     Pluggable('/spotify/connect', oauth2.SpotifyConnectView, 'spotify.connect'),
 ]

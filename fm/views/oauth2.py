@@ -37,6 +37,19 @@ class GoogleTestClientView(MethodView):
         return render_template('oauth2/google.html')
 
 
+class SpotifyTestClientView(MethodView):
+    """ This view should only be accessible in DEBUG mode.
+    """
+
+    def get(self):
+        """ Renders a HTML test client for testing google OAuth2 Flow
+        """
+        if current_app.debug is False:
+            return http.NotFound()
+
+        return render_template('oauth2/spotify.html')
+
+
 class GoogleConnectView(MethodView):
     """ View for handling Google OAuth2 account connections.
     """

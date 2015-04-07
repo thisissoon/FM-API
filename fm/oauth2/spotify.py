@@ -49,6 +49,20 @@ class SpotifyOAuth2(object):
         return response.json()
 
     @staticmethod
+    def refresh_access_token(refresh_token):
+        response = requests.post(
+            'https://accounts.spotify.com/api/token',
+            auth=(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_CLIENT_SECRET),
+            data={
+                'grant_type': 'refresh_token',
+                'refresh_token': refresh_token
+            }
+        )
+        if response.status_code != httplib.OK:
+            raise SpotifyOAuth2Exception(response.text)
+        return response.json()
+
+    @staticmethod
     def disconnect(access_token):
         pass
 
