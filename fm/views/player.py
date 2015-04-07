@@ -14,12 +14,13 @@ from flask import request, url_for
 from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
+from fm.logic.player import Queue, Random
 from fm.models.spotify import Album, Artist, PlaylistHistory, Track
-from fm.session import authenticated, current_user
 from fm.models.user import User
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
-from fm.serializers.spotify import TrackSerializer, HistorySerializer
+from fm.serializers.spotify import HistorySerializer, TrackSerializer
 from fm.serializers.user import UserSerializer
+from fm.session import authenticated, current_user
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
 
@@ -204,7 +205,7 @@ class CurrentView(MethodView):
         return http.NoContent()
 
 
-class HisotryView(MethodView):
+class HistoryView(MethodView):
     """ Playlist History Resource for tracking the hisotry of played tracks.
     """
 
@@ -317,16 +318,20 @@ class QueueView(MethodView):
 
         db.session.commit()
 
-        # Add track to the Queue - Also storing the current user ID
-        redis.rpush(config.PLAYLIST_REDIS_KEY, json.dumps({
-            'uri': track.spotify_uri,
-            'user': current_user.id}))
-
-        # Publish the Add event
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({
-            'event': 'add',
-            'uri': track.spotify_uri,
-            'user': current_user.id
-        }))
-
+        Queue.add(track, current_user)
         return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))
+
+
+class RandomView(MethodView):
+
+    @authenticated
+    def post(self):
+        response = []
+        for track in Random.get_tracks(request.json['tracks']):
+            response.append({
+                'track': TrackSerializer().serialize(track),
+                'user': UserSerializer().serialize(current_user)
+            })
+            Queue.add(track, current_user)
+
+        return http.Created(response)
