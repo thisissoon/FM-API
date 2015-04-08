@@ -58,11 +58,14 @@ class UserView(MethodView):
 class UserSpotifyPlaylistView(MethodView):
 
     def get(self, pk):
-        """ Get a serialized user object.
-
+        """ Get user's playlists.
+        If user is not authorized its Spotify account view returns HTTP code
+        for NO CONTENT
         Arguments
         ---------
-        pk : str
+        pk: str
             The user primary key UUID
         """
+        if User.query.get(pk).spotify_id is None:
+            return http.NoContent('User hasn\'t authorized Spotify account')
         return http.OK()

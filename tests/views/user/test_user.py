@@ -9,6 +9,7 @@ Unit tests for the ``fm.views.user.UserView`` class.
 """
 
 import uuid
+import httplib
 
 from flask import url_for
 from fm.ext import db
@@ -66,3 +67,11 @@ class TestUserGet(object):
         response = self.client.get(url)
         assert response.status_code == 200
         assert response.json['spotify_playlists'] is None
+
+    def test_spotify_playlist_returns_404_for_unauthorized_on_spotify(self):
+        user = UserFactory()
+        db.session.add(user)
+        db.session.commit()
+
+        response = self.client.get(url_for('users.user_playlists', pk=user.id))
+        assert response.status_code == httplib.NO_CONTENT
