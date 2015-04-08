@@ -9,12 +9,11 @@ Kim serializers for `fm.models.spotify` models.
 """
 
 import kim.types as t
-
 from fm.serializers.user import UserSerializer
-from kim.fields import Field
 from kim.contrib.sqa import SQASerializer
-from kim.serializers import Serializer
+from kim.fields import Field
 from kim.roles import blacklist
+from kim.serializers import Serializer
 
 
 class ArtistSerializer(SQASerializer):
@@ -72,4 +71,7 @@ class HistorySerializer(SQASerializer):
 
 
 class PlaylistSerializer(Serializer):
+    id = Field(t.String)
     name = Field(t.String)
+    # images = Field(t.String)
+    # tracks_url = Field(t.String)

@@ -66,7 +66,6 @@ class Playlist(object):
         self.name = self.playlist_json['name']
         self.href = self.playlist_json['href']
         self.id = self.playlist_json['id']
-        self.images = self.playlist_json['images']
         self.tracks_url = self.playlist_json['tracks']['href']
 
     @property
