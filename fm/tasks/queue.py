@@ -14,8 +14,8 @@ from fm.logic.player import Queue
 
 
 @celery.task
-def add_track(raw, user):
-    """ Celery taks for adding a single track to the queue.
+def add(raw, user):
+    """ Celery task for adding a single track to the queue.
 
     Arguments
     ---------
