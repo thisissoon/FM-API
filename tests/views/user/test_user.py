@@ -19,6 +19,10 @@ from tests.factories.user import UserFactory
 
 class TestUserGet(object):
 
+    def setup(self):
+        self.app.config['SPOTIFY_CLIENT_ID'] = 'cf5628'
+        self.app.config['SPOTIFY_CLIENT_SECRET'] = '98db'
+
     def must_be_valid_uuid(self):
         url = url_for('users.user', pk='foo')
         response = self.client.get(url)
@@ -68,10 +72,25 @@ class TestUserGet(object):
         assert response.status_code == 200
         assert response.json['spotify_playlists'] is None
 
-    def test_spotify_playlist_returns_404_for_unauthorized_on_spotify(self):
+    def test_spotify_playlist_returns_204_for_unauthorized_on_spotify(self):
         user = UserFactory()
         db.session.add(user)
         db.session.commit()
 
         response = self.client.get(url_for('users.user_playlists', pk=user.id))
         assert response.status_code == httplib.NO_CONTENT
+
+    def test_get_spotify_playlist(self):
+        user = UserFactory()
+        user.spotify_id = '11'
+        user.spotify_credentials = {
+            'access_token': "uBR4aZdI",
+            'token_type': "Bearer",
+            'expires_in': 3600,
+            'refresh_token': "-_Y_rr0pX4vDzYQ"
+        }
+
+        db.session.add(user)
+        db.session.commit()
+         response = self.client.get(url_for('users.user_playlists', pk=user.id))
+         assert response.status_code == httplib.OK

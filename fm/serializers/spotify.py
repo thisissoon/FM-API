@@ -13,6 +13,7 @@ import kim.types as t
 from fm.serializers.user import UserSerializer
 from kim.fields import Field
 from kim.contrib.sqa import SQASerializer
+from kim.serializers import Serializer
 from kim.roles import blacklist
 
 
@@ -68,3 +69,7 @@ class HistorySerializer(SQASerializer):
     id = Field(t.String, read_only=True)
     track = Field(t.Nested(TrackSerializer))
     user = Field(t.Nested(UserSerializer))
+
+
+class PlaylistSerializer(Serializer):
+    name = Field(t.String)
