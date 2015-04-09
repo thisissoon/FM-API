@@ -69,5 +69,4 @@ def add(data, user):
         db.session.commit()
 
     # Append Track to Queue
-
-    Queue.add(track, user)
+    Queue.add(track.spotify_uri, user)
