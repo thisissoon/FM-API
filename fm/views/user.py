@@ -78,3 +78,23 @@ class UserSpotifyPlaylistView(MethodView):
             [pl for pl in spotify_api.playlist_iterator()],
             many=True
         ))
+
+
+class UserSpotifyTracksView(MethodView):
+
+    def get(self, user_pk, playlist_pk):
+        """ Get user's track in particular playlist.
+        If user is not authorized its Spotify account view returns HTTP code
+        for NO CONTENT
+        Arguments
+        ---------
+        user_pk: str
+            The user primary key UUID
+        playlist_pk: str
+            The playlist spotify id
+        """
+        user = User.query.get(user_pk)
+        if user.spotify_id is None:
+            return http.NoContent('User hasn\'t authorized Spotify account')
+
+        return http.OK()

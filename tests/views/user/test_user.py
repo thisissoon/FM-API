@@ -181,3 +181,12 @@ class TestUserGet(object):
                                            user_pk=user.id))
         assert response.status_code == httplib.OK
         assert expected == response.json
+
+    def test_spotify_tracks_returns_204_for_unauthorized_on_spotify(self):
+        user = UserFactory()
+        db.session.add(user)
+        db.session.commit()
+
+        response = self.client.get(url_for('users.user_spotify_track',
+                                           user_pk=user.id, playlist_pk=12345))
+        assert response.status_code == httplib.NO_CONTENT
