@@ -15,12 +15,13 @@ from flask.views import MethodView
 from fm import http
 from fm.ext import config, db, redis
 from fm.logic.player import Queue, Random
-from fm.models.spotify import Album, Artist, PlaylistHistory, Track
+from fm.models.spotify import PlaylistHistory, Track
 from fm.models.user import User
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import HistorySerializer, TrackSerializer
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
+from fm.tasks.queue import add
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
 
@@ -263,63 +264,25 @@ class QueueView(MethodView):
             total=total,
             limit=limit)
 
-    # TODO: Refactor this resource, its getting a tad large
     @authenticated
     def post(self):
         """ Allows you to add anew track to the player playlist.
         """
 
         serializer = PlaylistSerializer()
+
         try:
-            data = serializer.marshal(request.json)
+            track = serializer.marshal(request.json)
         except MappingErrors as e:
             return http.UnprocessableEntity(errors=e.message)
 
-        album = Album.query.filter(Album.spotify_uri == data['track']['album']['uri']).first()
-        if album is None:
-            album = Album()
-            db.session.add(album)
+        # Dispatch Celery Task
+        add.delay(track['track'], current_user.id)
 
-        album.name = data['track']['album']['name']
-        album.images = data['track']['album']['images']
-        album.spotify_uri = data['track']['album']['uri']
-
-        db.session.commit()
-
-        for item in data['track']['artists']:
-            artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
-            if artist is None:
-                artist = Artist()
-                db.session.add(artist)
-
-            artist.name = item['name']
-            artist.spotify_uri = item['uri']
-
-            if artist not in album.artists:
-                album.artists.append(artist)
-
-            db.session.commit()
-
-        track = Track.query.filter(Track.spotify_uri == data['track']['uri']).first()
-        if track is None:
-            track = Track()
-            db.session.add(track)
-
-        track.name = data['track']['name']
-        track.spotify_uri = data['track']['uri']
-        track.duration = data['track']['duration_ms']
-        track.album_id = album.id
-
-        # If a track is skipped we should decrement the play count
-        try:
-            track.play_count += 1
-        except TypeError as e:
-            track.play_count = 1
-
-        db.session.commit()
-
-        Queue.add(track, current_user)
-        return http.Created(location=url_for('tracks.track', pk_or_uri=track.id))
+        return http.Created(location=url_for(
+            'tracks.track',
+            pk_or_uri=track['track']['uri'],
+            _external=True))
 
 
 class RandomView(MethodView):
@@ -332,6 +295,6 @@ class RandomView(MethodView):
                 'track': TrackSerializer().serialize(track),
                 'user': UserSerializer().serialize(current_user)
             })
-            Queue.add(track, current_user)
+            Queue.add(track.spotify_uri, current_user.id)
 
         return http.Created(response)

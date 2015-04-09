@@ -13,6 +13,11 @@ class SpotifyURI(t.String):
         return self.track
 
     def validate(self, value):
+        try:
+            id = value.split(':')[-1:][0]
+        except IndexError:
+            raise ValidationError('Invalid Spotify URI: {0}'.format(value))
+
         endpoint = 'https://api.spotify.com/v1/tracks/{0}'.format(id)
 
         try:
@@ -21,7 +26,7 @@ class SpotifyURI(t.String):
             raise ValidationError('Unable to get track data from Spotify')
 
         if not response.status_code == 200:
-            raise ValidationError('Invalid Spotify URI: {0}'.format(value))
+            raise ValidationError('Invalid Spotify Track ID: {0}'.format(id))
 
         try:
             track = response.json()

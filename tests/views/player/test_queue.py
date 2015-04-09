@@ -8,16 +8,18 @@ tests.views.player.test_queue
 Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
+import httplib
 import json
 import mock
 import pytest
 import requests
 
-from fm.ext import db
-from fm.models.spotify import Album, Artist, Track
+from fm.ext import config, db
+from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
 from flask import url_for
+from mockredis import mock_redis_client
 from tests import TRACK_DATA
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
@@ -110,7 +112,7 @@ class TestQueuePost(QueueTest):
 
         self.requests = mock.MagicMock()
         self.requests.get.return_value = mock.MagicMock(
-            status_code=200,
+            status_code=httplib.OK,
             json=mock.MagicMock(return_value=TRACK_DATA))
         self.requests.ConnectionError = requests.ConnectionError
 
@@ -120,11 +122,11 @@ class TestQueuePost(QueueTest):
             new_callable=mock.PropertyMock(return_value=self.requests))
 
         patch.start()
-
         self.addPatchCleanup(patch)
 
-        patch = mock.patch('fm.views.player.Queue')
-        patch.start()
+        patch = mock.patch('fm.logic.player.redis', mock_redis_client())
+        self.redis = patch.start()
+        self.redis.publish = mock.MagicMock()
         self.addPatchCleanup(patch)
 
     @pytest.mark.usefixtures("unauthenticated")
@@ -134,17 +136,17 @@ class TestQueuePost(QueueTest):
             'track': 'foo'
         }))
 
-        assert response.status_code == 401
+        assert response.status_code == httplib.UNAUTHORIZED
 
     def should_catch_connection_error(self):
         self.requests.get.side_effect = requests.ConnectionError()
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'track': 'foo'
+            'track': 'spotify:track:foo'
         }))
 
-        assert response.status_code == 422
+        assert response.status_code == httplib.UNPROCESSABLE_ENTITY
         assert 'Unable to get track data from Spotify' in response.json['errors']['track']
 
     def ensure_valid_spotify_uri(self):
@@ -152,66 +154,27 @@ class TestQueuePost(QueueTest):
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'track': 'foo'
+            'track': 'spotify:track:foo'
         }))
 
-        assert response.status_code == 422
-        assert 'Invalid Spotify URI: foo' in response.json['errors']['track']
+        assert response.status_code == httplib.UNPROCESSABLE_ENTITY
+        assert 'Invalid Spotify Track ID: foo' in response.json['errors']['track']
 
-    def should_create_new_album(self):
-        assert Album.query.count() == 0
-
+    def should_call_queue_add_task(self):
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'track': 'foo'
+            'track': 'spotify:track:foo'
         }))
 
-        album = Album.query.first()
+        queue = self.redis.get(config.PLAYLIST_REDIS_KEY)
+        user = User.query.one()
 
-        assert response.status_code == 201
-        assert album is not None
-        assert album.name == TRACK_DATA['album']['name']
-        assert album.images == TRACK_DATA['album']['images']
-        assert album.spotify_uri == TRACK_DATA['album']['uri']
-
-    def should_create_artist(self):
-        assert Artist.query.count() == 0
-
-        url = url_for('player.queue')
-        response = self.client.post(url, data=json.dumps({
-            'track': 'foo'
+        assert response.status_code == httplib.CREATED
+        assert len(queue) == 1
+        assert json.loads(queue[0])['user'] == user.id
+        assert json.loads(queue[0])['uri'] == TRACK_DATA['uri']
+        assert self.redis.publish.caled_once_with(json.dumps({
+            'event': 'add',
+            'uri': TRACK_DATA['uri'],
+            'user': user.id
         }))
-
-        artist = Artist.query.first()
-
-        assert response.status_code == 201
-        assert artist is not None
-        assert artist.name == TRACK_DATA['artists'][0]['name']
-        assert artist.spotify_uri == TRACK_DATA['artists'][0]['uri']
-
-    def ensure_new_track_play_count_is_one(self):
-        url = url_for('player.queue')
-        response = self.client.post(url, data=json.dumps({
-            'track': 'foo'
-        }))
-
-        track = Track.query.first()
-
-        assert response.status_code == 201
-        assert track.play_count == 1
-
-    def should_increment_existing_track_play_count(self):
-        t = TrackFactory(spotify_uri=TRACK_DATA['uri'], play_count=5)
-
-        db.session.add(t)
-        db.session.commit()
-
-        url = url_for('player.queue')
-        response = self.client.post(url, data=json.dumps({
-            'track': t.spotify_uri
-        }))
-
-        track = Track.query.first()
-
-        assert response.status_code == 201
-        assert track.play_count == 6
