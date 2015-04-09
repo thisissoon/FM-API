@@ -8,8 +8,8 @@ tests.views.user.test_user
 Unit tests for the ``fm.views.user.UserView`` class.
 """
 
-import httplib
 import uuid
+import httplib
 
 import mock
 from flask import url_for
@@ -78,7 +78,8 @@ class TestUserGet(object):
         db.session.add(user)
         db.session.commit()
 
-        response = self.client.get(url_for('users.user_playlists', pk=user.id))
+        response = self.client.get(url_for('users.user_spotify_playlists',
+                                           user_pk=user.id))
         assert response.status_code == httplib.NO_CONTENT
 
     @mock.patch('fm.views.user.update_spotify_credentials')
@@ -169,9 +170,14 @@ class TestUserGet(object):
             {
                 "id": "4wtLaWQcPct5tlAWTxqjMD",
                 "name": "The Happy Hipster"
+                # "tracks": {
+                #     "href": "https://api.spotify.com/v1/users/spotify/pla",
+                #     "total": 186
+                # },
             }
         ]
 
-        response = self.client.get(url_for('users.user_playlists', pk=user.id))
+        response = self.client.get(url_for('users.user_spotify_playlists',
+                                           user_pk=user.id))
         assert response.status_code == httplib.OK
         assert expected == response.json
