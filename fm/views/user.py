@@ -9,15 +9,15 @@ Views for working with User objects.
 """
 
 import uuid
-from fm.thirdparty.spotify import SpotifyApi
 
 from flask.views import MethodView
 from fm import http
+from fm.logic.oauth import update_spotify_credentials
 from fm.models.user import User
+from fm.serializers.spotify import PlaylistSerializer, TrackSerializer
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
-from fm.logic.oauth import update_spotify_credentials
-from fm.serializers.spotify import PlaylistSerializer
+from fm.thirdparty.spotify import SpotifyApi
 
 
 class UserAuthenticatedView(MethodView):
@@ -73,6 +73,7 @@ class UserSpotifyPlaylistView(MethodView):
         if user.spotify_id is None:
             return http.NoContent('User hasn\'t authorized Spotify account')
         update_spotify_credentials(user)
+
         spotify_api = SpotifyApi(user)
         return http.OK(PlaylistSerializer().serialize(
             [pl for pl in spotify_api.playlist_iterator()],
@@ -96,5 +97,10 @@ class UserSpotifyTracksView(MethodView):
         user = User.query.get(user_pk)
         if user.spotify_id is None:
             return http.NoContent('User hasn\'t authorized Spotify account')
+        update_spotify_credentials(user)
 
-        return http.OK()
+        spotify_api = SpotifyApi(user)
+        return http.OK(TrackSerializer().serialize(
+            [pl for pl in spotify_api.get_playlists_tracks(playlist_pk)],
+            many=True
+        ))

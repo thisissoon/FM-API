@@ -9,7 +9,6 @@ Kim serializers for `fm.models.spotify` models.
 """
 
 import kim.types as t
-from fm.serializers import types
 from fm.serializers.user import UserSerializer
 from kim.contrib.sqa import SQASerializer
 from kim.fields import Field
@@ -71,7 +70,14 @@ class HistorySerializer(SQASerializer):
     user = Field(t.Nested(UserSerializer))
 
 
-class PlaylistSerializer(Serializer):
+class BaseSpotifySerializer(Serializer):
+
+    id = Field(t.String)
+    name = Field(t.String)
+    spotify_uri = Field(t.String)
+
+
+class PlaylistSerializer(BaseSpotifySerializer):
     """ Spotify playlist serializer
 
     Returns following data s structure:
@@ -92,6 +98,19 @@ class PlaylistSerializer(Serializer):
         total = Field(t.Integer)
         playlist = Field(t.String)
 
-    id = Field(t.String)
-    name = Field(t.String)
     tracks = Field(t.Nested(TrackSerializer()))
+
+
+class TrackSerializer(BaseSpotifySerializer):
+    """ Spotify track serializer
+    """
+
+    class Album(BaseSpotifySerializer):
+        pass
+
+    class Artists(BaseSpotifySerializer):
+        pass
+
+    duration = Field(t.Integer)  # ms
+    album = Field(t.Nested(Album()))
+    artists = Field(t.Collection(t.Nested(Artists())))
