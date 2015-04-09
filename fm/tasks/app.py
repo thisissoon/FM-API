@@ -12,4 +12,4 @@ from fm.app import create
 from fm.tasks import Celery
 
 
-celery = Celery().init_app(create())
+celery = Celery(create())
