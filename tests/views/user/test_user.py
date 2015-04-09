@@ -8,8 +8,8 @@ tests.views.user.test_user
 Unit tests for the ``fm.views.user.UserView`` class.
 """
 
-import uuid
 import httplib
+import uuid
 
 import mock
 from flask import url_for
@@ -159,24 +159,34 @@ class TestUserGet(object):
 
         user = UserFactory()
         user.spotify_id = '54544'
+
         db.session.add(user)
         db.session.commit()
 
         expected = [
             {
-                "id": "6kxQr8LTtln4Li4dnT6N0B",
-                "name": "Running Motivation"
+                'id': '6kxQr8LTtln4Li4dnT6N0B',
+                'name': 'Running Motivation',
+                'tracks': {
+                    'playlist': url_for('users.user_spotify_track',
+                                        user_pk=user.id,
+                                        playlist_pk='6kxQr8LTtln4Li4dnT6N0B',
+                                        _external=True),
+                    'total': 39
+                }
             },
             {
-                "id": "4wtLaWQcPct5tlAWTxqjMD",
-                "name": "The Happy Hipster"
-                # "tracks": {
-                #     "href": "https://api.spotify.com/v1/users/spotify/pla",
-                #     "total": 186
-                # },
+                'id': '4wtLaWQcPct5tlAWTxqjMD',
+                'name': 'The Happy Hipster',
+                'tracks': {
+                    'playlist': url_for('users.user_spotify_track',
+                                        user_pk=user.id,
+                                        playlist_pk='4wtLaWQcPct5tlAWTxqjMD',
+                                        _external=True),
+                    'total': 186
+                }
             }
         ]
-
         response = self.client.get(url_for('users.user_spotify_playlists',
                                            user_pk=user.id))
         assert response.status_code == httplib.OK

@@ -15,4 +15,5 @@ class SpotifyPlaylistEndpoint(types.String):
         user = User.query.get(value)
         if user.spotify_id is None:
             return None
-        return url_for('users.user_spotify_playlists', user_pk=value, _external=True)
+        return url_for('users.user_spotify_playlists', user_pk=value,
+                       _external=True)
