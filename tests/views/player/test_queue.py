@@ -138,28 +138,6 @@ class TestQueuePost(QueueTest):
 
         assert response.status_code == httplib.UNAUTHORIZED
 
-    def should_catch_connection_error(self):
-        self.requests.get.side_effect = requests.ConnectionError()
-
-        url = url_for('player.queue')
-        response = self.client.post(url, data=json.dumps({
-            'track': 'spotify:track:foo'
-        }))
-
-        assert response.status_code == httplib.UNPROCESSABLE_ENTITY
-        assert 'Unable to get track data from Spotify' in response.json['errors']['track']
-
-    def ensure_valid_spotify_uri(self):
-        self.requests.get.return_value = mock.MagicMock(status_code=404)
-
-        url = url_for('player.queue')
-        response = self.client.post(url, data=json.dumps({
-            'track': 'spotify:track:foo'
-        }))
-
-        assert response.status_code == httplib.UNPROCESSABLE_ENTITY
-        assert 'Invalid Spotify Track ID: foo' in response.json['errors']['track']
-
     def should_call_queue_add_task(self):
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({

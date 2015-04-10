@@ -1,3 +1,4 @@
+import httplib
 import kim.types as t
 import requests
 
@@ -13,11 +14,7 @@ class SpotifyURI(t.String):
         return self.track
 
     def validate(self, value):
-        try:
-            id = value.split(':')[-1:][0]
-        except IndexError:
-            raise ValidationError('Invalid Spotify URI: {0}'.format(value))
-
+        id = value.split(':')[-1]
         endpoint = 'https://api.spotify.com/v1/tracks/{0}'.format(id)
 
         try:
@@ -25,8 +22,8 @@ class SpotifyURI(t.String):
         except requests.ConnectionError:
             raise ValidationError('Unable to get track data from Spotify')
 
-        if not response.status_code == 200:
-            raise ValidationError('Invalid Spotify Track ID: {0}'.format(id))
+        if not response.status_code == httplib.OK:
+            raise ValidationError('Track not found on Spotify: {0}'.format(value))
 
         try:
             track = response.json()
