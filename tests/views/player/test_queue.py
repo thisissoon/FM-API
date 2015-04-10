@@ -28,43 +28,51 @@ from tests.factories.user import UserFactory
 class QueueTest(object):
 
     def setup(self):
-        patch = mock.patch('fm.views.player.redis')
-        self.redis = patch.start()
+        # Standard redis mock client to be used across multiple patches
+        self.redis = mock_redis_client()
+        self.redis.publish = mock.MagicMock()
+
+        # Patch redis in the player logic module
+        patch = mock.patch(
+            'fm.logic.player.redis',
+            new_callable=mock.PropertyMock(return_value=self.redis))
+        patch.start()
+        self.addPatchCleanup(patch)
+
+        # Patch redis in the player views module
+        patch = mock.patch(
+            'fm.views.player.redis',
+            new_callable=mock.PropertyMock(return_value=self.redis))
+        patch.start()
         self.addPatchCleanup(patch)
 
 
 class TestGetQueue(QueueTest):
 
     def ensure_same_track_is_not_grouped(self):
-        tracks = [TrackFactory(), TrackFactory(), TrackFactory()]
-        users = [UserFactory(), UserFactory(), UserFactory()]
+        track = TrackFactory()
+        user = UserFactory()
 
-        db.session.add_all(tracks + users)
+        db.session.add_all([track, user])
         db.session.commit()
 
-        # Each track is in the queue twice
-        queue = []
-        for i, t in enumerate(tracks):
-            queue.append(json.dumps({
-                'uri': t.spotify_uri,
-                'user': users[i].id
-            }))
-
-        queue = queue + queue
-
-        self.redis.lrange.return_value = queue
-        self.redis.llen.return_value = len(tracks)
+        # Add the track 3 times to the queue - we should get it 3 times
+        for i in range(3):
+            self.redis.rpush(
+                config.PLAYLIST_REDIS_KEY,
+                json.dumps({
+                    'uri': track.spotify_uri,
+                    'user': user.id
+                })
+            )
 
         url = url_for('player.queue')
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert len(response.json) == 6
+        assert len(response.json) == 3
 
     def must_return_empty_list_when_no_queue(self):
-        self.redis.lrange.return_value = []
-        self.redis.llen.return_value = 0
-
         url = url_for('player.queue')
         response = self.client.get(url)
 
@@ -72,33 +80,28 @@ class TestGetQueue(QueueTest):
         assert len(response.json) == 0
 
     def should_return_200_ok(self):
-        tracks = [TrackFactory(), TrackFactory(), TrackFactory()]
-        users = [UserFactory(), UserFactory(), UserFactory()]
+        tracks = [TrackFactory() for i in range(3)]
+        users = [UserFactory() for i in range(3)]
 
         db.session.add_all(tracks + users)
         db.session.commit()
 
-        # Each track is in the queue twice
-        queue = []
-        for i, t in enumerate(tracks):
-            queue.append(json.dumps({
-                'uri': t.spotify_uri,
-                'user': users[i].id
-            }))
-
-        self.redis.lrange.return_value = queue
-        self.redis.llen.return_value = len(tracks)
+        expected = []
+        for i, track in enumerate(tracks):
+            self.redis.rpush(
+                config.PLAYLIST_REDIS_KEY,
+                json.dumps({
+                    'uri': track.spotify_uri,
+                    'user': users[i].id
+                })
+            )
+            expected.append({
+                'track': TrackSerializer().serialize(track),
+                'user': UserSerializer().serialize(users[i])
+            })
 
         url = url_for('player.queue')
         response = self.client.get(url)
-
-        expected = []
-        for i, track in enumerate(tracks):
-            user = users[i]
-            expected.append({
-                'track': TrackSerializer().serialize(track),
-                'user': UserSerializer().serialize(user)
-            })
 
         assert response.status_code == 200
         assert expected == response.json
@@ -109,14 +112,6 @@ class TestQueuePost(QueueTest):
 
     def setup(self):
         super(TestQueuePost, self).setup()
-
-        # Patch Redis
-        patch = mock.patch('fm.logic.player.redis', mock_redis_client())
-        self.redis = patch.start()
-        self.redis.publish = mock.MagicMock()
-        self.addPatchCleanup(patch)
-
-        # Patch Serializer
         patch = mock.patch('fm.views.player.PlaylistSerializer')
         self.PlaylistSerializer = patch.start()
         self.addPatchCleanup(patch)
