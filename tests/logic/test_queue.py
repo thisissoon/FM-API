@@ -18,5 +18,5 @@ class TestQueue(unittest.TestCase):
         db.session.add_all([track, user])
         db.session.commit()
 
-        Queue.add(track, user)
+        Queue.add(track.spotify_uri, user.id)
         assert Queue.length() == 1

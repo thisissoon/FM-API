@@ -21,6 +21,8 @@ class Celery(object):
     """ Class for setting up celery with a given Flask application.
     """
 
+    app = None
+
     def __init__(self, app=None):
         """ Initialiser of the Celery instance. If an application is provieed
         it will call ``init_app``.
@@ -43,10 +45,10 @@ class Celery(object):
             Attribute name
         """
 
-        if hasattr(self.celery, name):
-            return getattr(self.celery, name)
+        if self.app is None:
+            self.init_app(None)
 
-        raise AttributeError
+        return getattr(self.app, name)
 
     def init_app(self, app):
         """ Initialise Celery for the Flask application from the application
@@ -57,6 +59,11 @@ class Celery(object):
         app : flask.app.Flask
             Flask application instance
         """
+
+        from fm.app import create
+
+        if app is None:
+            app = create()
 
         # Create the Celery Application
         celery_app = celery.Celery(app.import_name)
@@ -79,7 +86,7 @@ class Celery(object):
             celery_app.Task = ContextTask
 
         # Store the celery app on on this instance for access later
-        self.celery = celery_app
+        self.app = celery_app
 
         # Return the celery application
         return celery_app

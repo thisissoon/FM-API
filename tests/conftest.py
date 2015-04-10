@@ -7,6 +7,9 @@ from fm.ext import db as _db
 from tests.factories.user import UserFactory
 
 
+_app = create()  # Create Application Instance
+
+
 class Response(object):
 
     @property
@@ -32,7 +35,6 @@ class InjectContentTypeHeader(object):
 
 @pytest.yield_fixture(scope='session')
 def app(request):
-    _app = create()
     _response_class = _app.response_class
     _app.response_class = type("Response", (Response, _app.response_class), {})
     _app.wsgi_app = InjectContentTypeHeader(_app.wsgi_app)

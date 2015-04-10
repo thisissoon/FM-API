@@ -17,29 +17,33 @@ class Queue(object):
     A class wraps a player queue logic. Class provides simple and atomic
     operations to a redis instance.
     """
+
     @staticmethod
-    def add(track, user):
+    def add(uri, user):
         """ Add a track into a redis queue
 
         Parameters
         ----------
-        track: fm.models.spotify.Track
-            intance of Track which is added into queue
-        user: fm.models.user.User
-            user who adds a track into queue
+        uri: str
+            The spotify URI of the Track to add to the Queue
+        user: str
+            The user id of the user whome added the track to the Queue
         """
+
+        # Push the Track into the Queue
         redis.rpush(
             config.PLAYLIST_REDIS_KEY,
             json.dumps({
-                'uri': track.spotify_uri,
-                'user': user.id
+                'uri': uri,
+                'user': user
             })
         )
 
+        # Publish Add Event
         redis.publish(config.PLAYER_CHANNEL, json.dumps({
             'event': 'add',
-            'uri': track.spotify_uri,
-            'user': user.id
+            'uri': uri,
+            'user': user
         }))
 
     @staticmethod
@@ -51,6 +55,7 @@ class Queue(object):
         int
             number of items in a playlist queue
         """
+
         return redis.llen(config.PLAYLIST_REDIS_KEY)
 
 
@@ -72,4 +77,5 @@ class Random(object):
         list
             Random tracks of fm.models.spotify.Track
         """
+
         return Track.query.order_by(func.random()).limit(count).all()
