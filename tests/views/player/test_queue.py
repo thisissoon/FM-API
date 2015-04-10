@@ -12,13 +12,13 @@ import httplib
 import json
 import mock
 import pytest
-import requests
 
 from fm.ext import config, db
 from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
 from flask import url_for
+from kim.exceptions import MappingErrors
 from mockredis import mock_redis_client
 from tests import TRACK_DATA
 from tests.factories.spotify import TrackFactory
@@ -110,38 +110,46 @@ class TestQueuePost(QueueTest):
     def setup(self):
         super(TestQueuePost, self).setup()
 
-        self.requests = mock.MagicMock()
-        self.requests.get.return_value = mock.MagicMock(
-            status_code=httplib.OK,
-            json=mock.MagicMock(return_value=TRACK_DATA))
-        self.requests.ConnectionError = requests.ConnectionError
-
-        # Patch Requests to Spotify
-        patch = mock.patch(
-            'fm.serializers.types.spotify.requests',
-            new_callable=mock.PropertyMock(return_value=self.requests))
-
-        patch.start()
-        self.addPatchCleanup(patch)
-
+        # Patch Redis
         patch = mock.patch('fm.logic.player.redis', mock_redis_client())
         self.redis = patch.start()
         self.redis.publish = mock.MagicMock()
+        self.addPatchCleanup(patch)
+
+        # Patch Serializer
+        patch = mock.patch('fm.views.player.PlaylistSerializer')
+        self.PlaylistSerializer = patch.start()
         self.addPatchCleanup(patch)
 
     @pytest.mark.usefixtures("unauthenticated")
     def must_be_authenticated(self):
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'track': 'foo'
+            'uri': 'foo'
         }))
 
         assert response.status_code == httplib.UNAUTHORIZED
 
-    def should_call_queue_add_task(self):
+    def must_catch_validation_errors(self):
+        errors = MappingErrors({'uri': ['Something Went Wrong']})
+        self.PlaylistSerializer.return_value = mock.MagicMock(
+            marshal=mock.MagicMock(side_effect=errors))
+
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
-            'track': 'spotify:track:foo'
+            'uri': 'spotify:track:foo'
+        }))
+
+        assert response.status_code == httplib.UNPROCESSABLE_ENTITY
+        assert response.json['errors']['uri'][0] == 'Something Went Wrong'
+
+    def should_add_track_to_queue(self):
+        self.PlaylistSerializer.return_value = mock.MagicMock(
+            marshal=mock.MagicMock(return_value={'track': TRACK_DATA}))
+
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': 'spotify:track:foo'
         }))
 
         queue = self.redis.get(config.PLAYLIST_REDIS_KEY)

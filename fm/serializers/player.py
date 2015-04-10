@@ -22,7 +22,7 @@ class PlaylistSerializer(Serializer):
     """ This schema is used for adding tracks to the player playlist.
     """
 
-    track = Field(SpotifyURI, required=True)
+    uri = Field(SpotifyURI, required=True)
 
 
 class VolumeSerializer(Serializer):
