@@ -277,12 +277,11 @@ class QueueView(MethodView):
             return http.UnprocessableEntity(errors=e.message)
 
         # Dispatch Celery Task
-        add.delay(track['track'], current_user.id)
+        add.delay(track['uri'], current_user.id)
 
         return http.Created(location=url_for(
             'tracks.track',
-            pk_or_uri=track['track']['uri'],
-            _external=True))
+            pk_or_uri=track['uri']['uri']))
 
 
 class RandomView(MethodView):
