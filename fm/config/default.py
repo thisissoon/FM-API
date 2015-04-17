@@ -29,6 +29,7 @@ CELERY_BROKER_URL = os.environ.get(
     'CELERY_BROKER_URL',
     'amqp://guest:guest@localhost:5672//')
 CELERY_IMPORTS = (
+    'fm.tasks.artist',
     'fm.tasks.queue'
 )
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
