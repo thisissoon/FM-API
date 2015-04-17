@@ -10,9 +10,12 @@ Models for storing Spotify Track data.
 
 import uuid
 
-from fm.ext import db
+from sqlalchemy import func, Index
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.declarative import declared_attr
+
+from fm.ext import db
 
 
 class Artist(db.Model):
@@ -145,3 +148,29 @@ class PlaylistHistory(db.Model):
 
     track = db.relation('Track', lazy='joined')
     user = db.relation('User', lazy='joined')
+
+
+class Genre(db.Model):
+    """ Stores Genre names from Echo Nest
+    """
+
+    __tablename__ = 'genre'
+
+    #: Primary Key
+    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
+
+    #: Name of the Genre
+    name = db.Column(db.Unicode(128), nullable=False)
+
+    @declared_attr
+    def __table_args__(cls):
+        """ Custom table arguments such as custom indexes.
+        """
+
+        return (
+            Index(
+                'ix_genre_name_lower',
+                func.lower(cls.name),
+                unique=True
+            ),
+        )
