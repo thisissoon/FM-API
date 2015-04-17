@@ -62,7 +62,12 @@ CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count', 'Access-Token']
 CORS_ACA_HEADERS = ['Content-Type', 'Access-Token']
 CORS_ACA_ORIGIN = os.environ.get('CORS_ACA_ORIGIN', '*')
 
+# Echo Nest
+
+ECHONEST_API_KEY = os.environ.get('ECHONEST_API_KEY', None)
+
 # Google OAuth
+
 GOOGLE_ALLOWED_DOMAINS = [
     'thisissoon.com',
     'thishe.re'
