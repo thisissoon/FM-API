@@ -42,6 +42,11 @@ class Artist(db.Model):
         'album',
         creator=lambda album: ArtistAlbumAssociation(album=album))
 
+    genres = association_proxy(
+        'genre_associations',
+        'genre',
+        creator=lambda genre: ArtistGenreAssociation(genre=genre))
+
 
 class ArtistAlbumAssociation(db.Model):
     """ Link table joining Album to Artist
@@ -61,6 +66,26 @@ class ArtistAlbumAssociation(db.Model):
 
     artist = db.relationship('Artist', backref='album_associations', lazy='joined')
     album = db.relationship('Album', backref='artist_associations', lazy='joined')
+
+
+class ArtistGenreAssociation(db.Model):
+    """ Linking Artist to Genres
+    """
+
+    __tablename__ = 'artist_genre'
+
+    #: Artist Primary Key
+    artist_id = db.Column(db.ForeignKey('artist.id'), primary_key=True, index=True)
+
+    #: Genre Primary Key
+    grenre_id = db.Column(db.ForeignKey('genre.id'), primary_key=True, index=True)
+
+    #
+    # Relations
+    #
+
+    artist = db.relationship('Artist', backref='genre_associations', lazy='joined')
+    genre = db.relationship('Genre', backref='artist_associations', lazy='joined')
 
 
 class Album(db.Model):
@@ -89,6 +114,64 @@ class Album(db.Model):
         'artist_associations',
         'artist',
         creator=lambda artist: ArtistAlbumAssociation(artist=artist))
+
+
+class Genre(db.Model):
+    """ Stores Genre names from Echo Nest
+    """
+
+    __tablename__ = 'genre'
+
+    #: Primary Key
+    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
+
+    #: Name of the Genre
+    name = db.Column(db.Unicode(128), nullable=False)
+
+    @declared_attr
+    def __table_args__(cls):
+        """ Custom table arguments such as custom indexes.
+        """
+
+        return (
+            Index(
+                'ix_genre_name_lower',
+                func.lower(cls.name),
+                unique=True
+            ),
+        )
+
+    #
+    # Relations
+    #
+
+    artists = association_proxy(
+        'artist_associations',
+        'artist',
+        creator=lambda artist: ArtistGenreAssociation(artist=artist))
+
+
+class PlaylistHistory(db.Model):
+    """ Holds the playlist history
+    """
+
+    __tablename__ = 'playlist_history'
+
+    #: Primary Key
+    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
+
+    #: Track ID
+    track_id = db.Column(db.ForeignKey('track.id'), nullable=False, index=True)
+
+    #: User ID
+    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
+
+    #
+    # Relations
+    #
+
+    track = db.relation('Track', lazy='joined')
+    user = db.relation('User', lazy='joined')
 
 
 class Track(db.Model):
@@ -125,52 +208,3 @@ class Track(db.Model):
     #
 
     album = db.relation('Album', backref='tracks', lazy='joined')
-
-
-class PlaylistHistory(db.Model):
-    """ Holds the playlist history
-    """
-
-    __tablename__ = 'playlist_history'
-
-    #: Primary Key
-    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
-
-    #: Track ID
-    track_id = db.Column(db.ForeignKey('track.id'), nullable=False, index=True)
-
-    #: User ID
-    user_id = db.Column(db.ForeignKey('user.id'), nullable=False, index=True)
-
-    #
-    # Relations
-    #
-
-    track = db.relation('Track', lazy='joined')
-    user = db.relation('User', lazy='joined')
-
-
-class Genre(db.Model):
-    """ Stores Genre names from Echo Nest
-    """
-
-    __tablename__ = 'genre'
-
-    #: Primary Key
-    id = db.Column(UUID, primary_key=True, default=lambda: unicode(uuid.uuid4()))
-
-    #: Name of the Genre
-    name = db.Column(db.Unicode(128), nullable=False)
-
-    @declared_attr
-    def __table_args__(cls):
-        """ Custom table arguments such as custom indexes.
-        """
-
-        return (
-            Index(
-                'ix_genre_name_lower',
-                func.lower(cls.name),
-                unique=True
-            ),
-        )
