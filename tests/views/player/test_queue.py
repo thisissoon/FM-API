@@ -150,7 +150,8 @@ class TestQueuePost(QueueTest):
         assert response.json['errors']['uri'][0]  \
             == 'Track not found on Spotify: spotify:track:foo'
 
-    def should_add_track_to_queue(self):
+    @mock.patch('fm.tasks.queue.update_genres')
+    def should_add_track_to_queue(self, update_genres):
         self.requests.get.return_value = mock.MagicMock(
             status_code=httplib.OK,
             json=mock.MagicMock(return_value=TRACK_DATA))
@@ -172,3 +173,4 @@ class TestQueuePost(QueueTest):
             'uri': TRACK_DATA['uri'],
             'user': user.id
         }))
+        update_genres.s.assert_called_with(u'spotify:artist:5v61OSg53KaQxGMpErkBNp')
