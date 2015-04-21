@@ -11,7 +11,6 @@ Echo Nest Functions for retrieving data from Echo Nest API.
 import httplib
 
 import requests
-
 from furl import furl
 from simplejson import JSONDecodeError
 
