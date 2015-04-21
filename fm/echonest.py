@@ -51,8 +51,6 @@ def get_artist_genres(uri):
             'bucket': 'genre'
         }).url
 
-    response = requests.get(url)
-
     try:
         response = requests.get(url)
     except requests.ConnectionError:
@@ -71,6 +69,8 @@ def get_artist_genres(uri):
     try:
         genres = data['response']['artist']['genres']
     except KeyError as e:
-        raise EchoNestError(e)
+        raise EchoNestError(
+            'Response payload does not contain {0} element'.format(e.message)
+        )
 
     return [genre['name'] for genre in genres]

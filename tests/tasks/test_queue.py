@@ -36,6 +36,11 @@ class TestAdd(object):
         self.redis.publish = mock.MagicMock()
         self.addPatchCleanup(patch)
 
+        patch = mock.patch('fm.tasks.queue.update_genres')
+        self.update_genres = patch.start()
+        self.update_genres.return_value = []
+        self.addPatchCleanup(patch)
+
     def should_create_new_album(self):
         assert Album.query.count() == 0
 
