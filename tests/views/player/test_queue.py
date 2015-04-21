@@ -10,16 +10,17 @@ Unit tests for the ``fm.views.player.QueueView`` class.
 
 import httplib
 import json
+
 import mock
 import pytest
 import requests
+from flask import url_for
+from mockredis import mock_redis_client
 
 from fm.ext import config, db
 from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
-from flask import url_for
-from mockredis import mock_redis_client
 from tests import TRACK_DATA
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
