@@ -20,6 +20,14 @@ from fm.ext import config
 BASE_URL = furl('https://developer.echonest.com').add(path=['api', 'v4']).url
 
 
+class EchoNestError(Exception):
+    """ Custom Echonest Exception to be raised when errors talking to the
+    Echonest API occure.
+    """
+
+    pass
+
+
 def get_artist_genres(uri):
     """ Retrieves a Spotify Artists Genres from Echo Nest.
 
@@ -48,23 +56,21 @@ def get_artist_genres(uri):
     try:
         response = requests.get(url)
     except requests.ConnectionError:
-        # TODO: Log
-        return False
+        raise EchoNestError('Error connecting to the Echonest API')
 
     if not response.status_code == httplib.OK:
-        # TODO: Log
-        return False
+        raise EchoNestError(
+            'Echonest API response code was {0} not 200'.format(response.status_code)
+        )
 
     try:
         data = response.json()
     except JSONDecodeError:
-        # TODO: Log
-        return False
+        raise EchoNestError('Unable to decode response data to dict')
 
     try:
         genres = data['response']['artist']['genres']
-    except KeyError:
-        # TODO: Log
-        return False
+    except KeyError as e:
+        raise EchoNestError(e)
 
     return [genre['name'] for genre in genres]
