@@ -8,26 +8,32 @@ fm.tasks.artist
 Asynchronous tasks specifically relating to Artists.
 """
 
-from fm.echonest import get_artist_genres
+# First Party Libs
+from fm.echonest import EchoNestError, get_artist_genres
 from fm.ext import celery, db
 from fm.models.spotify import Artist, Genre
 
 
 @celery.task
-def update_genres(uri):
+def update_genres(pk):
     """ Task for updating an existing artists genres asynchronously from
     Echo Nest.
 
-    uri : str
-        Existing artist Spotify URI
+    pk : str
+        The UUID Primary Key of the Artist
     """
 
-    artist = Artist.query.filter(Artist.spotify_uri == uri).first()
+    artist = Artist.query.get(pk)
     if artist is None:
+        # TODO: Log This
         return False
 
     # Call Echo Nest
-    genres = get_artist_genres(uri)
+    try:
+        genres = get_artist_genres(artist.spotify_uri)
+    except EchoNestError:
+        # TODO: Log This
+        return False
 
     for name in genres:
         genre = Genre.query.filter(Genre.name == name).first()

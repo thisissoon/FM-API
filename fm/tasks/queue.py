@@ -70,9 +70,7 @@ def add(data, user):
         db.session.commit()
 
         # Call Sub task for artist Genre updating
-        update_genres \
-            .s(artist.spotify_uri) \
-            .delay()
+        update_genres.s(artist.id).delay()
 
     # Append Track to Queue
     Queue.add(track.spotify_uri, user)

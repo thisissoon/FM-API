@@ -18,6 +18,7 @@ from flask import url_for
 from mockredis import mock_redis_client
 
 from fm.ext import config, db
+from fm.models.spotify import Artist
 from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
@@ -173,4 +174,4 @@ class TestQueuePost(QueueTest):
             'uri': TRACK_DATA['uri'],
             'user': user.id
         }))
-        update_genres.s.assert_called_with(u'spotify:artist:5v61OSg53KaQxGMpErkBNp')
+        update_genres.s.assert_called_with(Artist.query.all()[0].id)
