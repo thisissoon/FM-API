@@ -8,14 +8,18 @@ tests.tasks.test_queue
 Unit Tests for Celery Queue Tasks
 """
 
+# Standard Libs
 import json
-import mock
 
+# Third Pary Libs
+import mock
+from mockredis import mock_redis_client
+
+# First Party Libs
 from fm.ext import config, db
 from fm.models.spotify import Album, Artist, Track
-from fm.tasks.queue import add
 from fm.models.user import User
-from mockredis import mock_redis_client
+from fm.tasks.queue import add
 from tests import TRACK_DATA
 from tests.factories.spotify import AlbumFactory, ArtistFactory, TrackFactory
 from tests.factories.user import UserFactory
