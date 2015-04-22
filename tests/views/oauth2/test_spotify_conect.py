@@ -7,12 +7,15 @@ tests.views.oauth2.test_google_connect
 
 Unit tests for the ``fm.views.oauth2.GoogleConnectView`` class.
 """
-import json
-import mock
+# Standard Libs
 import httplib
+import json
 import urllib
-from flask import url_for, g
+
+# Third Pary Libs
+import mock
 import pytest
+from flask import g, url_for
 
 
 class MockRequestsResponse(object):

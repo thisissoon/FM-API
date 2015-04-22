@@ -1,6 +1,9 @@
+# Third Pary Libs
 from flask import url_for
-from fm.models.user import User
 from kim import types
+
+# First Party Libs
+from fm.models.user import User
 
 
 class SpotifyPlaylistEndpoint(types.String):
