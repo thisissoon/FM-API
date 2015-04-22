@@ -15,6 +15,7 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q \
         libffi-dev \
         python \
         python-dev \
+        git \
     && apt-get clean \
     && apt-get autoclean \
     && apt-get autoremove -y \
