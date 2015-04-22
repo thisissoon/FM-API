@@ -15,10 +15,10 @@ import uuid
 import mock
 
 # First Party Libs
-from fm.echonest import EchoNestError
 from fm.ext import db
 from fm.models.spotify import Artist, Genre
 from fm.tasks.artist import update_genres
+from fm.thirdparty.echonest import EchoNestError
 from tests.factories.spotify import ArtistFactory
 
 

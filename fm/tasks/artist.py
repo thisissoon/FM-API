@@ -9,9 +9,9 @@ Asynchronous tasks specifically relating to Artists.
 """
 
 # First Party Libs
-from fm.echonest import EchoNestError, get_artist_genres
 from fm.ext import celery, db
 from fm.models.spotify import Artist, Genre
+from fm.thirdparty.echonest import EchoNestError, get_artist_genres
 
 
 @celery.task
