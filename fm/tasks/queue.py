@@ -8,6 +8,7 @@ fm.tasks.queue
 Celery Tasks for the Player Queue.
 """
 
+# First Party Libs
 from fm.ext import celery, db
 from fm.logic.player import Queue
 from fm.models.spotify import Album, Artist, Track

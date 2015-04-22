@@ -8,14 +8,17 @@ fm.views.user
 Views for working with User objects.
 """
 
+# Standard Libs
 import uuid
 
-
+# Third Pary Libs
 from flask.views import MethodView
+
+# First Party Libs
 from fm import http
 from fm.models.user import User
-from fm.session import authenticated, current_user
 from fm.serializers.user import UserSerializer
+from fm.session import authenticated, current_user
 
 
 class UserAuthenticatedView(MethodView):

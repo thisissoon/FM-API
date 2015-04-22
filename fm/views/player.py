@@ -8,13 +8,16 @@ fm.views.player
 Views for handling /player API resource requests.
 """
 
+# Standard Libs
 import json
 
+# Third Pary Libs
 from flask import request, url_for
 from flask.views import MethodView
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
 
+# First Party Libs
 from fm import http
 from fm.ext import config, db, redis
 from fm.logic.player import Queue, Random

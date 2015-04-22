@@ -8,9 +8,13 @@ fm.views.track
 Track resources.
 """
 
+# Standard Libs
 import uuid
 
+# Third Pary Libs
 from flask.views import MethodView
+
+# First Party Libs
 from fm import http
 from fm.models.spotify import Track
 from fm.serializers.spotify import TrackSerializer

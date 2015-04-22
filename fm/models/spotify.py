@@ -8,13 +8,16 @@ fm.models.tracks
 Models for storing Spotify Track data.
 """
 
+# Standard Libs
 import uuid
 
-from sqlalchemy import func, Index
+# Third Pary Libs
+from sqlalchemy import Index, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declared_attr
 
+# First Party Libs
 from fm.ext import db
 
 

@@ -10,17 +10,20 @@ API Iterface to the physical FM player.
 
 # Temporary patch for issue reported here:
 # https://groups.google.com/forum/#!topic/nose-users/fnJ-kAUbYHQ
+# Standard Libs
 import multiprocessing  # noqa
 import os
 import sys
 
-from setuptools import setup, find_packages
+# First Party Libs
+import fm  # noqa
+from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
+
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(root, 'fm'))
 
-import fm  # noqa
 
 
 class PyTest(TestCommand):

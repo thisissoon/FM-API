@@ -8,12 +8,16 @@ fm.ext
 Flask Application Extension Instantiation.
 """
 
-from fm.db.sqla import FMSQLAlchemy
+# Third Pary Libs
 from flask.ext.via import Via
+from werkzeug import LocalProxy
+
+# First Party Libs
 from fm.config import ConfigProxy
 from fm.db.nosql import Redis
+from fm.db.sqla import FMSQLAlchemy
 from fm.tasks import Celery
-from werkzeug import LocalProxy
+
 
 # Celery
 celery = Celery()

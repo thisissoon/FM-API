@@ -8,10 +8,14 @@ fm.models.user
 SQLAlchemy User Models.
 """
 
+# Standard Libs
 import uuid
 
-from fm.ext import db
+# Third Pary Libs
 from sqlalchemy.dialects.postgresql import JSON, UUID
+
+# First Party Libs
+from fm.ext import db
 
 
 class User(db.Model):

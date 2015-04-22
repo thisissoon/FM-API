@@ -8,12 +8,16 @@ fm.fb.sqla
 Custom SQLAlchemy functionality.
 """
 
-from fm.db.model import FMModel
+# Third Pary Libs
 from flask.ext.sqlalchemy import (
-    declarative_base,
     SQLAlchemy,
     _BoundDeclarativeMeta,
-    _QueryProperty)
+    _QueryProperty,
+    declarative_base
+)
+
+# First Party Libs
+from fm.db.model import FMModel
 
 
 class FMSQLAlchemy(SQLAlchemy):

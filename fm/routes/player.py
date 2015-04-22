@@ -9,8 +9,12 @@ Route mapping to player resources.
 """
 
 
+# Third Pary Libs
 from flask.ext.via.routers.default import Pluggable
+
+# First Party Libs
 from fm.views import player
+
 
 routes = [
     Pluggable('/pause', player.PauseView, 'pause'),

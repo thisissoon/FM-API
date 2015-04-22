@@ -8,10 +8,12 @@ fm.serializers.types.spotify
 Custom Kim Field Types relating to Spotifu Validation
 """
 
+# Standard Libs
 import httplib
+
+# Third Pary Libs
 import kim.types as t
 import requests
-
 from kim.exceptions import ValidationError
 from simplejson import JSONDecodeError
 

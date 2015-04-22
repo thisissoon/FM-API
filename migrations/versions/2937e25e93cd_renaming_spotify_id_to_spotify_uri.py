@@ -10,8 +10,11 @@ Create Date: 2015-03-03 16:59:38.501727
 revision = '2937e25e93cd'
 down_revision = '219d09e1a415'
 
-from alembic import op  # noqa
+# Third Pary Libs
 import sqlalchemy as sa  # noqa
+from alembic import op  # noqa
+
+# First Party Libs
 import fm  # noqa
 
 

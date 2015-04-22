@@ -8,14 +8,18 @@ tests.serializers.types.test_spotify
 Unit tests for sptoify Serializer field types.
 """
 
+# Standard Libs
 import httplib
+
+# Third Pary Libs
 import mock
 import pytest
 import requests
-
-from fm.serializers.types.spotify import SpotifyURI
 from kim.exceptions import ValidationError
 from simplejson import JSONDecodeError
+
+# First Party Libs
+from fm.serializers.types.spotify import SpotifyURI
 from tests import TRACK_DATA
 
 

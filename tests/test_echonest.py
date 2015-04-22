@@ -8,13 +8,16 @@ tests.test_echonest
 Unittests for Echonest API communication functions.
 """
 
+# Standard Libs
 import httplib
 
+# Third Pary Libs
 import mock
 import pytest
 import requests
 from simplejson import JSONDecodeError
 
+# First Party Libs
 from fm.echonest import EchoNestError, get_artist_genres
 from tests import ECHONEST_ARTIST_GENRES
 

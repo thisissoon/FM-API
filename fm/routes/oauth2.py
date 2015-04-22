@@ -8,8 +8,11 @@ fm.routes.oauth2
 Routes for the Google OAUTH2 Authentication
 """
 
-from fm.views import oauth2
+# Third Pary Libs
 from flask.ext.via.routers.default import Pluggable
+
+# First Party Libs
+from fm.views import oauth2
 
 
 routes = [

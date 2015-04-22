@@ -8,10 +8,15 @@ tests.test_session
 Unit tests for session management.
 """
 
-import mock
+# Standard Libs
 import uuid
 
+# Third Pary Libs
+import mock
 from flask import g
+from itsdangerous import URLSafeTimedSerializer
+
+# First Party Libs
 from fm.ext import db
 from fm.http import Unauthorized
 from fm.session import (
@@ -19,9 +24,9 @@ from fm.session import (
     USER_SESSION_KEY,
     authenticated,
     make_session,
-    validate_session,
-    user_from_session)
-from itsdangerous import URLSafeTimedSerializer
+    user_from_session,
+    validate_session
+)
 from tests.factories.user import UserFactory
 
 

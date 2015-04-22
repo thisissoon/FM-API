@@ -5,11 +5,15 @@ Classes for handling and wrapping basic player logic like queuing and
 generating random content.
 """
 
+# Standard Libs
 import json
 
+# Third Pary Libs
+from sqlalchemy.sql import func
+
+# First Party Libs
 from fm.ext import config, redis
 from fm.models.spotify import Track
-from sqlalchemy.sql import func
 
 
 class Queue(object):

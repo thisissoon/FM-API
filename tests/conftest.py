@@ -1,7 +1,21 @@
-import json
-import pytest
+#!/usr/bin/env python
+# encoding: utf-8
 
+"""
+tests.conftest
+==============
+
+PyTest Configuration
+"""
+
+# Standard Libs
+import json
+
+# Third Pary Libs
+import pytest
 from flask import g
+
+# First Party Libs
 from fm.app import create
 from fm.ext import db as _db
 from tests.factories.user import UserFactory

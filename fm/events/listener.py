@@ -9,15 +9,18 @@ Redis Pub/Sub Service, listening on events from a Redis channel and
 handling events it cares about.
 """
 
-import gevent
+# Standard Libs
 import json
 
+# Third Pary Libs
+import gevent
+from gevent.monkey import patch_all
 
+# First Party Libs
 from fm.app import create
 from fm.ext import config, db, redis
-from fm.models.spotify import Track, PlaylistHistory
+from fm.models.spotify import PlaylistHistory, Track
 from fm.models.user import User
-from gevent.monkey import patch_all
 
 
 def add_playlist_history(uri, user):

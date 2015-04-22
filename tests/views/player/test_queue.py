@@ -8,15 +8,18 @@ tests.views.player.test_queue
 Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
+# Standard Libs
 import httplib
 import json
 
+# Third Pary Libs
 import mock
 import pytest
 import requests
 from flask import url_for
 from mockredis import mock_redis_client
 
+# First Party Libs
 from fm.ext import config, db
 from fm.models.spotify import Artist
 from fm.models.user import User

@@ -8,10 +8,13 @@ fm.http.pagination
 Helper classes for constructing paginated responses.
 """
 
-from flask import request
+# Standard Libs
 from functools import wraps
-from furl import furl
 from math import ceil
+
+# Third Pary Libs
+from flask import request
+from furl import furl
 from webargs import Arg
 from webargs.flaskparser import FlaskParser
 

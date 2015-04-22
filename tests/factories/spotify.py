@@ -8,11 +8,13 @@ tests.factories.spotify
 SQLAlchemy Factories for Spotify models.
 """
 
+# Third Pary Libs
 import factory
-
 from factory import fuzzy
+
+# First Party Libs
 from fm.models.spotify import Album, Artist, PlaylistHistory, Track
-from tests.factories import Factory, UUID4
+from tests.factories import UUID4, Factory
 from tests.factories.user import UserFactory
 
 
