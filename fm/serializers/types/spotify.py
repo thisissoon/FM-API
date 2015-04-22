@@ -12,10 +12,31 @@ Custom Kim Field Types relating to Spotifu Validation
 import httplib
 
 # Third Pary Libs
-import kim.types as t
-import requests
+from flask import url_for
+from kim import types as t
 from kim.exceptions import ValidationError
 from simplejson import JSONDecodeError
+
+# First Party Libs
+import requests
+from fm.models.user import User
+
+
+class SpotifyPlaylistEndpoint(t.String):
+    """ A custom type for user's spotify playlists.
+    Source must be set up for user id
+
+    Example
+    -------
+        >>> Field(types.SpotifyPlaylistEndpoint(), source='id')
+    """
+
+    def serialize_value(self, value):
+        user = User.query.get(value)
+        if user.spotify_id is None:
+            return None
+        return url_for('users.user_spotify_playlists', user_pk=value,
+                       _external=True)
 
 
 class SpotifyURI(t.String):

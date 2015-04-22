@@ -15,7 +15,7 @@ from kim.fields import Field
 from kim.serializers import Serializer
 
 # First Party Libs
-from fm.serializers import types
+from fm.serializers.types.spotify import SpotifyPlaylistEndpoint
 
 
 class UserSerializer(Serializer):
@@ -28,4 +28,4 @@ class UserSerializer(Serializer):
     display_name = Field(t.String)
     avatar_url = Field(t.String)
 
-    spotify_playlists = Field(types.SpotifyPlaylistEndpoint(), source='id')
+    spotify_playlists = Field(SpotifyPlaylistEndpoint(), source='id')
