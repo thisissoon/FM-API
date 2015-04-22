@@ -16,8 +16,8 @@ import mock
 from flask import url_for
 
 # First Party Libs
-from fm.google import GoogleOAuth2Exception
 from fm.models.user import User
+from fm.oauth2.google import GoogleOAuth2Exception
 
 
 class TestGoogleConnectPost(object):

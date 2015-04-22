@@ -37,6 +37,12 @@ class User(db.Model):
     #: Google OAuth Token
     oauth2_credentials = db.Column(JSON, nullable=False)
 
+    #: Spotify Plus ID
+    spotify_id = db.Column(db.Unicode(128), index=True)
+
+    #: Spotify OAuth Token
+    spotify_credentials = db.Column(JSON)
+
     #
     # Attributes
     #

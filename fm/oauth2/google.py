@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 """
-fm.google
+fm.oauth2.google
 =========
 
 Google oAuth2 Connection helper methods.
