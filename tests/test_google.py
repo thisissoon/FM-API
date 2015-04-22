@@ -11,7 +11,7 @@ Tests for Google OAuth2 helpers.
 import mock
 import pytest
 
-from fm import google
+from fm.oauth2 import google
 from oauth2client.client import FlowExchangeError
 
 
@@ -22,7 +22,7 @@ class TestGetCredentials(object):
         self.app.config['GOOGLE_CLIENT_SECRET'] = 'bar'
         self.app.config['GOOGLE_REDIRECT_URI'] = 'bar'
 
-    @mock.patch('fm.google.credentials_from_code')
+    @mock.patch('fm.oauth2.google.credentials_from_code')
     def must_crach_flow_exception_and_reraise(self, credentials_from_code):
         credentials_from_code.return_value = mock.MagicMock(access_token='bar')
         credentials_from_code.side_effect = FlowExchangeError('some_error')
@@ -33,7 +33,7 @@ class TestGetCredentials(object):
 
 class TestDisconnect(object):
 
-    @mock.patch('fm.google.httplib2')
+    @mock.patch('fm.oauth2.google.httplib2')
     def should_raise_exception_on_invalid_status(self, httplib2):
         Http = mock.MagicMock()
         Http.request.return_value = ({'status': '400'}, )
@@ -43,7 +43,7 @@ class TestDisconnect(object):
         with pytest.raises(google.GoogleOAuth2Exception):
             google.disconnect('foo')
 
-    @mock.patch('fm.google.httplib2')
+    @mock.patch('fm.oauth2.google.httplib2')
     def should_disconnect_user(self, httplib2):
         Http = mock.MagicMock()
         Http.request.return_value = ({'status': '200'}, )
@@ -59,9 +59,9 @@ class TestDisconnect(object):
 
 class TestAuthenticateOauthCode(object):
 
-    @mock.patch('fm.google.get_credentials')
-    @mock.patch('fm.google.user_from_credentials')
-    @mock.patch('fm.google.disconnect')
+    @mock.patch('fm.oauth2.google.get_credentials')
+    @mock.patch('fm.oauth2.google.user_from_credentials')
+    @mock.patch('fm.oauth2.google.disconnect')
     def must_raise_exception_not_in_allowed_domains(
             self,
             disconnect,

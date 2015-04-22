@@ -12,12 +12,15 @@ import json
 
 from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
+
 from fm import http
 from fm.ext import db
-from fm.google import authenticate_oauth_code, GoogleOAuth2Exception
+from fm.oauth2.google import GoogleOAuth2Exception, authenticate_oauth_code
 from fm.models.user import User
-from fm.session import make_session
+from fm.oauth2.spotify import SpotifyOAuth2Exception
+from fm.session import authenticated, current_user, make_session
 from furl import furl
+from fm.logic.oauth import authorize_spotify_user
 
 
 class GoogleTestClientView(MethodView):
@@ -32,6 +35,19 @@ class GoogleTestClientView(MethodView):
             return http.NotFound()
 
         return render_template('oauth2/google.html')
+
+
+class SpotifyTestClientView(MethodView):
+    """ This view should only be accessible in DEBUG mode.
+    """
+
+    def get(self):
+        """ Renders a HTML test client for testing google OAuth2 Flow
+        """
+        if current_app.debug is False:
+            return http.NotFound()
+
+        return render_template('oauth2/spotify.html')
 
 
 class GoogleConnectView(MethodView):
@@ -94,3 +110,19 @@ class GoogleConnectView(MethodView):
                 'access_token': session_id
             },
             headers=headers)
+
+
+class SpotifyConnectView(MethodView):
+
+    @authenticated
+    def get(self):
+        try:
+            code = request.args['code']
+        except KeyError:
+            return http.BadRequest('Paramether `code` is missing')
+        try:
+            authorize_spotify_user(current_user, code)
+        except SpotifyOAuth2Exception as e:
+            return http.Unauthorized(e.message)
+
+        return ''
