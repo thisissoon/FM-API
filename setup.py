@@ -25,7 +25,6 @@ root = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(root, 'fm'))
 
 
-
 class PyTest(TestCommand):
 
     def finalize_options(self):
