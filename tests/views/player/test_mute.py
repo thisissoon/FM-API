@@ -8,10 +8,12 @@ tests.views.player.test_must
 Unit tests for the ``fm.views.player.MuteView`` class.
 """
 
+# Standard Libs
 import json
+
+# Third Pary Libs
 import mock
 import pytest
-
 from flask import url_for
 
 

@@ -1,5 +1,7 @@
+# Standard Libs
 import httplib
 
+# Third Pary Libs
 import requests
 from flask import url_for
 

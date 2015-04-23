@@ -9,9 +9,12 @@ Base routes for the FM application using Flask-Via.
 """
 
 
-from fm.views import RootView
+# Third Pary Libs
 from flask.ext.via.routers import Include
 from flask.ext.via.routers.default import Pluggable
+
+# First Party Libs
+from fm.views import RootView
 
 
 routes = [

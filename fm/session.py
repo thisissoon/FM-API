@@ -9,14 +9,18 @@ Session handling functionality for user authentication using the `Access-Token`
 header.
 """
 
-from flask import g, request, has_request_context
-from fm.ext import config, redis
-from fm.models.user import User
+# Standard Libs
 from functools import wraps
+
+# Third Pary Libs
+from flask import g, has_request_context, request
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug import LocalProxy
 
+# First Party Libs
+from fm.ext import config, redis
 from fm.http import Unauthorized
+from fm.models.user import User
 
 
 SESSION_KEY = 'fm:api:session:{0}'

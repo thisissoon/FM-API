@@ -8,9 +8,11 @@ fm.tasks.queue
 Celery Tasks for the Player Queue.
 """
 
+# First Party Libs
 from fm.ext import celery, db
-from fm.models.spotify import Album, Artist, Track
 from fm.logic.player import Queue
+from fm.models.spotify import Album, Artist, Track
+from fm.tasks.artist import update_genres
 
 
 @celery.task
@@ -67,6 +69,9 @@ def add(data, user):
 
         db.session.add(artist)
         db.session.commit()
+
+        # Call Sub task for artist Genre updating
+        update_genres.s(artist.id).delay()
 
     # Append Track to Queue
     Queue.add(track.spotify_uri, user)

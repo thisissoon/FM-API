@@ -8,8 +8,10 @@ fm.db.nosql
 Classes for connecting to NoSQL data stores.
 """
 
+# Standard Libs
 import urlparse
 
+# Third Pary Libs
 from redis import StrictRedis
 
 

@@ -8,14 +8,18 @@ tests.tasks.test_queue
 Unit Tests for Celery Queue Tasks
 """
 
+# Standard Libs
 import json
-import mock
 
+# Third Pary Libs
+import mock
+from mockredis import mock_redis_client
+
+# First Party Libs
 from fm.ext import config, db
 from fm.models.spotify import Album, Artist, Track
-from fm.tasks.queue import add
 from fm.models.user import User
-from mockredis import mock_redis_client
+from fm.tasks.queue import add
 from tests import TRACK_DATA
 from tests.factories.spotify import AlbumFactory, ArtistFactory, TrackFactory
 from tests.factories.user import UserFactory
@@ -34,6 +38,11 @@ class TestAdd(object):
         patch = mock.patch('fm.logic.player.redis', mock_redis_client())
         self.redis = patch.start()
         self.redis.publish = mock.MagicMock()
+        self.addPatchCleanup(patch)
+
+        patch = mock.patch('fm.tasks.queue.update_genres')
+        self.update_genres = patch.start()
+        self.update_genres.return_value = []
         self.addPatchCleanup(patch)
 
     def should_create_new_album(self):

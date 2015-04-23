@@ -8,10 +8,14 @@ tests.views.oauth2.test_google_connect
 Unit tests for the ``fm.views.oauth2.GoogleConnectView`` class.
 """
 
+# Standard Libs
 import json
-import mock
 
+# Third Pary Libs
+import mock
 from flask import url_for
+
+# First Party Libs
 from fm.models.user import User
 from fm.oauth2.google import GoogleOAuth2Exception
 

@@ -8,13 +8,13 @@ fm.serializers.player
 Marshmallow schemas for player resources.
 """
 
+# Third Pary Libs
 import kim.types as t
-
 from kim.exceptions import ValidationError
 from kim.fields import Field
 from kim.serializers import Serializer
 
-
+# First Party Libs
 from fm.serializers.types.spotify import SpotifyURI
 
 

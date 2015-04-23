@@ -8,7 +8,9 @@ fm.config.default
 Default configuration for the Flask application.
 """
 
+# Standard Libs
 import os
+
 
 # Debugging
 
@@ -29,6 +31,7 @@ CELERY_BROKER_URL = os.environ.get(
     'CELERY_BROKER_URL',
     'amqp://guest:guest@localhost:5672//')
 CELERY_IMPORTS = (
+    'fm.tasks.artist',
     'fm.tasks.queue'
 )
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
@@ -62,7 +65,12 @@ CORS_ACA_EXPOSE_HEADERS = ['Link', 'Total-Pages', 'Total-Count', 'Access-Token']
 CORS_ACA_HEADERS = ['Content-Type', 'Access-Token']
 CORS_ACA_ORIGIN = os.environ.get('CORS_ACA_ORIGIN', '*')
 
+# Echo Nest
+
+ECHONEST_API_KEY = os.environ.get('ECHONEST_API_KEY', None)
+
 # Google OAuth
+
 GOOGLE_ALLOWED_DOMAINS = [
     'thisissoon.com',
     'thishe.re'

@@ -8,7 +8,10 @@ tests.views.user.test_authenticated
 Unit tests for the ``fm.views.user.UserAuthenticatedView`` class.
 """
 
+# Third Pary Libs
 from flask import g, url_for
+
+# First Party Libs
 from fm.ext import db
 from fm.serializers.user import UserSerializer
 from tests.factories.user import UserFactory

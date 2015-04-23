@@ -8,10 +8,16 @@ fm.views.player
 Views for handling /player API resource requests.
 """
 
+# Standard Libs
 import json
 
+# Third Pary Libs
 from flask import request, url_for
 from flask.views import MethodView
+from kim.exceptions import MappingErrors
+from sqlalchemy import desc
+
+# First Party Libs
 from fm import http
 from fm.ext import config, db, redis
 from fm.logic.player import Queue, Random
@@ -22,8 +28,6 @@ from fm.serializers.spotify import HistorySerializer, TrackSerializer
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
 from fm.tasks.queue import add
-from kim.exceptions import MappingErrors
-from sqlalchemy import desc
 
 
 class PauseView(MethodView):

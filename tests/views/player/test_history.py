@@ -8,11 +8,15 @@ tests.views.player.test_history
 Unit tests for the ``fm.views.player.HistoryView`` class.
 """
 
+# Standard Libs
 import datetime
 
+# Third Pary Libs
+from flask import url_for
+
+# First Party Libs
 from dateutil.tz import tzutc
 from fm.ext import db
-from flask import url_for
 from tests.factories.spotify import PlaylistHistoryFactory
 
 

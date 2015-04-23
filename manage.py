@@ -8,10 +8,12 @@ fm.manage
 FM Management Command Scripts.
 """
 
+# Third Pary Libs
 import alembic
-
 from flask.ext.migrate import Migrate, MigrateCommand, _get_config
 from flask.ext.script import Manager, prompt_bool
+
+# First Party Libs
 from fm import app
 from fm.events.listener import listener
 from fm.ext import db

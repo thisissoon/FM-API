@@ -8,18 +8,23 @@ tests.views.player.test_queue
 Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
+# Standard Libs
 import httplib
 import json
+
+# Third Pary Libs
 import mock
 import pytest
 import requests
+from flask import url_for
+from mockredis import mock_redis_client
 
+# First Party Libs
 from fm.ext import config, db
+from fm.models.spotify import Artist
 from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
-from flask import url_for
-from mockredis import mock_redis_client
 from tests import TRACK_DATA
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
@@ -149,7 +154,8 @@ class TestQueuePost(QueueTest):
         assert response.json['errors']['uri'][0]  \
             == 'Track not found on Spotify: spotify:track:foo'
 
-    def should_add_track_to_queue(self):
+    @mock.patch('fm.tasks.queue.update_genres')
+    def should_add_track_to_queue(self, update_genres):
         self.requests.get.return_value = mock.MagicMock(
             status_code=httplib.OK,
             json=mock.MagicMock(return_value=TRACK_DATA))
@@ -171,3 +177,4 @@ class TestQueuePost(QueueTest):
             'uri': TRACK_DATA['uri'],
             'user': user.id
         }))
+        update_genres.s.assert_called_with(Artist.query.all()[0].id)

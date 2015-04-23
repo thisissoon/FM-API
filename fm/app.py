@@ -8,13 +8,17 @@ fm.app
 Flask Application Factory for bootstraping the FM API Application.
 """
 
+# Standard Libs
 import os
 import traceback
 
+# Third Pary Libs
 from flask import Flask, request
-from fm.ext import celery, db, redis, via
+
+# First Party Libs
 from fm import models  # noqa
 from fm import http
+from fm.ext import celery, db, redis, via
 from fm.http.cors import CORS
 
 

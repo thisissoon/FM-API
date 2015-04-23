@@ -8,11 +8,15 @@ tests.views.user.test_user
 Unit tests for the ``fm.views.user.UserView`` class.
 """
 
+# Standard Libs
 import httplib
 import uuid
 
+# Third Pary Libs
 import mock
 from flask import url_for
+
+# First Party Libs
 from fm.ext import db
 from fm.serializers.user import UserSerializer
 from tests.factories.user import UserFactory

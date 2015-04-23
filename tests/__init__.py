@@ -74,3 +74,23 @@ TRACK_DATA = {
     u'type': u'track',
     u'uri': u'spotify:track:11oRv2sfZJxNYqCl6wLaqJ'
 }
+
+
+# Example EchoNest Genre Data
+ECHONEST_ARTIST_GENRES = {
+    u'response': {
+        u'artist': {
+            u'genres': [
+                {u'name': u'dancehall'},
+                {u'name': u'reggae fusion'}
+            ],
+            u'id': u'ARHMCWM1187FB37D67',
+            u'name': u'Damian Marley'
+        },
+        u'status': {
+            u'code': 0,
+            u'message': u'Success',
+            u'version': u'4.2'
+        }
+    }
+}

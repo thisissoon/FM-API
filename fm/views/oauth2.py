@@ -8,19 +8,22 @@ fm.views.oauth2
 Views for the Google OAUTH2 authentication.
 """
 
+# Standard Libs
 import json
 
+# Third Pary Libs
 from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
+from furl import furl
 
+# First Party Libs
 from fm import http
 from fm.ext import db
-from fm.oauth2.google import GoogleOAuth2Exception, authenticate_oauth_code
+from fm.logic.oauth import authorize_spotify_user
 from fm.models.user import User
+from fm.oauth2.google import GoogleOAuth2Exception, authenticate_oauth_code
 from fm.oauth2.spotify import SpotifyOAuth2Exception
 from fm.session import authenticated, current_user, make_session
-from furl import furl
-from fm.logic.oauth import authorize_spotify_user
 
 
 class GoogleTestClientView(MethodView):

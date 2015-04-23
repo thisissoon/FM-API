@@ -8,11 +8,13 @@ tests.test_google
 Tests for Google OAuth2 helpers.
 """
 
+# Third Pary Libs
 import mock
 import pytest
-
-from fm.oauth2 import google
 from oauth2client.client import FlowExchangeError
+
+# First Party Libs
+from fm.oauth2 import google
 
 
 class TestGetCredentials(object):

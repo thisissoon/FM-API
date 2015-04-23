@@ -8,12 +8,15 @@ fm.serializers.spotify
 Kim serializers for `fm.models.spotify` models.
 """
 
+# Third Pary Libs
 import kim.types as t
-from fm.serializers.user import UserSerializer
 from kim.contrib.sqa import SQASerializer
 from kim.fields import Field
 from kim.roles import blacklist
 from kim.serializers import Serializer
+
+# First Party Libs
+from fm.serializers.user import UserSerializer
 
 
 class ArtistSerializer(SQASerializer):

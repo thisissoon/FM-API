@@ -8,9 +8,14 @@ fm.db.types
 Custom types for SQLAlchemy models.
 """
 
+# Standard Libs
 from datetime import datetime
-from dateutil.tz import tzutc
+
+# Third Pary Libs
 from sqlalchemy import types
+
+# First Party Libs
+from dateutil.tz import tzutc
 
 
 class UTCDateTime(types.TypeDecorator):

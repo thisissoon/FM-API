@@ -8,12 +8,16 @@ fm.db.model
 SQLAlchemy models.
 """
 
+# Standard Libs
 import datetime
 
-from dateutil.tz import tzutc
-from sqlalchemy import Column
-from fm.db.types import UTCDateTime
+# Third Pary Libs
 from flask.ext.sqlalchemy import Model
+from sqlalchemy import Column
+
+# First Party Libs
+from dateutil.tz import tzutc
+from fm.db.types import UTCDateTime
 
 
 class FMModel(Model):

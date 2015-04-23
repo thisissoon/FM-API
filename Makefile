@@ -17,6 +17,7 @@ clean: clean-build clean-pyc
 clean-build:
 	rm -fr build/
 	rm -fr dist/
+	rm -fr */__pycache__
 	rm -fr *.egg-info
 
 clean-pyc:

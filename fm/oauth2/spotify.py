@@ -7,10 +7,14 @@ fm.oauth2.spotify
 
 Spotify oAuth2 Connection helper methods.
 """
+# Standard Libs
 import httplib
 
+# Third Pary Libs
 import requests
 from flask import url_for
+
+# First Party Libs
 from fm.ext import config
 
 

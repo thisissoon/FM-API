@@ -8,16 +8,20 @@ tests.views.player.test_current
 Unit tests for the ``fm.views.player.CurrentView`` class.
 """
 
+# Standard Libs
 import json
-import mock
-import pytest
 import uuid
 
+# Third Pary Libs
+import mock
+import pytest
+from flask import url_for
+
+# First Party Libs
 from fm.ext import db
-from fm.views.player import CurrentView
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
-from flask import url_for
+from fm.views.player import CurrentView
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
 

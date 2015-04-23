@@ -8,12 +8,16 @@ tests.factories.user
 SQLAlchemy Factories for User models.
 """
 
-import factory
+# Standard Libs
 import json
 
+# Third Pary Libs
+import factory
 from factory import fuzzy
+
+# First Party Libs
 from fm.models.user import User
-from tests.factories import Factory, UUID4
+from tests.factories import UUID4, Factory
 
 
 class UserFactory(Factory):

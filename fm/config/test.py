@@ -10,3 +10,5 @@ Application configuration when running the Test Suite.
 
 
 CELERY_ALWAYS_EAGER = True
+
+ECHONEST_API_KEY = 'FOO'

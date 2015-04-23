@@ -9,8 +9,12 @@ Routes for the User Views
 """
 
 
+# Third Pary Libs
 from flask.ext.via.routers.default import Pluggable
+
+# First Party Libs
 from fm.views import user
+
 
 routes = [
     # /users/current

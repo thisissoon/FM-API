@@ -1,20 +1,29 @@
 # Alpine is thin linux OS that weighs in at a few MB
-FROM alpine:3.1
+FROM ubuntu:14.04
+
+# pip Installer
+ADD https://bootstrap.pypa.io/get-pip.py /get-pip.py
 
 # Working Directory where all commands will be run from
 WORKDIR /fm
 
 # Install OS dependencies
-RUN apk add --update \
-    build-base \
-    postgresql-dev \
-    git \
-    python \
-    python-dev \
-    py-pip \
-    libevent-dev \
-    libffi-dev \
-    && rm -rf /var/cache/apk/*
+RUN apt-get update -y && apt-get install --no-install-recommends -y -q \
+        build-essential \
+        libpq-dev \
+        libevent-dev \
+        libffi-dev \
+        python \
+        python-dev \
+        git \
+    && apt-get clean \
+    && apt-get autoclean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+# Install Pip
+RUN chmod +x /get-pip.py
+RUN python /get-pip.py
 
 # Set 5000 to be the default exposed port
 EXPOSE 5000

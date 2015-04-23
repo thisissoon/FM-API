@@ -8,9 +8,13 @@ fm.views.user
 Views for working with User objects.
 """
 
+# Standard Libs
 import uuid
 
+# Third Pary Libs
 from flask.views import MethodView
+
+# First Party Libs
 from fm import http
 from fm.logic.oauth import update_spotify_credentials
 from fm.models.user import User

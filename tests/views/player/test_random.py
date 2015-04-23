@@ -8,16 +8,19 @@ tests.views.player.test_random
 Unit tests for the ``fm.views.player.RandomView`` class.
 """
 
+# Standard Libs
 import httplib
 import json
 
+# Third Pary Libs
 import mock
-
 import pytest
 from flask import url_for
+from mockredis import mock_redis_client
+
+# First Party Libs
 from fm.ext import db
 from fm.logic.player import Queue
-from mockredis import mock_redis_client
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
 
