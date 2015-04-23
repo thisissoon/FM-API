@@ -1,9 +1,61 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 # Standard Libs
 import httplib
 
 # Third Pary Libs
 import requests
 from flask import url_for
+from kim import types as t
+from kim.fields import Field
+from kim.serializers import Serializer
+
+
+class BaseSpotifySerializer(Serializer):
+
+    id = Field(t.String)
+    name = Field(t.String)
+    spotify_uri = Field(t.String)
+
+
+class PlaylistSerializer(BaseSpotifySerializer):
+    """ Spotify playlist serializer
+
+    Returns following data s structure:
+        {
+            'id': '4wtLaWQcPct5tlAWTxqjMD',
+            'name': 'The Happy Hipster',
+            'tracks': {
+                'playlist': url to user's spotify tracks,
+                'total': 186
+            }
+        }
+    """
+
+    class TrackSerializer(Serializer):
+        """ Nested Track serializer
+        Exposing url for tracks in playlist and total number of tracks in it
+        """
+        total = Field(t.Integer)
+        playlist = Field(t.String)
+
+    tracks = Field(t.Nested(TrackSerializer()))
+
+
+class TrackSerializer(BaseSpotifySerializer):
+    """ Spotify track serializer
+    """
+
+    class Album(BaseSpotifySerializer):
+        pass
+
+    class Artists(BaseSpotifySerializer):
+        pass
+
+    duration = Field(t.Integer)  # ms
+    album = Field(t.Nested(Album()))
+    artists = Field(t.Collection(t.Nested(Artists())))
 
 
 class SpotifyApi(object):

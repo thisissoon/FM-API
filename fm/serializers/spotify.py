@@ -13,7 +13,6 @@ import kim.types as t
 from kim.contrib.sqa import SQASerializer
 from kim.fields import Field
 from kim.roles import blacklist
-from kim.serializers import Serializer
 
 # First Party Libs
 from fm.serializers.user import UserSerializer
@@ -71,49 +70,3 @@ class HistorySerializer(SQASerializer):
     id = Field(t.String, read_only=True)
     track = Field(t.Nested(TrackSerializer))
     user = Field(t.Nested(UserSerializer))
-
-
-class BaseSpotifySerializer(Serializer):
-
-    id = Field(t.String)
-    name = Field(t.String)
-    spotify_uri = Field(t.String)
-
-
-class PlaylistSerializer(BaseSpotifySerializer):
-    """ Spotify playlist serializer
-
-    Returns following data s structure:
-        {
-            'id': '4wtLaWQcPct5tlAWTxqjMD',
-            'name': 'The Happy Hipster',
-            'tracks': {
-                'playlist': url to user's spotify tracks,
-                'total': 186
-            }
-        }
-    """
-
-    class TrackSerializer(Serializer):
-        """ Nested Track serializer
-        Exposing url for tracks in playlist and total number of tracks in it
-        """
-        total = Field(t.Integer)
-        playlist = Field(t.String)
-
-    tracks = Field(t.Nested(TrackSerializer()))
-
-
-class TrackSerializer(BaseSpotifySerializer):
-    """ Spotify track serializer
-    """
-
-    class Album(BaseSpotifySerializer):
-        pass
-
-    class Artists(BaseSpotifySerializer):
-        pass
-
-    duration = Field(t.Integer)  # ms
-    album = Field(t.Nested(Album()))
-    artists = Field(t.Collection(t.Nested(Artists())))
