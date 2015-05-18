@@ -16,6 +16,7 @@ redis==2.10.3
 # Asynchronous
 celery==3.1.17
 gevent==1.0.1
+requests==2.6.0
 
 # Serialization
 py-kim==0.1.6
