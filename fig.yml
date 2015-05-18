@@ -23,6 +23,7 @@ celery:
     - postgres
     - redis
   environment:
+    - C_FORCE_ROOT=True
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@FMAPI_postgres_1:5432/soonfm
     - GOOGLE_REDIRECT_URI=http://localhost:8000/
     - CORS_ACA_ORIGIN=http://localhost:8000
