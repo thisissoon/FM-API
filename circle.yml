@@ -7,7 +7,7 @@ machine:
     - postgresql
     - docker
   environment:
-    REPO: soon/fm-api
+    REPO: thisissoon/fm-api
     TAG: $(sed 's/master/latest/;s/\//\-/' <<<$CIRCLE_BRANCH)
     SQLALCHEMY_DATABASE_URI: postgres://ubuntu@localhost:5432/circle_test
 
@@ -18,3 +18,12 @@ dependencies:
 test:
   override:
     - docker run -it --name test --net=host --volume="`pwd`/.git:/fm/.git" -e CIRCLE_BRANCH=$CIRCLE_BRANCH -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG make circleci
+  post:
+    - docker tag $REPO:$TAG quay.io/$REPO:$TAG
+    - sed "s/<QUAY_TOKEN>/$QUAY_TOKEN/" < .dockercfg.template > ~/.dockercfg
+
+deployment:
+  latest:
+    branch: master
+    commands:
+      - docker push quay.io/$REPO:$TAG
