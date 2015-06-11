@@ -550,12 +550,15 @@ is observed, in the event the track is paused the value will be ``1`` else it wi
             "name": "Dark Chest Of Wonders - Live @ Wacken 2013",
             "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD"
         },
-        "user" {
+        "user": {
             "avatar_url": "https://lh5.googleusercontent.com/-8zjhd-e4yZA/AAAAAAAAAAI/AAAAAAAAAFU/NiS1oH4gAKo/photo.jpg",
             "display_name": "Chris Reeves",
             "family_name": "Reeves",
             "given_name": "Chris",
             "id": "8258be6b-ee53-4186-8bbd-55bc0a3a6f24"
+        },
+        "player": {
+            "elapsed_time": 5000
         }
     }
 

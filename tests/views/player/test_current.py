@@ -73,10 +73,14 @@ class TestCurrentGet(BaseCurrentTest):
         db.session.add_all([track, user])
         db.session.commit()
 
-        self.redis.get.return_value = json.dumps({
-            'uri': track.spotify_uri,
-            'user': user.id
-        })
+        mock_redis_values = {
+            'fm:player:current': json.dumps({
+                'uri': track.spotify_uri,
+                'user': user.id
+            }),
+            'fm:player:elapsed_time': "5"
+        }
+        self.redis.get.side_effect = lambda x: mock_redis_values.get(x)
 
         url = url_for('player.current')
         response = self.client.get(url)
@@ -84,6 +88,7 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.status_code == 200
         assert response.json['track'] == TrackSerializer().serialize(track)
         assert response.json['user'] == UserSerializer().serialize(user)
+        assert response.json['player']['elapsed_time'] == 5000
 
 
 @pytest.mark.usefixtures("authenticated")
