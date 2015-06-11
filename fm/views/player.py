@@ -182,7 +182,7 @@ class CurrentView(MethodView):
             'track': TrackSerializer().serialize(track),
             'user': UserSerializer().serialize(user),
             'player': {
-                'elapsed_time': redis.get('fm:player:elapsed_time') * 1000  # ms
+                'elapsed_time': int(redis.get('fm:player:elapsed_time')) * 1000  # ms
             }
         }
 

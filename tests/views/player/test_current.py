@@ -78,7 +78,7 @@ class TestCurrentGet(BaseCurrentTest):
                 'uri': track.spotify_uri,
                 'user': user.id
             }),
-            'fm:player:elapsed_time': 5
+            'fm:player:elapsed_time': "5"
         }
         self.redis.get.side_effect = lambda x: mock_redis_values.get(x)
 
