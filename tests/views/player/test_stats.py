@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+"""
+tests.views.player.test_stats
+===============================
+
+Unit tests for the ``fm.views.player.StatsView`` class.
+"""
+# Standard Libs
+import datetime
+
+# Third Pary Libs
+from dateutil.tz import tzutc
+from flask import url_for
+from tests.factories.spotify import PlaylistHistoryFactory, UserFactory
+
+# First Party Libs
+from fm.ext import db
+from fm.serializers.user import UserSerializer
+
+
+class TestGetStats(object):
+
+    def should_return_users_in_a_time_window(self):
+        most_played = UserFactory()
+        second_most_played = UserFactory()
+        entries = [
+            PlaylistHistoryFactory(user=most_played),
+            PlaylistHistoryFactory(user=most_played),
+            PlaylistHistoryFactory(user=second_most_played),
+            PlaylistHistoryFactory(
+                created=datetime.datetime(2015, 1, 1, tzinfo=tzutc())
+            ),
+        ]
+
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats') + '?since=2015-07-11'
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json == {
+            'most_active_djs': [
+                {
+                    'user': UserSerializer().serialize(most_played),
+                    'total': 2
+                },
+                {
+                    'user': UserSerializer().serialize(second_most_played),
+                    'total': 1
+                },
+            ]
+        }

@@ -16,7 +16,8 @@ from flask import request, url_for
 from flask.views import MethodView
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
-
+from sqlalchemy.sql import func
+import time
 # First Party Libs
 from fm import http
 from fm.ext import config, db, redis
@@ -234,6 +235,31 @@ class HistoryView(MethodView):
             limit=kwargs.get('limit'),
             page=kwargs.get('page'),
             total=total)
+
+
+class StatsView(MethodView):
+
+    def most_active_dj(self, since):
+        query = User.query \
+            .with_entities(User, func.count(User.id).label('count')) \
+            .outerjoin(PlaylistHistory) \
+            .group_by(User.id) \
+            .order_by(desc('count'))
+
+        return query.all()
+
+    def get(self, *args, **kwargs):
+        since = time.strptime(kwargs.pop('since'))
+
+        stats = {
+            'most_active_djs': [
+                {
+                    'user': UserSerializer().serialize(u),
+                    'total': t
+                } for u, t in self.most_active_dj(since)
+            ]
+        }
+        return http.OK(stats)
 
 
 class QueueView(MethodView):
