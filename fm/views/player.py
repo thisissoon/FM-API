@@ -39,19 +39,19 @@ class PauseView(MethodView):
     def post(self):
         """ Pauses the player.
         """
+        event = {'event': 'pause'}
+        redis.publish(config.PLAYER_CHANNEL, json.dumps(event))
 
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'pause'}))
-
-        return http.Created()
+        return http.Created(event)
 
     @authenticated
     def delete(self):
         """ Unapuses the player.
         """
+        event = {'event': 'resume'}
+        redis.publish(config.PLAYER_CHANNEL, json.dumps(event))
 
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({'event': 'resume'}))
-
-        return http.NoContent()
+        return http.OK(event)
 
 
 class VolumeView(MethodView):
@@ -85,18 +85,14 @@ class VolumeView(MethodView):
             'event': 'set_volume',
             'volume': data['volume']
         }))
-
-        return http.OK()
+        return http.OK(data)
 
 
 class MuteView(MethodView):
     """ Controls mute state of the Player.
     """
 
-    def get(self):
-        """ Returns the current mute state of the player
-        """
-
+    def is_mute(self):
         mute = redis.get('fm:player:mute')
         if mute is None:
             mute = 0
@@ -106,7 +102,12 @@ class MuteView(MethodView):
         except ValueError:
             value = False
 
-        return http.OK({'mute': value})
+        return value
+
+    def get(self):
+        """ Returns the current mute state of the player
+        """
+        return http.OK({'mute': self.is_mute()})
 
     @authenticated
     def post(self):
@@ -118,7 +119,7 @@ class MuteView(MethodView):
             'mute': True
         }))
 
-        return http.Created()
+        return http.Created({'mute': self.is_mute()})
 
     @authenticated
     def delete(self):
@@ -130,7 +131,7 @@ class MuteView(MethodView):
             'mute': False
         }))
 
-        return http.NoContent()
+        return http.OK({'mute': self.is_mute()})
 
 
 class CurrentView(MethodView):
@@ -209,7 +210,7 @@ class CurrentView(MethodView):
             })
         )
 
-        return http.NoContent()
+        return http.OK()
 
 
 class HistoryView(MethodView):
@@ -272,7 +273,7 @@ class QueueView(MethodView):
 
     @authenticated
     def post(self):
-        """ Allows you to add anew track to the player playlist.
+        """ Allows you to add a new track to the player playlist.
         """
 
         serializer = PlaylistSerializer()

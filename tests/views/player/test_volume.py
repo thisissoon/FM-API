@@ -87,3 +87,4 @@ class TestVolumePost(BaseVolumeTest):
                 'event': 'set_volume',
                 'volume': 20
             }))
+        assert response.json == {'volume': 20}

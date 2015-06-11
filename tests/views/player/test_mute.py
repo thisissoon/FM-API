@@ -92,7 +92,7 @@ class TestDeleteMute(BaseMuteTest):
         url = url_for('player.mute')
         response = self.client.delete(url)
 
-        assert response.status_code == 204
+        assert response.status_code == 200
         self.redis.publish.assert_called_once_with(
             self.app.config.get('PLAYER_CHANNEL'),
             json.dumps({
