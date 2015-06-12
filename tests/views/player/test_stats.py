@@ -64,7 +64,7 @@ class TestGetStats(object):
             },
         ]
 
-    def should_return_most_played_djs_from_the_beginning_of_the_world(self):
+    def should_return_most_played_djs_from_the_beginning_of_the_age(self):
         most_played = UserFactory()
         second_most_played = UserFactory()
         entries = [
@@ -112,7 +112,7 @@ class TestGetStats(object):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['most_played_track'] == [
+        assert response.json['most_played_tracks'] == [
             {
                 'track': TrackSerializer().serialize(most_played),
                 'total': 2
@@ -123,7 +123,7 @@ class TestGetStats(object):
             },
         ]
 
-    def should_return_played_tracs_from_the_beginning_of_the_world(self):
+    def should_return_played_tracs_from_the_beginning_of_the_age(self):
         most_played = TrackFactory()
         second_most_played = TrackFactory()
         entries = [
@@ -138,7 +138,7 @@ class TestGetStats(object):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['most_played_track'] == [
+        assert response.json['most_played_tracks'] == [
             {
                 'track': TrackSerializer().serialize(most_played),
                 'total': 2
@@ -174,14 +174,14 @@ class TestGetStats(object):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['most_played_artist'] == [
+        assert response.json['most_played_artists'] == [
             {
                 'artist': ArtistSerializer().serialize(most_played),
                 'total': 1
             },
         ]
 
-    def should_return_most_played_artist_from_the_beginning_of_the_world(self):
+    def should_return_most_played_artist_from_the_beginning_of_the_age(self):
         most_played = ArtistFactory()
         second_most_played = ArtistFactory()
         entries = [
@@ -205,7 +205,7 @@ class TestGetStats(object):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['most_played_artist'] == [
+        assert response.json['most_played_artists'] == [
             {
                 'artist': ArtistSerializer().serialize(most_played),
                 'total': 2
@@ -216,7 +216,7 @@ class TestGetStats(object):
             },
         ]
 
-    def should_return_most_played_genre_from_the_beginning_of_the_world(self):
+    def should_return_most_played_genre_from_the_beginning_of_the_age(self):
         most_played = GenreFactory()
         second_most_played = GenreFactory()
         entries = [
@@ -246,7 +246,7 @@ class TestGetStats(object):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['most_played_genre'] == [
+        assert response.json['most_played_genres'] == [
             {
                 'name': most_played.name,
                 'total': 2
@@ -286,14 +286,14 @@ class TestGetStats(object):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['most_played_genre'] == [
+        assert response.json['most_played_genres'] == [
             {
                 'name': most_played.name,
                 'total': 1
             },
         ]
 
-    def should_return_user_played_time_from_the_beginning_of_the_world(self):
+    def should_return_user_played_time_from_the_beginning_of_the_age(self):
         most_played = UserFactory()
         second_most_played = UserFactory()
         entries = [
@@ -358,18 +358,13 @@ class TestGetStats(object):
             },
         ]
 
-    def should_return_total_played_time_from_the_beginning_of_the_world(self):
-        most_played = UserFactory()
-        second_most_played = UserFactory()
+    def should_return_total_played_time_from_the_beginning_of_the_age(self):
         entries = [
             PlaylistHistoryFactory(
-                user=most_played,
                 track=TrackFactory(duration=1000)),
             PlaylistHistoryFactory(
-                user=most_played,
                 track=TrackFactory(duration=500)),
             PlaylistHistoryFactory(
-                user=second_most_played,
                 track=TrackFactory(duration=700)),
         ]
         db.session.add_all(entries)
@@ -382,18 +377,13 @@ class TestGetStats(object):
         assert response.json['total_play_time'] == 2200
 
     def should_return_total_played_time_since_selected_date(self):
-        most_played = UserFactory()
-        second_most_played = UserFactory()
         entries = [
             PlaylistHistoryFactory(
-                user=most_played,
                 track=TrackFactory(duration=1000)),
             PlaylistHistoryFactory(
-                user=most_played,
                 created=datetime.datetime(2014, 1, 1, tzinfo=tzutc()),
                 track=TrackFactory(duration=500)),
             PlaylistHistoryFactory(
-                user=second_most_played,
                 track=TrackFactory(duration=700)),
         ]
         db.session.add_all(entries)
@@ -404,3 +394,35 @@ class TestGetStats(object):
 
         assert response.status_code == 200
         assert response.json['total_play_time'] == 1700
+
+    def should_return_total_plays_from_the_beginning_of_the_age(self):
+        entries = [
+            PlaylistHistoryFactory(),
+            PlaylistHistoryFactory(),
+            PlaylistHistoryFactory()
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['total_plays'] == 3
+
+    def should_return_total_plays_fsince_selected_date(self):
+        entries = [
+            PlaylistHistoryFactory(),
+            PlaylistHistoryFactory(),
+            PlaylistHistoryFactory(
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc()),
+            )
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats', since='2015-06-01')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['total_plays'] == 2

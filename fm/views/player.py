@@ -283,7 +283,13 @@ class StatsView(MethodView):
             query = query.filter(PlaylistHistory.created >= since)
         return query.first()[0]
 
-    def most_played_track(self, since):
+    def total_plays(self, since):
+        query = PlaylistHistory.query
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.count()
+
+    def most_played_tracks(self, since):
         query = Track.query \
             .options(lazyload(Track.album)) \
             .with_entities(Track, func.count(Track.id).label('count')) \
@@ -294,7 +300,7 @@ class StatsView(MethodView):
             query = query.filter(PlaylistHistory.created >= since)
         return query.limit(10)
 
-    def most_played_artist(self, since):
+    def most_played_artists(self, since):
         query = Artist.query \
             .with_entities(Artist, func.count(Artist.id).label('count')) \
             .join(ArtistAlbumAssociation) \
@@ -307,7 +313,7 @@ class StatsView(MethodView):
             query = query.filter(PlaylistHistory.created >= since)
         return query.limit(10)
 
-    def most_played_genre(self, since):
+    def most_played_genres(self, since):
         query = Genre.query \
             .with_entities(Genre, func.count(Genre.id).label('count')) \
             .join(ArtistGenreAssociation) \
@@ -333,27 +339,28 @@ class StatsView(MethodView):
                     'user': UserSerializer().serialize(u),
                     'total': t
                 } for u, t in self.most_active_djs(since)],
-            'most_played_track': [
+            'most_played_tracks': [
                 {
                     'track': TrackSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_track(since)],
-            'most_played_artist': [
+                } for u, t in self.most_played_tracks(since)],
+            'most_played_artists': [
                 {
                     'artist': ArtistSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_artist(since)],
-            'most_played_genre': [
+                } for u, t in self.most_played_artists(since)],
+            'most_played_genres': [
                 {
                     'name': u.name,
                     'total': t
-                } for u, t in self.most_played_genre(since)],
+                } for u, t in self.most_played_genres(since)],
             'total_play_time_per_user': [
                 {
                     'user': UserSerializer().serialize(u),
                     'total': t
                 } for u, t in self.total_play_time_per_user(since)],
             'total_play_time': self.total_play_time(since),
+            'total_plays': self.total_plays(since),
         }
         return http.OK(stats)
 
