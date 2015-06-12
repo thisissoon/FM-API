@@ -25,7 +25,15 @@ from sqlalchemy.sql import func
 from fm import http
 from fm.ext import config, db, redis
 from fm.logic.player import Queue, Random
-from fm.models.spotify import Album, Artist, PlaylistHistory, Track, ArtistAlbumAssociation
+from fm.models.spotify import (
+    Album,
+    Artist,
+    ArtistAlbumAssociation,
+    ArtistGenreAssociation,
+    Genre,
+    PlaylistHistory,
+    Track
+)
 from fm.models.user import User
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
 from fm.serializers.spotify import (
@@ -246,7 +254,7 @@ class HistoryView(MethodView):
 
 class StatsView(MethodView):
 
-    def most_active_dj(self, since):
+    def most_active_djs(self, since):
         query = User.query \
             .with_entities(User, func.count(User.id).label('count')) \
             .join(PlaylistHistory) \
@@ -278,7 +286,21 @@ class StatsView(MethodView):
             .order_by(desc('count'))
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        return query.limit(10)
 
+    def most_played_genre(self, since):
+        query = Genre.query \
+            .with_entities(Genre, func.count(Genre.id).label('count')) \
+            .join(ArtistGenreAssociation) \
+            .join(Artist) \
+            .join(ArtistAlbumAssociation) \
+            .join(Album) \
+            .join(Track) \
+            .join(PlaylistHistory) \
+            .group_by(Genre.id) \
+            .order_by(desc('count'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
         return query.limit(10)
 
     def get(self, *args, **kwargs):
@@ -291,7 +313,7 @@ class StatsView(MethodView):
                 {
                     'user': UserSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_active_dj(since)
+                } for u, t in self.most_active_djs(since)
             ],
             'most_played_track': [
                 {
@@ -304,8 +326,13 @@ class StatsView(MethodView):
                     'artist': ArtistSerializer().serialize(u),
                     'total': t
                 } for u, t in self.most_played_artist(since)
+            ],
+            'most_played_genre': [
+                {
+                    'name': u.name,
+                    'total': t
+                } for u, t in self.most_played_genre(since)
             ]
-
         }
         return http.OK(stats)
 

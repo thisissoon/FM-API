@@ -19,7 +19,18 @@ from tests.factories import UUID4, Factory
 from tests.factories.user import UserFactory
 
 # First Party Libs
-from fm.models.spotify import Album, Artist, PlaylistHistory, Track
+from fm.models.spotify import Album, Artist, Genre, PlaylistHistory, Track
+
+
+class GenreFactory(Factory):
+    """ Genre Model Factory
+    """
+
+    class Meta:
+        model = Genre
+
+    id = UUID4()
+    name = factory.LazyAttribute(lambda o: u'Genre {0}'.format(o.id))
 
 
 class ArtistFactory(Factory):

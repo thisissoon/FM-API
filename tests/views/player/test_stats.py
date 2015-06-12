@@ -16,6 +16,7 @@ from flask import url_for
 from tests.factories.spotify import (
     AlbumWithArtist,
     ArtistFactory,
+    GenreFactory,
     PlaylistHistoryFactory,
     TrackFactory,
     UserFactory
@@ -39,6 +40,7 @@ class TestGetStats(object):
             PlaylistHistoryFactory(
                 user=second_most_played,
                 created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
+
             ),
             PlaylistHistoryFactory(
                 created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
@@ -157,17 +159,12 @@ class TestGetStats(object):
                 )
             ),
             PlaylistHistoryFactory(
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc()),
                 track=TrackFactory(
                     album=AlbumWithArtist(
                         artists=[second_most_played, most_played]
                     )
                 )
-            ),
-            PlaylistHistoryFactory(
-                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
-            ),
-            PlaylistHistoryFactory(
-                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
             ),
         ]
         db.session.add_all(entries)
@@ -180,10 +177,6 @@ class TestGetStats(object):
         assert response.json['most_played_artist'] == [
             {
                 'artist': ArtistSerializer().serialize(most_played),
-                'total': 2
-            },
-            {
-                'artist': ArtistSerializer().serialize(second_most_played),
                 'total': 1
             },
         ]
@@ -219,6 +212,83 @@ class TestGetStats(object):
             },
             {
                 'artist': ArtistSerializer().serialize(second_most_played),
+                'total': 1
+            },
+        ]
+
+    def should_return_most_played_genre_from_the_beginning_of_the_world(self):
+        most_played = GenreFactory()
+        second_most_played = GenreFactory()
+        entries = [
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(
+                        artists=[ArtistFactory(
+                            genres=[most_played])
+                        ]
+                    )
+                )
+            ),
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(
+                        artists=[ArtistFactory(
+                            genres=[second_most_played, most_played])
+                        ]
+                    )
+                )
+            ),
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['most_played_genre'] == [
+            {
+                'name': most_played.name,
+                'total': 2
+            },
+            {
+                'name': second_most_played.name,
+                'total': 1
+            },
+        ]
+
+    def should_return_most_played_genre_since_selected_date(self):
+        most_played = GenreFactory()
+        second_most_played = GenreFactory()
+        entries = [
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(
+                        artists=[ArtistFactory(
+                            genres=[most_played])]
+                    )
+                )
+            ),
+            PlaylistHistoryFactory(
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc()),
+                track=TrackFactory(
+                    album=AlbumWithArtist(
+                        artists=[ArtistFactory(
+                            genres=[second_most_played, most_played])]
+                    )
+                )
+            ),
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats', since='2015-06-01')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['most_played_genre'] == [
+            {
+                'name': most_played.name,
                 'total': 1
             },
         ]
