@@ -275,6 +275,14 @@ class StatsView(MethodView):
             query = query.filter(PlaylistHistory.created >= since)
         return query.limit(10)
 
+    def total_play_time(self, since):
+        query = Track.query.with_entities(
+            func.sum(Track.duration).label('sum')
+        ).join(PlaylistHistory)
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.first()[0]
+
     def most_played_track(self, since):
         query = Track.query \
             .options(lazyload(Track.album)) \
@@ -345,6 +353,7 @@ class StatsView(MethodView):
                     'user': UserSerializer().serialize(u),
                     'total': t
                 } for u, t in self.total_play_time_per_user(since)],
+            'total_play_time': self.total_play_time(since),
         }
         return http.OK(stats)
 

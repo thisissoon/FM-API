@@ -357,3 +357,50 @@ class TestGetStats(object):
                 'total': 700
             },
         ]
+
+    def should_return_total_played_time_from_the_beginning_of_the_world(self):
+        most_played = UserFactory()
+        second_most_played = UserFactory()
+        entries = [
+            PlaylistHistoryFactory(
+                user=most_played,
+                track=TrackFactory(duration=1000)),
+            PlaylistHistoryFactory(
+                user=most_played,
+                track=TrackFactory(duration=500)),
+            PlaylistHistoryFactory(
+                user=second_most_played,
+                track=TrackFactory(duration=700)),
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['total_play_time'] == 2200
+
+    def should_return_total_played_time_since_selected_date(self):
+        most_played = UserFactory()
+        second_most_played = UserFactory()
+        entries = [
+            PlaylistHistoryFactory(
+                user=most_played,
+                track=TrackFactory(duration=1000)),
+            PlaylistHistoryFactory(
+                user=most_played,
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc()),
+                track=TrackFactory(duration=500)),
+            PlaylistHistoryFactory(
+                user=second_most_played,
+                track=TrackFactory(duration=700)),
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats', since='2015-06-01')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['total_play_time'] == 1700
