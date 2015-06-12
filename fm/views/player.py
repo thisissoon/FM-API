@@ -246,8 +246,10 @@ class StatsView(MethodView):
             .with_entities(User, func.count(User.id).label('count')) \
             .outerjoin(PlaylistHistory) \
             .group_by(User.id) \
-            .order_by(desc('count')) \
-            .filter(PlaylistHistory.created >= since)
+            .order_by(desc('count'))
+
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
         return query.all()
 
     def get(self, *args, **kwargs):
