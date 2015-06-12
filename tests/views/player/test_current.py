@@ -90,6 +90,30 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.json['user'] == UserSerializer().serialize(user)
         assert response.json['player']['elapsed_time'] == 5000
 
+    def should_return_zero_when_elapsed_time_cant_be_pulled(self):
+        track = TrackFactory()
+        user = UserFactory()
+
+        db.session.add_all([track, user])
+        db.session.commit()
+
+        mock_redis_values = {
+            'fm:player:current': json.dumps({
+                'uri': track.spotify_uri,
+                'user': user.id
+            }),
+            'fm:player:elapsed_time': None
+        }
+        self.redis.get.side_effect = lambda x: mock_redis_values.get(x)
+
+        url = url_for('player.current')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['track'] == TrackSerializer().serialize(track)
+        assert response.json['user'] == UserSerializer().serialize(user)
+        assert response.json['player']['elapsed_time'] == 0
+
 
 @pytest.mark.usefixtures("authenticated")
 class TestCurrentDelete(BaseCurrentTest):
