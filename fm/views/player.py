@@ -264,6 +264,17 @@ class StatsView(MethodView):
             query = query.filter(PlaylistHistory.created >= since)
         return query.limit(10)
 
+    def total_play_time_per_user(self, since):
+        query = User.query \
+            .with_entities(User, func.sum(Track.duration).label('sum')) \
+            .join(PlaylistHistory) \
+            .join(Track) \
+            .group_by(User.id) \
+            .order_by(desc('sum'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.limit(10)
+
     def most_played_track(self, since):
         query = Track.query \
             .options(lazyload(Track.album)) \
@@ -313,26 +324,27 @@ class StatsView(MethodView):
                 {
                     'user': UserSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_active_djs(since)
-            ],
+                } for u, t in self.most_active_djs(since)],
             'most_played_track': [
                 {
                     'track': TrackSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_track(since)
-            ],
+                } for u, t in self.most_played_track(since)],
             'most_played_artist': [
                 {
                     'artist': ArtistSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_artist(since)
-            ],
+                } for u, t in self.most_played_artist(since)],
             'most_played_genre': [
                 {
                     'name': u.name,
                     'total': t
-                } for u, t in self.most_played_genre(since)
-            ]
+                } for u, t in self.most_played_genre(since)],
+            'total_play_time_per_user': [
+                {
+                    'user': UserSerializer().serialize(u),
+                    'total': t
+                } for u, t in self.total_play_time_per_user(since)],
         }
         return http.OK(stats)
 
