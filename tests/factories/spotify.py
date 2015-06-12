@@ -9,13 +9,18 @@ SQLAlchemy Factories for Spotify models.
 """
 
 # Third Pary Libs
+# Standard Libs
+from datetime import datetime
+
+# Third Party Libs
 import factory
+from dateutil import tz
 from factory import fuzzy
+from tests.factories import UUID4, Factory
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.models.spotify import Album, Artist, PlaylistHistory, Track
-from tests.factories import UUID4, Factory
-from tests.factories.user import UserFactory
 
 
 class ArtistFactory(Factory):
@@ -88,3 +93,4 @@ class PlaylistHistoryFactory(Factory):
     id = UUID4()
     track = factory.LazyAttribute(lambda o: TrackFactory())
     user = factory.LazyAttribute(lambda o: UserFactory())
+    created = factory.LazyAttribute(lambda o: datetime.now(tz.tzutc()))

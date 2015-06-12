@@ -10,14 +10,16 @@ Views for handling /player API resource requests.
 
 # Standard Libs
 import json
+from datetime import datetime
 
-# Third Pary Libs
+# Third Party Libs
+import pytz
 from flask import request, url_for
 from flask.views import MethodView
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
 from sqlalchemy.sql import func
-import time
+
 # First Party Libs
 from fm import http
 from fm.ext import config, db, redis
@@ -244,12 +246,14 @@ class StatsView(MethodView):
             .with_entities(User, func.count(User.id).label('count')) \
             .outerjoin(PlaylistHistory) \
             .group_by(User.id) \
-            .order_by(desc('count'))
-
+            .order_by(desc('count')) \
+            .filter(PlaylistHistory.created >= since)
         return query.all()
 
     def get(self, *args, **kwargs):
-        since = time.strptime(kwargs.pop('since'))
+        since = request.args.get('since', None)
+        if since:
+            since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
 
         stats = {
             'most_active_djs': [

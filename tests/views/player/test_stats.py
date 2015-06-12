@@ -10,7 +10,7 @@ Unit tests for the ``fm.views.player.StatsView`` class.
 # Standard Libs
 import datetime
 
-# Third Pary Libs
+# Third Party Libs
 from dateutil.tz import tzutc
 from flask import url_for
 from tests.factories.spotify import PlaylistHistoryFactory, UserFactory
@@ -30,14 +30,18 @@ class TestGetStats(object):
             PlaylistHistoryFactory(user=most_played),
             PlaylistHistoryFactory(user=second_most_played),
             PlaylistHistoryFactory(
-                created=datetime.datetime(2015, 1, 1, tzinfo=tzutc())
+                user=second_most_played,
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
+            ),
+            PlaylistHistoryFactory(
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
             ),
         ]
 
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats') + '?since=2015-07-11'
+        url = url_for('player.stats', since='2015-06-01')
         response = self.client.get(url)
 
         assert response.status_code == 200
