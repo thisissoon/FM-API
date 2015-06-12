@@ -18,6 +18,7 @@ from flask import request, url_for
 from flask.views import MethodView
 from kim.exceptions import MappingErrors
 from sqlalchemy import desc
+from sqlalchemy.orm import lazyload
 from sqlalchemy.sql import func
 
 # First Party Libs
@@ -244,13 +245,23 @@ class StatsView(MethodView):
     def most_active_dj(self, since):
         query = User.query \
             .with_entities(User, func.count(User.id).label('count')) \
-            .outerjoin(PlaylistHistory) \
+            .join(PlaylistHistory) \
             .group_by(User.id) \
             .order_by(desc('count'))
-
         if since:
             query = query.filter(PlaylistHistory.created >= since)
-        return query.all()
+        return query.limit(10)
+
+    def most_played_track(self, since):
+        query = Track.query \
+            .options(lazyload(Track.album)) \
+            .with_entities(Track, func.count(Track.id).label('count')) \
+            .join(PlaylistHistory) \
+            .group_by(Track.id) \
+            .order_by(desc('count'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.limit(10)
 
     def get(self, *args, **kwargs):
         since = request.args.get('since', None)
@@ -263,6 +274,12 @@ class StatsView(MethodView):
                     'user': UserSerializer().serialize(u),
                     'total': t
                 } for u, t in self.most_active_dj(since)
+            ],
+            'most_played_track': [
+                {
+                    'track': TrackSerializer().serialize(u),
+                    'total': t
+                } for u, t in self.most_played_track(since)
             ]
         }
         return http.OK(stats)
