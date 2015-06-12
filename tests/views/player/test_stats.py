@@ -14,6 +14,8 @@ import datetime
 from dateutil.tz import tzutc
 from flask import url_for
 from tests.factories.spotify import (
+    AlbumWithArtist,
+    ArtistFactory,
     PlaylistHistoryFactory,
     TrackFactory,
     UserFactory
@@ -21,7 +23,7 @@ from tests.factories.spotify import (
 
 # First Party Libs
 from fm.ext import db
-from fm.serializers.spotify import TrackSerializer
+from fm.serializers.spotify import ArtistSerializer, TrackSerializer
 from fm.serializers.user import UserSerializer
 
 
@@ -141,6 +143,82 @@ class TestGetStats(object):
             },
             {
                 'track': TrackSerializer().serialize(second_most_played),
+                'total': 1
+            },
+        ]
+
+    def should_return_most_played_artist_since_selected_date(self):
+        most_played = ArtistFactory()
+        second_most_played = ArtistFactory()
+        entries = [
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(artists=[most_played])
+                )
+            ),
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(
+                        artists=[second_most_played, most_played]
+                    )
+                )
+            ),
+            PlaylistHistoryFactory(
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
+            ),
+            PlaylistHistoryFactory(
+                created=datetime.datetime(2014, 1, 1, tzinfo=tzutc())
+            ),
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats', since='2015-06-01')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['most_played_artist'] == [
+            {
+                'artist': ArtistSerializer().serialize(most_played),
+                'total': 2
+            },
+            {
+                'artist': ArtistSerializer().serialize(second_most_played),
+                'total': 1
+            },
+        ]
+
+    def should_return_most_played_artist_from_the_beginning_of_the_world(self):
+        most_played = ArtistFactory()
+        second_most_played = ArtistFactory()
+        entries = [
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(artists=[most_played])
+                )
+            ),
+            PlaylistHistoryFactory(
+                track=TrackFactory(
+                    album=AlbumWithArtist(
+                        artists=[second_most_played, most_played]
+                    )
+                )
+            ),
+        ]
+        db.session.add_all(entries)
+        db.session.commit()
+
+        url = url_for('player.stats')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['most_played_artist'] == [
+            {
+                'artist': ArtistSerializer().serialize(most_played),
+                'total': 2
+            },
+            {
+                'artist': ArtistSerializer().serialize(second_most_played),
                 'total': 1
             },
         ]

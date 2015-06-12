@@ -8,7 +8,6 @@ tests.factories.spotify
 SQLAlchemy Factories for Spotify models.
 """
 
-# Third Pary Libs
 # Standard Libs
 from datetime import datetime
 

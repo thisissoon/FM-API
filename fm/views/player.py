@@ -25,10 +25,14 @@ from sqlalchemy.sql import func
 from fm import http
 from fm.ext import config, db, redis
 from fm.logic.player import Queue, Random
-from fm.models.spotify import PlaylistHistory, Track
+from fm.models.spotify import Album, Artist, PlaylistHistory, Track, ArtistAlbumAssociation
 from fm.models.user import User
 from fm.serializers.player import PlaylistSerializer, VolumeSerializer
-from fm.serializers.spotify import HistorySerializer, TrackSerializer
+from fm.serializers.spotify import (
+    ArtistSerializer,
+    HistorySerializer,
+    TrackSerializer
+)
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
 from fm.tasks.queue import add
@@ -263,6 +267,20 @@ class StatsView(MethodView):
             query = query.filter(PlaylistHistory.created >= since)
         return query.limit(10)
 
+    def most_played_artist(self, since):
+        query = Artist.query \
+            .with_entities(Artist, func.count(Artist.id).label('count')) \
+            .join(ArtistAlbumAssociation) \
+            .join(Album) \
+            .join(Track) \
+            .join(PlaylistHistory) \
+            .group_by(Artist.id) \
+            .order_by(desc('count'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+
+        return query.limit(10)
+
     def get(self, *args, **kwargs):
         since = request.args.get('since', None)
         if since:
@@ -280,7 +298,14 @@ class StatsView(MethodView):
                     'track': TrackSerializer().serialize(u),
                     'total': t
                 } for u, t in self.most_played_track(since)
+            ],
+            'most_played_artist': [
+                {
+                    'artist': ArtistSerializer().serialize(u),
+                    'total': t
+                } for u, t in self.most_played_artist(since)
             ]
+
         }
         return http.OK(stats)
 
