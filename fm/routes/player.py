@@ -20,6 +20,7 @@ routes = [
     Pluggable('/pause', player.PauseView, 'pause'),
     Pluggable('/current', player.CurrentView, 'current'),
     Pluggable('/history', player.HistoryView, 'history'),
+    Pluggable('/stats', player.StatsView, 'stats'),
     Pluggable('/queue', player.QueueView, 'queue'),
     Pluggable('/volume', player.VolumeView, 'volume'),
     Pluggable('/mute', player.MuteView, 'mute'),

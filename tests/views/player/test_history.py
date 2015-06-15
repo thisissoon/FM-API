@@ -12,12 +12,12 @@ Unit tests for the ``fm.views.player.HistoryView`` class.
 import datetime
 
 # Third Pary Libs
+from dateutil.tz import tzutc
 from flask import url_for
+from tests.factories.spotify import PlaylistHistoryFactory
 
 # First Party Libs
-from dateutil.tz import tzutc
 from fm.ext import db
-from tests.factories.spotify import PlaylistHistoryFactory
 
 
 class TestGetHistory(object):
