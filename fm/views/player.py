@@ -425,6 +425,14 @@ class QueueView(MethodView):
             pk_or_uri=track['uri']['uri']))
 
 
+class QueueMetaView(MethodView):
+
+    def get(self, *args, **kwargs):
+        return http.OK({
+            'play_time': sum(track.duration for track in Queue.get_tracks())
+        })
+
+
 class RandomView(MethodView):
 
     @authenticated
