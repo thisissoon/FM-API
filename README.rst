@@ -370,6 +370,23 @@ album and artist nested objects.
         ...
     ]
 
+``/player/queue/meta``
+~~~~~~~~~~~~~~~~~~
+
+Returns meta data about a queue. List of genres and users, total number of tracks in queue and total play time.
+
+.. code-block::
+
+    {
+        "genres": {
+            "Genre 868788b0-b131-4594-8c83-3676b1ea5fb9": 3,
+            "Genre b3cb7a50-89c8-4280-a26f-0fdce30aa785": 3
+        },
+        "play_time": 19902,
+        "total": 3,
+        "users": {"user": 3}
+    }
+
 
 ``POST``
 ^^^^^^^^

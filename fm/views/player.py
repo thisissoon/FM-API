@@ -9,10 +9,12 @@ Views for handling /player API resource requests.
 """
 
 # Standard Libs
+import itertools
 import json
+from collections import Counter
 from datetime import datetime
 
-# Third Party Libs
+# Third Pary Libs
 import pytz
 from flask import request, url_for
 from flask.views import MethodView
@@ -427,10 +429,20 @@ class QueueView(MethodView):
 
 class QueueMetaView(MethodView):
 
+    def get_list_of_genres(self, tracks):
+        artists = [track.album.artists for track in tracks]
+        genres = [artist.genres for artist in itertools.chain(*artists)]
+        return itertools.chain(*genres)
+
     def get(self, *args, **kwargs):
+        queue = list(Queue.get_queue())
+        tracks = list(Queue.get_tracks())
+
         return http.OK({
             'total': Queue.length(),
-            'play_time': sum(track.duration for track in Queue.get_tracks())
+            'genres': Counter(g.name for g in self.get_list_of_genres(tracks)),
+            'users': Counter(q['user'] for q in queue),
+            'play_time': sum(track.duration for track in tracks)
         })
 
 

@@ -8,8 +8,7 @@ fm.routes.player
 Route mapping to player resources.
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers.default import Pluggable
 
 # First Party Libs
