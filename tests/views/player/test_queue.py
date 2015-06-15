@@ -9,15 +9,18 @@ Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
 # Standard Libs
-import httplib
 import json
 
 # Third Pary Libs
+import httplib
 import mock
 import pytest
 import requests
 from flask import url_for
 from mockredis import mock_redis_client
+from tests import TRACK_DATA
+from tests.factories.spotify import TrackFactory
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import config, db
@@ -25,9 +28,6 @@ from fm.models.spotify import Artist
 from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
-from tests import TRACK_DATA
-from tests.factories.spotify import TrackFactory
-from tests.factories.user import UserFactory
 
 
 class QueueTest(object):

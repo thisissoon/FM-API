@@ -8,8 +8,7 @@ fm.routes.player
 Route mapping to player resources.
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers.default import Pluggable
 
 # First Party Libs
@@ -22,6 +21,7 @@ routes = [
     Pluggable('/history', player.HistoryView, 'history'),
     Pluggable('/stats', player.StatsView, 'stats'),
     Pluggable('/queue', player.QueueView, 'queue'),
+    Pluggable('/queue/meta', player.QueueMetaView, 'queue-meta'),
     Pluggable('/volume', player.VolumeView, 'volume'),
     Pluggable('/mute', player.MuteView, 'mute'),
     Pluggable('/random', player.RandomView, 'random'),

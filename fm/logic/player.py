@@ -51,6 +51,34 @@ class Queue(object):
         }))
 
     @staticmethod
+    def get_queue(offset=0, limit=None):
+        if limit is None:
+            limit = Queue.length()
+
+        tracks = redis.lrange(
+            config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1)
+        )
+        return (json.loads(track) for track in tracks)
+
+    @staticmethod
+    def get_tracks(offset=0, limit=None):
+        """ Returns a list of Tracks in a queue. Default behaviour is to return
+        all tracks in a queue - use limit to return desire number of tracks
+
+        Parameters
+        ----------
+        offset: int
+            Offset
+        limit: int
+            Limit
+
+        """
+        return (
+            Track.query.filter(Track.spotify_uri == track['uri']).first()
+            for track in Queue.get_queue(offset, limit)
+        )
+
+    @staticmethod
     def length():
         """ Return list of messages in a redis playlist queue
 
