@@ -70,3 +70,23 @@ class TestQueueMeta(object):
 
         assert response.status_code == 200
         assert sum(t.duration for t in tracks) == response.json['play_time']
+
+    def should_total_number_in_queue(self):
+        tracks = TrackFactory.create_batch(3)
+        db.session.add_all(tracks)
+        db.session.commit()
+
+        for track in tracks:
+            self.redis.rpush(
+                config.PLAYLIST_REDIS_KEY,
+                json.dumps({
+                    'uri': track.spotify_uri,
+                    'user': 'user'
+                })
+            )
+
+        url = url_for('player.queue-meta')
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert response.json['total'] == 3
