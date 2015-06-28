@@ -179,7 +179,7 @@ class CurrentView(MethodView):
 
         return track, user
 
-    def elapsed(self):
+    def elapsed(self, paused=False):
         """ Calculates the current playhead (durration) of the track based on
         two factors, 1: Track Start Time, 2: Total Pause Durration.
 
@@ -205,6 +205,15 @@ class CurrentView(MethodView):
             pause_durration = int(redis.get('fm:player:pause_durration'))
         except (ValueError, TypeError):
             pause_durration = 0
+
+        # If we are in a puase state we also need to add on the difference
+        # between the pause start time and now to pause duration
+        paused_start = None
+        if paused:
+            paused_start = redis.get('fm:player:paused_start')
+            if paused_start is not None:
+                paused_start = dateutil.parser.parse(paused_start)
+                pause_durration += int((now - paused_start).total_seconds() * 1000)
 
         # Perform calculation
         diff = now - (start_time + timedelta(

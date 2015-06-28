@@ -77,24 +77,48 @@ class TestCalculateElapsed(BaseCurrentTest):
 
     def test_no_paused_durration(self):
         now = datetime.datetime(2015, 1, 1, 13, 10, 2)
-        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)  # Started 2 seconds ago
 
         self.redis.get.return_value = start_time.isoformat()
 
         with mock.patch('fm.views.player.datetime') as _dt:
             _dt.utcnow.return_value = now
+
+            # No pauses, 2 seconds of play
             assert CurrentView().elapsed() == 2000
 
     def test_with_pause_durration(self):
-        now = datetime.datetime(2015, 1, 1, 13, 10, 22)
-        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)
+        now = datetime.datetime(2015, 1, 1, 13, 10, 23)  # now
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)  # started 22 seconds ago
 
         # Paused for 20 seconds = 20000 ms
-        self.redis.get.side_effect = [start_time.isoformat(), 20000]
+        self.redis.get.side_effect = [
+            start_time.isoformat(),
+            20000,  # Paused for 20 seconds
+        ]
 
         with mock.patch('fm.views.player.datetime') as _dt:
             _dt.utcnow.return_value = now
-            assert CurrentView().elapsed() == 2000
+
+            # We should have 3 seconds of total play
+            assert CurrentView().elapsed() == 3000
+
+    def test_in_live_pause_state(self):
+        now = datetime.datetime(2015, 1, 1, 13, 10, 32)  # now
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)  # started 32 seconds ago
+        pause_start = datetime.datetime(2015, 1, 1, 13, 10, 23)   # 3 seconds of play
+
+        # Paused for 20 seconds = 20000 ms
+        self.redis.get.side_effect = [
+            start_time.isoformat(),
+            20000,  # 20 seconds of first pause
+            pause_start.isoformat(),  # paused 2 secs later
+        ]
+        with mock.patch('fm.views.player.datetime') as _dt:
+            _dt.utcnow.return_value = now
+
+            # We should have 3 seconds of total play
+            assert CurrentView().elapsed(paused=True) == 3000
 
 
 class TestCurrentGet(BaseCurrentTest):
