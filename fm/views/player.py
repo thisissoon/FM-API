@@ -8,11 +8,13 @@ fm.views.player
 Views for handling /player API resource requests.
 """
 
+from __future__ import division
+
 # Standard Libs
 import itertools
 import json
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Third Party Libs
 import dateutil.parser
@@ -181,7 +183,7 @@ class CurrentView(MethodView):
         """ Calculates the current playhead (durration) of the track based on
         two factors, 1: Track Start Time, 2: Total Pause Durration.
 
-        elapsed = (now - start) + paused
+        elapsed = (now - (start + paused))
 
         Returns
         -------
@@ -200,13 +202,15 @@ class CurrentView(MethodView):
 
         # Get Pause Durration
         try:
-            pause_durration = int(redis.get('fm:player:paused'))
+            pause_durration = int(redis.get('fm:player:pause_durration'))
         except (ValueError, TypeError):
             pause_durration = 0
 
         # Perform calculation
-        diff = now - start_time
-        elapsed = (int(diff.total_seconds() * 1000)) + pause_durration
+        diff = now - (start_time + timedelta(
+            seconds=pause_durration / 1000
+        ))
+        elapsed = int(diff.total_seconds() * 1000)
 
         return elapsed
 

@@ -9,10 +9,11 @@ Unit tests for the ``fm.views.player.CurrentView`` class.
 """
 
 # Standard Libs
+import datetime
 import json
 import uuid
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 import pytest
 from flask import url_for
@@ -62,6 +63,38 @@ class TestGetCurrentTrack(BaseCurrentTest):
         })
 
         assert CurrentView().get_current_track() == (track, user)
+
+
+class TestCalculateElapsed(BaseCurrentTest):
+
+    def test_no_start_time_set_uses_now(self):
+        now = datetime.datetime(2015, 1, 1, 12, 13, 14)
+        self.redis.get.return_value = None
+
+        with mock.patch('fm.views.player.datetime') as _dt:
+            _dt.utcnow.return_value = now
+            assert CurrentView().elapsed() == 0
+
+    def test_no_paused_durration(self):
+        now = datetime.datetime(2015, 1, 1, 13, 10, 2)
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)
+
+        self.redis.get.return_value = start_time.isoformat()
+
+        with mock.patch('fm.views.player.datetime') as _dt:
+            _dt.utcnow.return_value = now
+            assert CurrentView().elapsed() == 2000
+
+    def test_with_pause_durration(self):
+        now = datetime.datetime(2015, 1, 1, 13, 10, 22)
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)
+
+        # Paused for 20 seconds = 20000 ms
+        self.redis.get.side_effect = [start_time.isoformat(), 20000]
+
+        with mock.patch('fm.views.player.datetime') as _dt:
+            _dt.utcnow.return_value = now
+            assert CurrentView().elapsed() == 2000
 
 
 class TestCurrentGet(BaseCurrentTest):
