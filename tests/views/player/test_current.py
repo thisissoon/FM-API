@@ -114,6 +114,7 @@ class TestCalculateElapsed(BaseCurrentTest):
             20000,  # 20 seconds of first pause
             pause_start.isoformat(),  # paused 2 secs later
         ]
+
         with mock.patch('fm.views.player.datetime') as _dt:
             _dt.utcnow.return_value = now
 
@@ -130,17 +131,24 @@ class TestCurrentGet(BaseCurrentTest):
         db.session.add_all([track, user])
         db.session.commit()
 
+        now = datetime.datetime.utcnow()
+        start = now - datetime.timedelta(seconds=5)
+
         mock_redis_values = {
             'fm:player:current': json.dumps({
                 'uri': track.spotify_uri,
                 'user': user.id
             }),
-            'fm:player:elapsed_time': "5"
+            'fm:player:start_time': start.isoformat()
         }
         self.redis.get.side_effect = lambda x: mock_redis_values.get(x)
 
         url = url_for('player.current')
-        response = self.client.get(url)
+
+        # We have to mock utcnow so we don't get drift in the test
+        with mock.patch('fm.views.player.datetime') as _dt:
+            _dt.utcnow.return_value = now
+            response = self.client.get(url)
 
         assert response.status_code == 200
         assert response.json['track'] == TrackSerializer().serialize(track)

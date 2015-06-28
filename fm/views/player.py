@@ -242,11 +242,6 @@ class CurrentView(MethodView):
         except (ValueError, TypeError):
             paused = 0
 
-        try:
-            elapsed_time = int(redis.get('fm:player:elapsed_time')) * 1000  # ms
-        except (ValueError, TypeError):
-            elapsed_time = 0
-
         headers = {
             'Paused': paused
         }
@@ -254,7 +249,7 @@ class CurrentView(MethodView):
             'track': TrackSerializer().serialize(track),
             'user': UserSerializer().serialize(user),
             'player': {
-                'elapsed_time': elapsed_time  # ms
+                'elapsed_time': self.elapsed(paused=bool(paused))  # MS
             }
         }
 
