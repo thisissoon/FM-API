@@ -202,7 +202,7 @@ class CurrentView(MethodView):
 
         # Get Pause Durration
         try:
-            pause_durration = int(redis.get('fm:player:pause_durration'))
+            pause_durration = int(redis.get('fm:player:pause_duration'))
         except (ValueError, TypeError):
             pause_durration = 0
 
@@ -210,7 +210,7 @@ class CurrentView(MethodView):
         # between the pause start time and now to pause duration
         paused_start = None
         if paused:
-            paused_start = redis.get('fm:player:paused_start')
+            paused_start = redis.get('fm:player:pause_time')
             if paused_start is not None:
                 paused_start = dateutil.parser.parse(paused_start)
                 pause_durration += int((now - paused_start).total_seconds() * 1000)
@@ -242,6 +242,8 @@ class CurrentView(MethodView):
         except (ValueError, TypeError):
             paused = 0
 
+        elapsed = self.elapsed(paused=bool(paused))
+
         headers = {
             'Paused': paused
         }
@@ -249,7 +251,8 @@ class CurrentView(MethodView):
             'track': TrackSerializer().serialize(track),
             'user': UserSerializer().serialize(user),
             'player': {
-                'elapsed_time': self.elapsed(paused=bool(paused))  # MS
+                'elapsed_time': elapsed,  # ms
+                'elapsed_percentage': (elapsed / track.duration) * 100  # %
             }
         }
 

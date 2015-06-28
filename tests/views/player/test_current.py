@@ -125,7 +125,7 @@ class TestCalculateElapsed(BaseCurrentTest):
 class TestCurrentGet(BaseCurrentTest):
 
     def should_return_track_data(self):
-        track = TrackFactory()
+        track = TrackFactory(duration=10000)
         user = UserFactory()
 
         db.session.add_all([track, user])
@@ -154,6 +154,7 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.json['track'] == TrackSerializer().serialize(track)
         assert response.json['user'] == UserSerializer().serialize(user)
         assert response.json['player']['elapsed_time'] == 5000
+        assert response.json['player']['elapsed_percentage'] == 50
 
     def should_return_zero_when_elapsed_time_cant_be_pulled(self):
         track = TrackFactory()
@@ -178,6 +179,7 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.json['track'] == TrackSerializer().serialize(track)
         assert response.json['user'] == UserSerializer().serialize(user)
         assert response.json['player']['elapsed_time'] == 0
+        assert response.json['player']['elapsed_percentage'] == 0
 
 
 @pytest.mark.usefixtures("authenticated")
