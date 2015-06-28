@@ -14,7 +14,8 @@ import json
 from collections import Counter
 from datetime import datetime
 
-# Third Pary Libs
+# Third Party Libs
+import dateutil.parser
 import pytz
 from flask import request, url_for
 from flask.views import MethodView
@@ -176,6 +177,39 @@ class CurrentView(MethodView):
 
         return track, user
 
+    def elapsed(self):
+        """ Calculates the current playhead (durration) of the track based on
+        two factors, 1: Track Start Time, 2: Total Pause Durration.
+
+        elapsed = (now - start) + paused
+
+        Returns
+        -------
+        int
+            Elapsed time in ms
+        """
+
+        now = datetime.utcnow()
+
+        # Get play start time
+        start_time = redis.get('fm:player:start_time')
+        if start_time is None:
+            start_time = now
+        else:
+            start_time = dateutil.parser.parse(start_time)
+
+        # Get Pause Durration
+        try:
+            pause_durration = int(redis.get('fm:player:paused'))
+        except (ValueError, TypeError):
+            pause_durration = 0
+
+        # Perform calculation
+        diff = now - start_time
+        elapsed = (int(diff.total_seconds() * 1000)) + pause_durration
+
+        return elapsed
+
     def get(self):
         """ Returns the currently playing track.
 
@@ -189,6 +223,7 @@ class CurrentView(MethodView):
         if track is None or user is None:
             return http.NoContent()
 
+        # Get Pause State
         try:
             paused = int(redis.get('fm:player:paused'))
         except (ValueError, TypeError):
