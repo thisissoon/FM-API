@@ -164,6 +164,7 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.json['user'] == UserSerializer().serialize(user)
         assert response.json['player']['elapsed_time'] == 5000
         assert response.json['player']['elapsed_percentage'] == 50
+        assert response.json['player']['elapsed_seconds'] == 5
 
     def should_return_zero_when_elapsed_time_cant_be_pulled(self):
         track = TrackFactory()
@@ -189,6 +190,7 @@ class TestCurrentGet(BaseCurrentTest):
         assert response.json['user'] == UserSerializer().serialize(user)
         assert response.json['player']['elapsed_time'] == 0
         assert response.json['player']['elapsed_percentage'] == 0
+        assert response.json['player']['elapsed_seconds'] == 0
 
 
 @pytest.mark.usefixtures("authenticated")

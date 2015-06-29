@@ -255,7 +255,8 @@ class CurrentView(MethodView):
             'user': UserSerializer().serialize(user),
             'player': {
                 'elapsed_time': elapsed,  # ms
-                'elapsed_percentage': (elapsed / track.duration) * 100  # %
+                'elapsed_percentage': (elapsed / track.duration) * 100,  # %
+                'elapsed_seconds': elapsed / 1000  # seconds
             }
         }
 
