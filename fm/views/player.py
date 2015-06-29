@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 
 # Third Party Libs
 import dateutil.parser
+import dateutil.tz
 import pytz
 from flask import request, url_for
 from flask.views import MethodView
@@ -192,6 +193,8 @@ class CurrentView(MethodView):
         """
 
         now = datetime.utcnow()
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=dateutil.tz.tzutc())
 
         # Get play start time
         start_time = redis.get('fm:player:start_time')

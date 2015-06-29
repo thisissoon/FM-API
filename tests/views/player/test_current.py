@@ -14,6 +14,7 @@ import json
 import uuid
 
 # Third Party Libs
+import dateutil.tz
 import mock
 import pytest
 from flask import url_for
@@ -76,8 +77,10 @@ class TestCalculateElapsed(BaseCurrentTest):
             assert CurrentView().elapsed() == 0
 
     def test_no_paused_durration(self):
-        now = datetime.datetime(2015, 1, 1, 13, 10, 2)
-        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)  # Started 2 seconds ago
+        tzutc = dateutil.tz.tzutc()
+        now = datetime.datetime(2015, 1, 1, 13, 10, 2, tzinfo=tzutc)
+        # Started 2 seconds ago
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0, tzinfo=tzutc)
 
         self.redis.get.return_value = start_time.isoformat()
 
@@ -88,8 +91,10 @@ class TestCalculateElapsed(BaseCurrentTest):
             assert CurrentView().elapsed() == 2000
 
     def test_with_pause_durration(self):
-        now = datetime.datetime(2015, 1, 1, 13, 10, 23)  # now
-        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)  # started 22 seconds ago
+        tzutc = dateutil.tz.tzutc()
+        now = datetime.datetime(2015, 1, 1, 13, 10, 23, tzinfo=tzutc)  # now
+        # started 22 seconds ago
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0, tzinfo=tzutc)
 
         # Paused for 20 seconds = 20000 ms
         self.redis.get.side_effect = [
@@ -104,9 +109,12 @@ class TestCalculateElapsed(BaseCurrentTest):
             assert CurrentView().elapsed() == 3000
 
     def test_in_live_pause_state(self):
-        now = datetime.datetime(2015, 1, 1, 13, 10, 32)  # now
-        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0)  # started 32 seconds ago
-        pause_start = datetime.datetime(2015, 1, 1, 13, 10, 23)   # 3 seconds of play
+        tzutc = dateutil.tz.tzutc()
+        now = datetime.datetime(2015, 1, 1, 13, 10, 32, tzinfo=tzutc)
+        # started 32 seconds ago
+        start_time = datetime.datetime(2015, 1, 1, 13, 10, 0, tzinfo=tzutc)
+        # 3 seconds of play
+        pause_start = datetime.datetime(2015, 1, 1, 13, 10, 23, tzinfo=tzutc)
 
         # Paused for 20 seconds = 20000 ms
         self.redis.get.side_effect = [
@@ -133,6 +141,7 @@ class TestCurrentGet(BaseCurrentTest):
 
         now = datetime.datetime.utcnow()
         start = now - datetime.timedelta(seconds=5)
+        start = start.replace(tzinfo=dateutil.tz.tzutc())
 
         mock_redis_values = {
             'fm:player:current': json.dumps({
