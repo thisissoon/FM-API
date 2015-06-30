@@ -8,13 +8,17 @@ fm.views.player
 Views for handling /player API resource requests.
 """
 
+from __future__ import division
+
 # Standard Libs
 import itertools
 import json
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Third Pary Libs
+# Third Party Libs
+import dateutil.parser
+import dateutil.tz
 import pytz
 from flask import request, url_for
 from flask.views import MethodView
@@ -176,6 +180,52 @@ class CurrentView(MethodView):
 
         return track, user
 
+    def elapsed(self, paused=False):
+        """ Calculates the current playhead (durration) of the track based on
+        two factors, 1: Track Start Time, 2: Total Pause Durration.
+
+        elapsed = (now - (start + paused))
+
+        Returns
+        -------
+        int
+            Elapsed time in ms
+        """
+
+        now = datetime.utcnow()
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=dateutil.tz.tzutc())
+
+        # Get play start time
+        start_time = redis.get('fm:player:start_time')
+        if start_time is None:
+            start_time = now
+        else:
+            start_time = dateutil.parser.parse(start_time)
+
+        # Get Pause Durration
+        try:
+            pause_durration = int(redis.get('fm:player:pause_duration'))
+        except (ValueError, TypeError):
+            pause_durration = 0
+
+        # If we are in a puase state we also need to add on the difference
+        # between the pause start time and now to pause duration
+        paused_start = None
+        if paused:
+            paused_start = redis.get('fm:player:pause_time')
+            if paused_start is not None:
+                paused_start = dateutil.parser.parse(paused_start)
+                pause_durration += int((now - paused_start).total_seconds() * 1000)
+
+        # Perform calculation
+        diff = now - (start_time + timedelta(
+            seconds=pause_durration / 1000
+        ))
+        elapsed = int(diff.total_seconds() * 1000)
+
+        return elapsed
+
     def get(self):
         """ Returns the currently playing track.
 
@@ -189,15 +239,13 @@ class CurrentView(MethodView):
         if track is None or user is None:
             return http.NoContent()
 
+        # Get Pause State
         try:
             paused = int(redis.get('fm:player:paused'))
         except (ValueError, TypeError):
             paused = 0
 
-        try:
-            elapsed_time = int(redis.get('fm:player:elapsed_time')) * 1000  # ms
-        except (ValueError, TypeError):
-            elapsed_time = 0
+        elapsed = self.elapsed(paused=bool(paused))
 
         headers = {
             'Paused': paused
@@ -206,7 +254,9 @@ class CurrentView(MethodView):
             'track': TrackSerializer().serialize(track),
             'user': UserSerializer().serialize(user),
             'player': {
-                'elapsed_time': elapsed_time  # ms
+                'elapsed_time': elapsed,  # ms
+                'elapsed_percentage': (elapsed / track.duration) * 100,  # %
+                'elapsed_seconds': elapsed / 1000  # seconds
             }
         }
 
