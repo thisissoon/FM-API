@@ -97,12 +97,14 @@ class TestGetQueue(QueueTest):
                 config.PLAYLIST_REDIS_KEY,
                 json.dumps({
                     'uri': track.spotify_uri,
-                    'user': users[i].id
+                    'user': users[i].id,
+                    'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
                 })
             )
             expected.append({
                 'track': TrackSerializer().serialize(track),
-                'user': UserSerializer().serialize(users[i])
+                'user': UserSerializer().serialize(users[i]),
+                'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
             })
 
         url = url_for('player.queue')

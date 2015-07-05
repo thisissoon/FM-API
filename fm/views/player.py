@@ -448,7 +448,8 @@ class QueueView(MethodView):
                 if track is not None and user is not None:
                     response.append({
                         'track': TrackSerializer().serialize(track),
-                        'user': UserSerializer().serialize(user)
+                        'user': UserSerializer().serialize(user),
+                        'uuid': item.get('uuid', None),
                     })
 
         return http.OK(

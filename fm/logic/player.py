@@ -7,8 +7,9 @@ generating random content.
 
 # Standard Libs
 import json
+import uuid
 
-# Third Pary Libs
+# Third Party Libs
 from sqlalchemy.sql import func
 
 # First Party Libs
@@ -39,7 +40,8 @@ class Queue(object):
             config.PLAYLIST_REDIS_KEY,
             json.dumps({
                 'uri': uri,
-                'user': user
+                'user': user,
+                'uuid': str(uuid.uuid4()),
             })
         )
 
