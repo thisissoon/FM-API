@@ -13,7 +13,6 @@ import httplib
 
 # Third Party Libs
 import requests
-# Third Pary Libs
 from furl import furl
 from simplejson import JSONDecodeError
 

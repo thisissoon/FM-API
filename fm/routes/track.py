@@ -8,8 +8,7 @@ fm.routes.track
 Routes for handling Tracks.
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers.default import Pluggable
 
 # First Party Libs

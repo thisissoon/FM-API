@@ -9,8 +9,7 @@ Create Date: 2015-03-23 12:13:18.582809
 # revision identifiers, used by Alembic.
 revision = '3da945eb68a1'
 down_revision = '346114c5f61a'
-
-# Third Pary Libs
+# Third Party Libs
 import sqlalchemy as sa  # noqa
 from alembic import op  # noqa
 from sqlalchemy.dialects import postgresql

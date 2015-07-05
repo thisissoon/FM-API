@@ -11,7 +11,7 @@ Views for working with User objects.
 # Standard Libs
 import uuid
 
-# Third Pary Libs
+# Third Party Libs
 from flask.views import MethodView
 
 # First Party Libs

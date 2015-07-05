@@ -12,7 +12,7 @@ header.
 # Standard Libs
 from functools import wraps
 
-# Third Pary Libs
+# Third Party Libs
 from flask import g, has_request_context, request
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug import LocalProxy

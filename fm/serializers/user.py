@@ -8,8 +8,7 @@ fm.user.serializer
 User Kim Serializers
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 import kim.types as t
 from kim.fields import Field
 from kim.serializers import Serializer

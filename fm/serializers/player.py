@@ -7,8 +7,7 @@ fm.serializers.player
 
 Marshmallow schemas for player resources.
 """
-
-# Third Pary Libs
+# Third Party Libs
 import kim.types as t
 from kim.exceptions import ValidationError
 from kim.fields import Field

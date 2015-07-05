@@ -230,3 +230,33 @@ class TestQueueDelete(QueueTest):
         }))
 
         assert response.status_code == httplib.NO_CONTENT
+
+    def should_publish_remove_event(self):
+        track = TrackFactory.create()
+        db.session.add(track)
+        db.session.commit()
+
+        self.redis.rpush(
+            config.PLAYLIST_REDIS_KEY,
+            json.dumps({
+                'uri': track.spotify_uri,
+                'user': current_user.id,
+                'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+            })
+        )
+
+        url = url_for('player.queue')
+        response = self.client.delete(url, data=json.dumps({
+            'uri': track.spotify_uri,
+            'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+        }))
+
+        assert response.status_code == httplib.OK
+        self.redis.publish.assert_called_once_with(
+            config.PLAYER_CHANNEL,
+            json.dumps({
+                'event': 'deleted',
+                'uri': track.spotify_uri,
+                'user': current_user.id
+            })
+        )

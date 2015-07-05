@@ -11,13 +11,13 @@ SQLAlchemy Factories for User models.
 # Standard Libs
 import json
 
-# Third Pary Libs
+# Third Party Libs
 import factory
 from factory import fuzzy
+from tests.factories import UUID4, Factory
 
 # First Party Libs
 from fm.models.user import User
-from tests.factories import UUID4, Factory
 
 
 class UserFactory(Factory):

@@ -109,6 +109,12 @@ class Queue(object):
             count=1
         )
         if deleted >= 1:
+            redis.publish(config.PLAYER_CHANNEL, json.dumps({
+                'event': 'deleted',
+                'uri': uri,
+                'user': user.id
+            }))
+
             return deleted
         else:
             raise ValueError('Cannot find value')

@@ -4,7 +4,7 @@
 # Standard Libs
 import httplib
 
-# Third Pary Libs
+# Third Party Libs
 import requests
 from flask import url_for
 from kim import types as t

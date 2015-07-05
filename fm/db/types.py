@@ -13,7 +13,6 @@ from datetime import datetime
 
 # Third Party Libs
 from dateutil.tz import tzutc
-# Third Pary Libs
 from sqlalchemy import types
 
 

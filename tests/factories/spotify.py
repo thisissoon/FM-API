@@ -11,7 +11,7 @@ SQLAlchemy Factories for Spotify models.
 # Standard Libs
 from datetime import datetime
 
-# Third Pary Libs
+# Third Party Libs
 import factory
 from dateutil import tz
 from factory import fuzzy

@@ -7,8 +7,7 @@ fm.http.cors
 
 Cross Origin Request Handling.
 """
-
-# Third Pary Libs
+# Third Party Libs
 from flask import request
 
 

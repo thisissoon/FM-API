@@ -13,7 +13,6 @@ import datetime
 
 # Third Party Libs
 from dateutil.tz import tzutc
-# Third Pary Libs
 from flask.ext.sqlalchemy import Model
 from sqlalchemy import Column
 

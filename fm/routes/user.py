@@ -8,8 +8,7 @@ fm.user.routes
 Routes for the User Views
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers.default import Pluggable
 
 # First Party Libs
