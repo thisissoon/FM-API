@@ -11,15 +11,15 @@ Unittests for Echonest API communication functions.
 # Standard Libs
 import httplib
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 import pytest
+import requests
 from simplejson import JSONDecodeError
+from tests import ECHONEST_ARTIST_GENRES
 
 # First Party Libs
-import requests
 from fm.thirdparty.echonest import EchoNestError, get_artist_genres
-from tests import ECHONEST_ARTIST_GENRES
 
 
 class TestGetArtistGenres(object):

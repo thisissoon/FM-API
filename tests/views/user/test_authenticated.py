@@ -9,12 +9,13 @@ Unit tests for the ``fm.views.user.UserAuthenticatedView`` class.
 """
 
 # Third Pary Libs
+# Third Party Libs
 from flask import g, url_for
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
 from fm.serializers.user import UserSerializer
-from tests.factories.user import UserFactory
 
 
 class TestUserAuthenticatedGet(object):

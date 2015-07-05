@@ -18,10 +18,13 @@ from flask.views import MethodView
 from fm import http
 from fm.logic.oauth import update_spotify_credentials
 from fm.models.user import User
-from fm.thirdparty.spotify import PlaylistSerializer, TrackSerializer
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
-from fm.thirdparty.spotify import SpotifyApi
+from fm.thirdparty.spotify import (
+    PlaylistSerializer,
+    SpotifyApi,
+    TrackSerializer
+)
 
 
 class UserAuthenticatedView(MethodView):

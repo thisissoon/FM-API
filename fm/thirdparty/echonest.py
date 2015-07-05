@@ -11,12 +11,13 @@ Echo Nest Functions for retrieving data from Echo Nest API.
 # Standard Libs
 import httplib
 
+# Third Party Libs
+import requests
 # Third Pary Libs
 from furl import furl
 from simplejson import JSONDecodeError
 
 # First Party Libs
-import requests
 from fm.ext import config
 
 

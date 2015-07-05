@@ -57,9 +57,7 @@ class Queue(object):
         if limit is None:
             limit = Queue.length()
 
-        tracks = redis.lrange(
-            config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1)
-        )
+        tracks = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
         return (json.loads(track) for track in tracks)
 
     @staticmethod
@@ -91,6 +89,29 @@ class Queue(object):
         """
 
         return redis.llen(config.PLAYLIST_REDIS_KEY)
+
+    @staticmethod
+    def delete(uri, user, uuid):
+        """ Remove a track from a redis queue
+
+        Parameters
+        ----------
+        uri: str
+            The spotify URI of the Track to add to the Queue
+        user: User model
+            The User class instance of the user whome added the track to the Queue
+        uuid: Uuid
+            Unique identifator of track in the queue
+        """
+        deleted = redis.lrem(
+            key=config.PLAYLIST_REDIS_KEY,
+            value=json.dumps({'uri': uri, 'user': user.id, 'uuid': uuid}),
+            count=1
+        )
+        if deleted >= 1:
+            return deleted
+        else:
+            raise ValueError('Cannot find value')
 
 
 class Random(object):

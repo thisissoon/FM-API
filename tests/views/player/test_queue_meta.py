@@ -11,7 +11,7 @@ Unit tests for the ``fm.views.player.QueueMetaView`` class.
 # Standard Libs
 import json
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 from flask import url_for
 from mockredis import mock_redis_client

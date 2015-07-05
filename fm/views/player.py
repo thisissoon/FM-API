@@ -477,6 +477,15 @@ class QueueView(MethodView):
             'tracks.track',
             pk_or_uri=track['uri']['uri']))
 
+    @authenticated
+    def delete(self):
+        data = request.json
+        try:
+            Queue.delete(uri=data['uri'], user=current_user, uuid=data['uuid'])
+        except ValueError:
+            return http.NoContent()
+        return http.OK()
+
 
 class QueueMetaView(MethodView):
 

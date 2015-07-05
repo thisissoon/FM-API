@@ -18,14 +18,14 @@ import dateutil.tz
 import mock
 import pytest
 from flask import url_for
+from tests.factories.spotify import TrackFactory
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
 from fm.views.player import CurrentView
-from tests.factories.spotify import TrackFactory
-from tests.factories.user import UserFactory
 
 
 class BaseCurrentTest(object):
