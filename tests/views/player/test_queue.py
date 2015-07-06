@@ -18,7 +18,7 @@ import pytest
 import requests
 from flask import url_for
 from mockredis import mock_redis_client
-from tests import TRACK_DATA
+from tests import ALBUM_DATA, TRACK_DATA
 from tests.factories.spotify import TrackFactory
 from tests.factories.user import UserFactory
 
@@ -181,6 +181,21 @@ class TestQueuePost(QueueTest):
             'user': user.id
         }))
         update_genres.s.assert_called_with(Artist.query.all()[0].id)
+
+    def should_add_album_tracks(self):
+        self.requests.get.return_value = mock.MagicMock(
+            status_code=httplib.OK,
+            json=mock.MagicMock(return_value=ALBUM_DATA)
+        )
+
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({
+            'uri': 'spotify:album:6akEvsycLGftJxYudPjmqK'
+        }))
+
+        queue = self.redis.get(config.PLAYLIST_REDIS_KEY)
+        assert response.status_code == httplib.CREATED
+        assert len(queue) == 2
 
 
 @pytest.mark.usefixtures("authenticated")

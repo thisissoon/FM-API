@@ -12,7 +12,32 @@ Celery Tasks for the Player Queue.
 from fm.ext import celery, db
 from fm.logic.player import Queue
 from fm.models.spotify import Album, Artist, Track
+from fm.models.user import User
 from fm.tasks.artist import update_genres
+from fm.thirdparty.spotify import SpotifyApi
+
+
+@celery.task
+def add_album(uri, user):
+    '''
+    Celery task for adding album tracks into the queue
+
+    Arguments
+    ---------
+    data : uri
+        URI of album to add
+
+    user : str
+        Id of the user whom aded t otrack to the queue
+    '''
+    user = User.queue.get(user)
+    spotify_api = SpotifyApi()
+
+    subtasks = []
+    for track in spotify_api.get_playlists_tracks(uri):
+        subtasks.append(add.s(track, user.id))
+    workflow = celery.chain(*subtasks)
+    workflow.delay()
 
 
 @celery.task
@@ -24,7 +49,7 @@ def add(data, user):
     data : dict
         Raw Decoded Spotify API Track JSON data
     user : str
-        The name of the user whom added the track to the queue
+        Id of the user whom added the track to the queue
     """
 
     # Create or Update Album

@@ -63,7 +63,13 @@ class SpotifyApi(object):
     class UnauthorizedException(Exception):
         pass
 
-    def __init__(self, user):
+    def __init__(self, user=None):
+        """
+        Arguments
+        ---------
+        user : User
+            user instance
+        """
         self.user = user
 
     def playlist_iterator(self):
@@ -107,6 +113,15 @@ class SpotifyApi(object):
         return track_url.format(
             user_id=self.user.spotify_id,
             playlist_id=playlist_id
+        )
+
+    def get_albums_track_url(self, album_uri):
+        """
+        Returns spotify endpoint for tracks in an album
+        """
+        album_url = 'https://api.spotify.com/v1/albums/{album_uri}/tracks'
+        return album_url.format(
+            user_id=self.user.spotify_id, album_uri=album_uri
         )
 
     def _hit_spotify_api(self, url):
@@ -184,13 +199,21 @@ class SpotifyApi(object):
             "total": 6
         }
         """
-
         nxt_track = self.get_playlists_tracks_url(playlist_id)
         while nxt_track is not None:
             track_data = self._hit_spotify_api(nxt_track)
             nxt_track = track_data['next']
             for metadata in track_data['items']:
                 yield Track(metadata['track'])
+
+    def get_album_tracks(self, album_uri):
+        page = self.get_playlists_tracks_url(album_uri)
+        while page is not None:
+            album_data = self._hit_spotify_api(page)
+            page = album_data['next']
+            for track in album_data['items']:
+                track = self._hit_spotify_api(track['href'])
+                yield Track(track)
 
 
 class BaseSpotify(object):

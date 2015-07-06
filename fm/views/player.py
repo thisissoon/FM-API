@@ -49,7 +49,7 @@ from fm.serializers.spotify import (
 )
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
-from fm.tasks.queue import add
+from fm.tasks.queue import add, add_album
 
 
 class PauseView(MethodView):
@@ -462,20 +462,23 @@ class QueueView(MethodView):
     def post(self):
         """ Allows you to add a new track to the player playlist.
         """
-
         serializer = PlaylistSerializer()
-
         try:
-            track = serializer.marshal(request.json)
+            obj = serializer.marshal(request.json)
         except MappingErrors as e:
             return http.UnprocessableEntity(errors=e.message)
 
-        # Dispatch Celery Task
-        add.delay(track['uri'], current_user.id)
-
-        return http.Created(location=url_for(
-            'tracks.track',
-            pk_or_uri=track['uri']['uri']))
+        if 'spotify:track:' in obj['uri']['uri']:
+            add.delay(obj['uri'], current_user.id)
+            return http.Created(location=url_for(
+                'tracks.track',
+                pk_or_uri=obj['uri']['uri'])
+            )
+        elif 'spotify:album:' in obj['uri']['uri']:
+            add_album.delay(obj['uri'], current_user.id)
+            return http.Created()
+        else:
+            return http.BadRequest()
 
     @authenticated
     def delete(self):
