@@ -11,7 +11,7 @@ Classes for connecting to NoSQL data stores.
 # Standard Libs
 import urlparse
 
-# Third Pary Libs
+# Third Party Libs
 from redis import StrictRedis
 
 

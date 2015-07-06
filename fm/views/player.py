@@ -448,7 +448,8 @@ class QueueView(MethodView):
                 if track is not None and user is not None:
                     response.append({
                         'track': TrackSerializer().serialize(track),
-                        'user': UserSerializer().serialize(user)
+                        'user': UserSerializer().serialize(user),
+                        'uuid': item.get('uuid', None),
                     })
 
         return http.OK(
@@ -475,6 +476,15 @@ class QueueView(MethodView):
         return http.Created(location=url_for(
             'tracks.track',
             pk_or_uri=track['uri']['uri']))
+
+    @authenticated
+    def delete(self):
+        data = request.json
+        try:
+            Queue.delete(uri=data['uri'], user=current_user, uuid=data['uuid'])
+        except ValueError:
+            return http.NoContent()
+        return http.OK()
 
 
 class QueueMetaView(MethodView):

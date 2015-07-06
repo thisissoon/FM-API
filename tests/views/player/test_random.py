@@ -12,17 +12,17 @@ Unit tests for the ``fm.views.player.RandomView`` class.
 import httplib
 import json
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 import pytest
 from flask import url_for
 from mockredis import mock_redis_client
+from tests.factories.spotify import TrackFactory
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
 from fm.logic.player import Queue
-from tests.factories.spotify import TrackFactory
-from tests.factories.user import UserFactory
 
 
 @pytest.mark.usefixtures("authenticated")

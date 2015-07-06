@@ -3,7 +3,7 @@ from __future__ import with_statement
 # Standard Libs
 from logging.config import fileConfig
 
-# Third Pary Libs
+# Third Party Libs
 from alembic import context
 # add your model's MetaData object here
 # for 'autogenerate' support

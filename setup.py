@@ -15,10 +15,12 @@ import multiprocessing  # noqa
 import os
 import sys
 
-# First Party Libs
-import fm  # noqa
+# Third Party Libs
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
+
+# First Party Libs
+import fm  # noqa
 
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__)))

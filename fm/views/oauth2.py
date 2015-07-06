@@ -11,7 +11,7 @@ Views for the Google OAUTH2 authentication.
 # Standard Libs
 import json
 
-# Third Pary Libs
+# Third Party Libs
 from flask import current_app, render_template, request, url_for
 from flask.views import MethodView
 from furl import furl

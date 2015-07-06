@@ -7,8 +7,7 @@ fm.oauth2.google
 
 Google oAuth2 Connection helper methods.
 """
-
-# Third Pary Libs
+# Third Party Libs
 import apiclient
 import httplib2
 from oauth2client.client import FlowExchangeError, credentials_from_code

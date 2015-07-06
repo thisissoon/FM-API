@@ -11,10 +11,11 @@ Unit tests for session management.
 # Standard Libs
 import uuid
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 from flask import g
 from itsdangerous import URLSafeTimedSerializer
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
@@ -27,7 +28,6 @@ from fm.session import (
     user_from_session,
     validate_session
 )
-from tests.factories.user import UserFactory
 
 
 class TestAuthenticated(object):

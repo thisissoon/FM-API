@@ -12,14 +12,14 @@ Unit tests for the ``fm.views.user.UserView`` class.
 import httplib
 import uuid
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 from flask import url_for
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
 from fm.serializers.user import UserSerializer
-from tests.factories.user import UserFactory
 
 
 class TestUserGet(object):

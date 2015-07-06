@@ -9,10 +9,10 @@ Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
 # Standard Libs
+import httplib
 import json
 
-# Third Pary Libs
-import httplib
+# Third Party Libs
 import mock
 import pytest
 import requests
@@ -28,6 +28,7 @@ from fm.models.spotify import Artist
 from fm.models.user import User
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
+from fm.session import current_user
 
 
 class QueueTest(object):
@@ -97,12 +98,14 @@ class TestGetQueue(QueueTest):
                 config.PLAYLIST_REDIS_KEY,
                 json.dumps({
                     'uri': track.spotify_uri,
-                    'user': users[i].id
+                    'user': users[i].id,
+                    'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
                 })
             )
             expected.append({
                 'track': TrackSerializer().serialize(track),
-                'user': UserSerializer().serialize(users[i])
+                'user': UserSerializer().serialize(users[i]),
+                'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
             })
 
         url = url_for('player.queue')
@@ -178,3 +181,82 @@ class TestQueuePost(QueueTest):
             'user': user.id
         }))
         update_genres.s.assert_called_with(Artist.query.all()[0].id)
+
+
+@pytest.mark.usefixtures("authenticated")
+class TestQueueDelete(QueueTest):
+
+    @pytest.mark.usefixtures("unauthenticated")
+    def must_be_authenticated(self):
+        url = url_for('player.queue')
+        response = self.client.delete(url, data=json.dumps({
+            'uri': 'foo',
+            'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+        }))
+
+        assert response.status_code == httplib.UNAUTHORIZED
+
+    def should_delete_track_in_queue(self):
+        tracks = [TrackFactory() for i in range(3)]
+        db.session.add_all(tracks)
+        db.session.commit()
+
+        for i, track in enumerate(tracks):
+            self.redis.rpush(
+                config.PLAYLIST_REDIS_KEY,
+                json.dumps({
+                    'uri': track.spotify_uri,
+                    'user': current_user.id,
+                    'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+                })
+            )
+
+        url = url_for('player.queue')
+        response = self.client.delete(url, data=json.dumps({
+            'uri': tracks[1].spotify_uri,
+            'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+        }))
+
+        assert response.status_code == httplib.OK
+        assert self.redis.llen(config.PLAYLIST_REDIS_KEY) == 2
+
+    def should_return_no_content_for_non_existing_key(self):
+        track = TrackFactory.create()
+
+        url = url_for('player.queue')
+        response = self.client.delete(url, data=json.dumps({
+            'uri': track.spotify_uri,
+            'uuid': 'blabla',
+        }))
+
+        assert response.status_code == httplib.NO_CONTENT
+
+    def should_publish_remove_event(self):
+        track = TrackFactory.create()
+        db.session.add(track)
+        db.session.commit()
+
+        self.redis.rpush(
+            config.PLAYLIST_REDIS_KEY,
+            json.dumps({
+                'uri': track.spotify_uri,
+                'user': current_user.id,
+                'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+            })
+        )
+
+        url = url_for('player.queue')
+        response = self.client.delete(url, data=json.dumps({
+            'uri': track.spotify_uri,
+            'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+        }))
+
+        assert response.status_code == httplib.OK
+        self.redis.publish.assert_called_once_with(
+            config.PLAYER_CHANNEL,
+            json.dumps({
+                'event': 'deleted',
+                'uri': track.spotify_uri,
+                'user': current_user.id
+            })
+        )

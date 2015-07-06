@@ -7,8 +7,7 @@ fm.routes.oauth2
 
 Routes for the Google OAUTH2 Authentication
 """
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers.default import Pluggable
 
 # First Party Libs

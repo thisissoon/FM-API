@@ -8,8 +8,7 @@ fm.routes.root
 Base routes for the FM application using Flask-Via.
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers import Include
 from flask.ext.via.routers.default import Pluggable
 

@@ -11,11 +11,9 @@ Custom types for SQLAlchemy models.
 # Standard Libs
 from datetime import datetime
 
-# Third Pary Libs
-from sqlalchemy import types
-
-# First Party Libs
+# Third Party Libs
 from dateutil.tz import tzutc
+from sqlalchemy import types
 
 
 class UTCDateTime(types.TypeDecorator):

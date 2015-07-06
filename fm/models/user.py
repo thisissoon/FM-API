@@ -11,7 +11,7 @@ SQLAlchemy User Models.
 # Standard Libs
 import uuid
 
-# Third Pary Libs
+# Third Party Libs
 from sqlalchemy.dialects.postgresql import JSON, UUID
 
 # First Party Libs

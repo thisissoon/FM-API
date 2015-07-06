@@ -12,7 +12,7 @@ Helper classes for constructing paginated responses.
 from functools import wraps
 from math import ceil
 
-# Third Pary Libs
+# Third Party Libs
 from flask import request
 from furl import furl
 from webargs import Arg

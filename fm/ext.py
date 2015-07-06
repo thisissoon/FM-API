@@ -7,8 +7,7 @@ fm.ext
 
 Flask Application Extension Instantiation.
 """
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via import Via
 from werkzeug import LocalProxy
 

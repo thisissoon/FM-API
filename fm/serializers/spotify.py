@@ -7,8 +7,7 @@ fm.serializers.spotify
 
 Kim serializers for `fm.models.spotify` models.
 """
-
-# Third Pary Libs
+# Third Party Libs
 import kim.types as t
 from kim.contrib.sqa import SQASerializer
 from kim.fields import Field

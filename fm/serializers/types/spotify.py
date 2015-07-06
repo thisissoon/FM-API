@@ -11,14 +11,14 @@ Custom Kim Field Types relating to Spotifu Validation
 # Standard Libs
 import httplib
 
-# Third Pary Libs
+# Third Party Libs
+import requests
 from flask import url_for
 from kim import types as t
 from kim.exceptions import ValidationError
 from simplejson import JSONDecodeError
 
 # First Party Libs
-import requests
 from fm.models.user import User
 
 

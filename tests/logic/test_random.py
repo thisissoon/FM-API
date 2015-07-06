@@ -1,10 +1,12 @@
 # Standard Libs
 import unittest
 
+# Third Party Libs
+from tests.factories.spotify import TrackFactory
+
 # First Party Libs
 from fm.ext import db
 from fm.logic.player import Random
-from tests.factories.spotify import TrackFactory
 
 
 class TestQueue(unittest.TestCase):
