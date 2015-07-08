@@ -16,7 +16,7 @@ HEADERS = {
     'CREDENTIALS': 'Access-Control-Allow-Credentials',
     'ORIGIN': 'Access-Control-Allow-Origin',
     'MAX_AGE': 'Access-Control-Allow-Max-Age',
-    'EXPOSE_HEADERS': 'Access-Control-Allow-Expose-Headers',
+    'EXPOSE_HEADERS': 'Access-Control-Expose-Headers',
     'HEADERS': 'Access-Control-Allow-Headers'
 }
 
