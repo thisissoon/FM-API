@@ -72,8 +72,15 @@ class SpotifyURI(t.String):
             The Spotiy URI
         """
 
-        id = value.split(':')[-1]
-        endpoint = 'https://api.spotify.com/v1/tracks/{0}'.format(id)
+        spotify_api_map = {
+            'track': 'https://api.spotify.com/v1/tracks/{0}',
+            'album': 'https://api.spotify.com/v1/albums/{0}'
+        }
+        try:
+            _, tpe, uri = value.split(':')
+            endpoint = spotify_api_map[tpe].format(uri)
+        except (KeyError, ValueError):
+            raise ValidationError('Unknow spotify uri: {}'.format(value))
 
         try:
             response = requests.get(endpoint)

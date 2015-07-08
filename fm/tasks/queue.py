@@ -13,10 +13,31 @@ from fm.ext import celery, db
 from fm.logic.player import Queue
 from fm.models.spotify import Album, Artist, Track
 from fm.tasks.artist import update_genres
+from fm.thirdparty.spotify import SpotifyApi
 
 
 @celery.task
-def add(data, user):
+def add_album(uri, user):
+    '''
+    Celery task for adding album tracks into the queue
+
+    Arguments
+    ---------
+    data : uri
+        URI of album to add
+
+    user : str
+        Id of the user whom aded t otrack to the queue
+    '''
+    spotify_api = SpotifyApi()
+    add_arguments = []
+    for i, track in enumerate(spotify_api.get_album_tracks(uri)):
+        add_arguments.append((track.raw, user, i < 1))
+    add.starmap(add_arguments).apply_async()
+
+
+@celery.task
+def add(data, user, notification=True):
     """ Celery task for adding a single track to the queue.
 
     Arguments
@@ -24,11 +45,10 @@ def add(data, user):
     data : dict
         Raw Decoded Spotify API Track JSON data
     user : str
-        The name of the user whom added the track to the queue
+        Id of the user whom added the track to the queue
     """
 
     # Create or Update Album
-
     album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
     if album is None:
         album = Album()
@@ -53,9 +73,9 @@ def add(data, user):
 
     db.session.add(track)
     db.session.commit()
+    Queue.add(track.spotify_uri, user, notification)
 
     # Create or Update Artists - Appending Album to the Artists Albums
-
     for item in data['artists']:
         artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
         if artist is None:
@@ -72,6 +92,3 @@ def add(data, user):
 
         # Call Sub task for artist Genre updating
         update_genres.s(artist.id).delay()
-
-    # Append Track to Queue
-    Queue.add(track.spotify_uri, user)
