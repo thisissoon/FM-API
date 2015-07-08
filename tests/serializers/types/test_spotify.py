@@ -46,7 +46,7 @@ class TestSpotifyURI(object):
         field = SpotifyURI()
 
         with pytest.raises(ValidationError) as e:
-            field.validate('foo')
+            field.validate('spotify:track:foo')
 
         assert e.value.message == 'Unable to get track data from Spotify'
 

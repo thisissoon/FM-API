@@ -475,7 +475,7 @@ class QueueView(MethodView):
                 pk_or_uri=obj['uri']['uri'])
             )
         elif 'spotify:album:' in obj['uri']['uri']:
-            add_album.delay(obj['uri'], current_user.id)
+            add_album.apply_async((obj['uri']['uri'], current_user.id))
             return http.Created()
         else:
             return http.BadRequest()

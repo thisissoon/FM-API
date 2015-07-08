@@ -12,7 +12,6 @@ Celery Tasks for the Player Queue.
 from fm.ext import celery, db
 from fm.logic.player import Queue
 from fm.models.spotify import Album, Artist, Track
-from fm.models.user import User
 from fm.tasks.artist import update_genres
 from fm.thirdparty.spotify import SpotifyApi
 
@@ -30,14 +29,9 @@ def add_album(uri, user):
     user : str
         Id of the user whom aded t otrack to the queue
     '''
-    user = User.queue.get(user)
     spotify_api = SpotifyApi()
-
-    subtasks = []
-    for track in spotify_api.get_playlists_tracks(uri):
-        subtasks.append(add.s(track, user.id))
-    workflow = celery.chain(*subtasks)
-    workflow.delay()
+    for track in spotify_api.get_album_tracks(uri):
+        add(track.raw, user)
 
 
 @celery.task
@@ -53,7 +47,6 @@ def add(data, user):
     """
 
     # Create or Update Album
-
     album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
     if album is None:
         album = Album()
@@ -78,9 +71,9 @@ def add(data, user):
 
     db.session.add(track)
     db.session.commit()
+    Queue.add(track.spotify_uri, user)
 
     # Create or Update Artists - Appending Album to the Artists Albums
-
     for item in data['artists']:
         artist = Artist.query.filter(Artist.spotify_uri == item['uri']).first()
         if artist is None:
@@ -97,6 +90,3 @@ def add(data, user):
 
         # Call Sub task for artist Genre updating
         update_genres.s(artist.id).delay()
-
-    # Append Track to Queue
-    Queue.add(track.spotify_uri, user)

@@ -7,7 +7,9 @@ tests
 
 Test suite for FM Player setup.
 """
+from __future__ import unicode_literals
 
+# Standard Libs
 import os
 
 

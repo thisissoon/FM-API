@@ -120,19 +120,20 @@ class SpotifyApi(object):
         Returns spotify endpoint for tracks in an album
         """
         album_url = 'https://api.spotify.com/v1/albums/{album_uri}/tracks'
-        return album_url.format(
-            user_id=self.user.spotify_id, album_uri=album_uri
-        )
+        return album_url.format(album_uri=album_uri)
 
     def _hit_spotify_api(self, url):
         """
         Function handle user Spotify authorization and return raw response
         data from Spotify api.
         """
-        credentials = 'Bearer {access_token}'.format(
-            access_token=self.user.spotify_credentials['access_token']
-        )
-        response = requests.get(url, headers={'authorization': credentials})
+        headers = {}
+        if self.user:
+            credentials = 'Bearer {access_token}'.format(
+                access_token=self.user.spotify_credentials['access_token']
+            )
+            headers = {'authorization': credentials}
+        response = requests.get(url, headers=headers)
         if response.status_code == httplib.UNAUTHORIZED:
             raise SpotifyApi.UnauthorizedException()
         return response.json()
@@ -206,8 +207,8 @@ class SpotifyApi(object):
             for metadata in track_data['items']:
                 yield Track(metadata['track'])
 
-    def get_album_tracks(self, album_uri):
-        page = self.get_playlists_tracks_url(album_uri)
+    def get_album_tracks(self, album_uri, raw=False):
+        page = self.get_albums_track_url(album_uri.split(':')[-1])
         while page is not None:
             album_data = self._hit_spotify_api(page)
             page = album_data['next']
@@ -222,6 +223,7 @@ class BaseSpotify(object):
         self.id = metadata['id']
         self.name = metadata['name']
         self.spotify_uri = metadata['uri']
+        self.raw = metadata
 
 
 class Playlist(BaseSpotify):
