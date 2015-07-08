@@ -24,7 +24,7 @@ class Queue(object):
     """
 
     @staticmethod
-    def add(uri, user):
+    def add(uri, user, notification=True):
         """ Add a track into a redis queue
 
         Parameters
@@ -46,11 +46,12 @@ class Queue(object):
         )
 
         # Publish Add Event
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({
-            'event': 'add',
-            'uri': uri,
-            'user': user
-        }))
+        if notification:
+            redis.publish(config.PLAYER_CHANNEL, json.dumps({
+                'event': 'add',
+                'uri': uri,
+                'user': user
+            }))
 
     @staticmethod
     def get_queue(offset=0, limit=None):

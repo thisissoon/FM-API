@@ -30,12 +30,14 @@ def add_album(uri, user):
         Id of the user whom aded t otrack to the queue
     '''
     spotify_api = SpotifyApi()
-    for track in spotify_api.get_album_tracks(uri):
-        add(track.raw, user)
+    add_arguments = []
+    for i, track in enumerate(spotify_api.get_album_tracks(uri)):
+        add_arguments.append((track.raw, user, i > 0))
+    add.starmap(add_arguments).apply_async()
 
 
 @celery.task
-def add(data, user):
+def add(data, user, notification=True):
     """ Celery task for adding a single track to the queue.
 
     Arguments
@@ -71,7 +73,7 @@ def add(data, user):
 
     db.session.add(track)
     db.session.commit()
-    Queue.add(track.spotify_uri, user)
+    Queue.add(track.spotify_uri, user, notification)
 
     # Create or Update Artists - Appending Album to the Artists Albums
     for item in data['artists']:

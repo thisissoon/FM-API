@@ -198,7 +198,7 @@ class TestQueuePost(QueueTest):
                     json=mock.MagicMock(return_value=TRACK_DATA)
                 ),
         }
-        self.requests_mock.side_effect = lambda x, *args, **kwargs: mock_data.get(x)
+        self.requests_mock.side_effect = lambda x, *args, **kwargs: mock_data.pop(x)
 
         url = url_for('player.queue')
         response = self.client.post(url, data=json.dumps({
@@ -208,6 +208,7 @@ class TestQueuePost(QueueTest):
         queue = self.redis.get(config.PLAYLIST_REDIS_KEY)
         assert response.status_code == httplib.CREATED
         assert len(queue) == 2
+        assert self.redis.publish.call_count == 1
 
 
 @pytest.mark.usefixtures("authenticated")
