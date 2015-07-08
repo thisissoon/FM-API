@@ -135,7 +135,7 @@ class TestQueuePost(QueueTest):
 
         assert response.status_code == httplib.UNAUTHORIZED
 
-    def must_catch_validation_errors(self):
+    def must_catch_validation_errors_for_non_existing_spotify_item(self):
         self.requests_mock.return_value = mock.MagicMock(
             status_code=httplib.NOT_FOUND
         )
@@ -148,6 +148,14 @@ class TestQueuePost(QueueTest):
         assert response.status_code == httplib.UNPROCESSABLE_ENTITY
         assert response.json['errors']['uri'][0]  \
             == 'Track not found on Spotify: spotify:track:foo'
+
+    def must_catch_validation_errors_for_wront_spotify_uri(self):
+        url = url_for('player.queue')
+        response = self.client.post(url, data=json.dumps({'uri': 'foo'}))
+
+        assert response.status_code == httplib.UNPROCESSABLE_ENTITY
+        assert response.json['errors']['uri'][0]  \
+            == 'Unknow spotify uri: foo'
 
     @mock.patch('fm.tasks.queue.update_genres')
     def should_add_track_to_queue(self, update_genres):

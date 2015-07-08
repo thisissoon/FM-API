@@ -32,7 +32,7 @@ def add_album(uri, user):
     spotify_api = SpotifyApi()
     add_arguments = []
     for i, track in enumerate(spotify_api.get_album_tracks(uri)):
-        add_arguments.append((track.raw, user, i > 0))
+        add_arguments.append((track.raw, user, i < 1))
     add.starmap(add_arguments).apply_async()
 
 
