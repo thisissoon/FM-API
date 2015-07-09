@@ -10,7 +10,7 @@ Views for working with User objects.
 
 # Standard Libs
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Third Party Libs
 import pytz
@@ -41,8 +41,7 @@ from fm.models.spotify import (
     Track
 )
 from fm.serializers.spotify import (
-    ArtistSerializer,
-    TrackSerializer
+    ArtistSerializer
 )
 
 

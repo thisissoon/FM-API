@@ -21,7 +21,7 @@ routes = [
     # /users/{id}
     Pluggable('/<pk>', user.UserView, 'user'),
     # /users/{id}/stats
-    Pluggable('/<pk>/stats/', user.UserStatsView, 'user_stats'),
+    Pluggable('/<pk>/stats/', user.UserStatsView, 'stats'),
 
     Pluggable('/<user_pk>/spotify-playlists/',
               user.UserSpotifyPlaylistView, 'user_spotify_playlists'),
