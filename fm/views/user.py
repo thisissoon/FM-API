@@ -10,8 +10,11 @@ Views for working with User objects.
 
 # Standard Libs
 import uuid
+from datetime import datetime, timedelta
 
 # Third Party Libs
+import pytz
+from flask import request
 from flask.views import MethodView
 
 # First Party Libs
@@ -24,6 +27,9 @@ from fm.thirdparty.spotify import (
     PlaylistSerializer,
     SpotifyApi,
     TrackSerializer
+)
+from fm.models.spotify import (
+    PlaylistHistory
 )
 
 
@@ -111,3 +117,36 @@ class UserSpotifyTracksView(MethodView):
             [pl for pl in spotify_api.get_playlists_tracks(playlist_pk)],
             many=True
         ))
+
+
+class UserStatsView(MethodView):
+    """ Provides statistics for a specific user.
+    """
+
+    def total_plays(self, user_pk, since):
+        query = PlaylistHistory.query \
+            .filter(PlaylistHistory.user_id == user_pk)
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.count()
+
+    def get(self, pk):
+
+        try:
+            uuid.UUID(pk, version=4)
+        except ValueError:
+            user = None
+        else:
+            user = User.query.get(pk)
+
+        if user is None:
+            return http.NotFound()
+
+        since = request.args.get('since', None)
+        if since:
+            since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
+
+        stats = {
+            'total_plays': self.total_plays(pk, since),
+        }
+        return http.OK(stats)
