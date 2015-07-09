@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 import pytz
 from flask import request
 from flask.views import MethodView
+from sqlalchemy.sql import func
 
 # First Party Libs
 from fm import http
@@ -29,7 +30,8 @@ from fm.thirdparty.spotify import (
     TrackSerializer
 )
 from fm.models.spotify import (
-    PlaylistHistory
+    PlaylistHistory,
+    Track
 )
 
 
@@ -123,6 +125,16 @@ class UserStatsView(MethodView):
     """ Provides statistics for a specific user.
     """
 
+    def total_play_time(self, user_pk, since):
+        query = Track.query \
+            .with_entities(func.sum(Track.duration).label('sum')) \
+            .join(PlaylistHistory) \
+            .filter(PlaylistHistory.user_id == user_pk)
+
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.first()[0]
+
     def total_plays(self, user_pk, since):
         query = PlaylistHistory.query \
             .filter(PlaylistHistory.user_id == user_pk)
@@ -148,5 +160,6 @@ class UserStatsView(MethodView):
 
         stats = {
             'total_plays': self.total_plays(pk, since),
+            'total_play_time': self.total_play_time(pk, since),
         }
         return http.OK(stats)
