@@ -312,7 +312,7 @@ class HistoryView(MethodView):
 
 class StatsView(MethodView):
 
-    def most_active_djs(self, since):
+    def most_active_djs(self, since=None, until=None):
         query = User.query \
             .with_entities(User, func.count(User.id).label('count')) \
             .join(PlaylistHistory) \
@@ -320,9 +320,11 @@ class StatsView(MethodView):
             .order_by(desc('count'))
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.limit(10)
 
-    def total_play_time_per_user(self, since):
+    def total_play_time_per_user(self, since=None, until=None):
         query = User.query \
             .with_entities(User, func.sum(Track.duration).label('sum')) \
             .join(PlaylistHistory) \
@@ -331,23 +333,29 @@ class StatsView(MethodView):
             .order_by(desc('sum'))
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.limit(10)
 
-    def total_play_time(self, since):
+    def total_play_time(self, since=None, until=None):
         query = Track.query.with_entities(
             func.sum(Track.duration).label('sum')
         ).join(PlaylistHistory)
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.first()[0]
 
-    def total_plays(self, since):
+    def total_plays(self, since=None, until=None):
         query = PlaylistHistory.query
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.count()
 
-    def most_played_tracks(self, since):
+    def most_played_tracks(self, since=None, until=None):
         query = Track.query \
             .options(lazyload(Track.album)) \
             .with_entities(Track, func.count(Track.id).label('count')) \
@@ -356,9 +364,11 @@ class StatsView(MethodView):
             .order_by(desc('count'))
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.limit(10)
 
-    def most_played_artists(self, since):
+    def most_played_artists(self, since=None, until=None):
         query = Artist.query \
             .with_entities(Artist, func.count(Artist.id).label('count')) \
             .join(ArtistAlbumAssociation) \
@@ -369,9 +379,11 @@ class StatsView(MethodView):
             .order_by(desc('count'))
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.limit(10)
 
-    def most_played_genres(self, since):
+    def most_played_genres(self, since=None, until=None):
         query = Genre.query \
             .with_entities(Genre, func.count(Genre.id).label('count')) \
             .join(ArtistGenreAssociation) \
@@ -384,41 +396,46 @@ class StatsView(MethodView):
             .order_by(desc('count'))
         if since:
             query = query.filter(PlaylistHistory.created >= since)
+        if until:
+            query = query.filter(PlaylistHistory.created <= until)
         return query.limit(10)
 
     def get(self, *args, **kwargs):
         since = request.args.get('from', None)
         if since:
             since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
+        until = request.args.get('to', None)
+        if until:
+            until = pytz.utc.localize(datetime.strptime(until, '%Y-%m-%d'))
 
         stats = {
             'most_active_djs': [
                 {
                     'user': UserSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_active_djs(since)],
+                } for u, t in self.most_active_djs(since, until)],
             'most_played_tracks': [
                 {
                     'track': TrackSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_tracks(since)],
+                } for u, t in self.most_played_tracks(since, until)],
             'most_played_artists': [
                 {
                     'artist': ArtistSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_artists(since)],
+                } for u, t in self.most_played_artists(since, until)],
             'most_played_genres': [
                 {
                     'name': u.name,
                     'total': t
-                } for u, t in self.most_played_genres(since)],
+                } for u, t in self.most_played_genres(since, until)],
             'total_play_time_per_user': [
                 {
                     'user': UserSerializer().serialize(u),
                     'total': t
-                } for u, t in self.total_play_time_per_user(since)],
-            'total_play_time': self.total_play_time(since),
-            'total_plays': self.total_plays(since),
+                } for u, t in self.total_play_time_per_user(since, until)],
+            'total_play_time': self.total_play_time(since, until),
+            'total_plays': self.total_plays(since, until),
         }
         return http.OK(stats)
 

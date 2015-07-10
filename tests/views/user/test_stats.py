@@ -24,8 +24,8 @@ from tests.factories.spotify import (
 
 # First Party Libs
 from fm.ext import db
-from fm.thirdparty.spotify import TrackSerializer
 from fm.serializers.spotify import ArtistSerializer
+from fm.thirdparty.spotify import TrackSerializer
 
 
 class TestGetStats(object):
