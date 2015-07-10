@@ -35,7 +35,7 @@ celery:
     - ECHONEST_API_KEY=CIJ9BRHQVCOULALBX
 socket:
   image: soon/fm-socket
-  command: forever -w server.js
+  command: npm start
   ports:
     - "8080:8080"
   links:
