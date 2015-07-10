@@ -49,7 +49,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -108,7 +108,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -170,7 +170,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -282,7 +282,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -343,7 +343,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -389,7 +389,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -421,7 +421,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('player.stats', since='2015-06-01')
+        url = url_for('player.stats', **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200

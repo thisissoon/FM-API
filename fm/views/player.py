@@ -387,7 +387,7 @@ class StatsView(MethodView):
         return query.limit(10)
 
     def get(self, *args, **kwargs):
-        since = request.args.get('since', None)
+        since = request.args.get('from', None)
         if since:
             since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
 

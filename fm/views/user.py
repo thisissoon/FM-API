@@ -206,7 +206,7 @@ class UserStatsView(MethodView):
         if user is None:
             return http.NotFound()
 
-        since = request.args.get('since', None)
+        since = request.args.get('from', None)
         if since:
             since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
 
