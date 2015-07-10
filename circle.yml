@@ -26,10 +26,10 @@ deployment:
   prod:
     branch: master
     commands:
-      - docker tag $REPO:$TAG $REPO:prod
-      - docker push $REPO:prod
+      - docker tag $REPO:$TAG quay.io/$REPO:prod
+      - docker push quay.io/$REPO:prod
   latest:
     branch: develop
     commands:
-      - docker tag $REPO:$TAG $REPO:latest
-      - docker push $REPO:latest
+      - docker tag $REPO:$TAG quay.io/$REPO:latest
+      - docker push quay.io/$REPO:latest
