@@ -54,11 +54,22 @@ class Queue(object):
             }))
 
     @staticmethod
+    def iterate():
+        for index in range(Queue.length()):
+            yield Queue.get_item(index)
+
+    @staticmethod
+    def get_item(index):
+        return redis.lindex(config.PLAYLIST_REDIS_KEY, index)
+
+    @staticmethod
     def get_queue(offset=0, limit=None):
         if limit is None:
             limit = Queue.length()
 
-        tracks = redis.lrange(config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1))
+        tracks = redis.lrange(
+            config.PLAYLIST_REDIS_KEY, offset, (offset + limit - 1)
+        )
         return (json.loads(track) for track in tracks)
 
     @staticmethod
@@ -92,31 +103,25 @@ class Queue(object):
         return redis.llen(config.PLAYLIST_REDIS_KEY)
 
     @staticmethod
-    def delete(uri, user, uuid):
+    def delete(uuid):
         """ Remove a track from a redis queue
 
         Parameters
         ----------
-        uri: str
-            The spotify URI of the Track to add to the Queue
-        user: User model
-            The User class instance of the user whome added the track to the Queue
         uuid: Uuid
             Unique identifator of track in the queue
         """
-        deleted = redis.lrem(
-            key=config.PLAYLIST_REDIS_KEY,
-            value=json.dumps({'uri': uri, 'user': user.id, 'uuid': uuid}),
-            count=1
-        )
-        if deleted >= 1:
-            redis.publish(config.PLAYER_CHANNEL, json.dumps({
-                'event': 'deleted',
-                'uri': uri,
-                'user': user.id
-            }))
 
-            return deleted
+        for item in Queue.iterate():
+            json_item = json.loads(item)
+            if json_item.get('uuid') == uuid:
+                redis.lrem(key=config.PLAYLIST_REDIS_KEY, value=item, count=1)
+                redis.publish(config.PLAYER_CHANNEL, json.dumps({
+                    'event': 'deleted',
+                    'uri': json_item['uri'],
+                    'user': json_item['user'],
+                }))
+                break
         else:
             raise ValueError('Cannot find value')
 
