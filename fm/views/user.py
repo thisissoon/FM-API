@@ -10,9 +10,15 @@ Views for working with User objects.
 
 # Standard Libs
 import uuid
+from datetime import datetime
 
 # Third Party Libs
+import pytz
+from flask import request
 from flask.views import MethodView
+from sqlalchemy import desc
+from sqlalchemy.orm import lazyload
+from sqlalchemy.sql import func
 
 # First Party Libs
 from fm import http
@@ -24,6 +30,18 @@ from fm.thirdparty.spotify import (
     PlaylistSerializer,
     SpotifyApi,
     TrackSerializer
+)
+from fm.models.spotify import (
+    Album,
+    Artist,
+    ArtistAlbumAssociation,
+    ArtistGenreAssociation,
+    Genre,
+    PlaylistHistory,
+    Track
+)
+from fm.serializers.spotify import (
+    ArtistSerializer
 )
 
 
@@ -111,3 +129,104 @@ class UserSpotifyTracksView(MethodView):
             [pl for pl in spotify_api.get_playlists_tracks(playlist_pk)],
             many=True
         ))
+
+
+class UserStatsView(MethodView):
+    """ Provides statistics for a specific user.
+    """
+
+    def total_play_time(self, user_pk, since):
+        query = Track.query \
+            .with_entities(func.sum(Track.duration).label('sum')) \
+            .join(PlaylistHistory) \
+            .filter(PlaylistHistory.user_id == user_pk)
+
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.first()[0]
+
+    def total_plays(self, user_pk, since):
+        query = PlaylistHistory.query \
+            .filter(PlaylistHistory.user_id == user_pk)
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.count()
+
+    def most_played_tracks(self, user_pk, since):
+        query = Track.query \
+            .options(lazyload(Track.album)) \
+            .with_entities(Track, func.count(Track.id).label('count')) \
+            .join(PlaylistHistory) \
+            .filter(PlaylistHistory.user_id == user_pk) \
+            .group_by(Track.id) \
+            .order_by(desc('count'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.limit(10)
+
+    def most_played_artists(self, user_pk, since):
+        query = Artist.query \
+            .with_entities(Artist, func.count(Artist.id).label('count')) \
+            .join(ArtistAlbumAssociation) \
+            .join(Album) \
+            .join(Track) \
+            .join(PlaylistHistory) \
+            .filter(PlaylistHistory.user_id == user_pk) \
+            .group_by(Artist.id) \
+            .order_by(desc('count'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.limit(10)
+
+    def most_played_genres(self, user_pk, since):
+        query = Genre.query \
+            .with_entities(Genre, func.count(Genre.id).label('count')) \
+            .join(ArtistGenreAssociation) \
+            .join(Artist) \
+            .join(ArtistAlbumAssociation) \
+            .join(Album) \
+            .join(Track) \
+            .join(PlaylistHistory) \
+            .filter(PlaylistHistory.user_id == user_pk) \
+            .group_by(Genre.id) \
+            .order_by(desc('count'))
+        if since:
+            query = query.filter(PlaylistHistory.created >= since)
+        return query.limit(10)
+
+    def get(self, pk):
+
+        try:
+            uuid.UUID(pk, version=4)
+        except ValueError:
+            user = None
+        else:
+            user = User.query.get(pk)
+
+        if user is None:
+            return http.NotFound()
+
+        since = request.args.get('since', None)
+        if since:
+            since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
+
+        stats = {
+            'most_played_tracks': [
+                {
+                    'track': TrackSerializer().serialize(u),
+                    'total': t
+                } for u, t in self.most_played_tracks(pk, since)],
+            'most_played_artists': [
+                {
+                    'artist': ArtistSerializer().serialize(u),
+                    'total': t
+                } for u, t in self.most_played_artists(pk, since)],
+            'most_played_genres': [
+                {
+                    'name': u.name,
+                    'total': t
+                } for u, t in self.most_played_genres(pk, since)],
+            'total_plays': self.total_plays(pk, since),
+            'total_play_time': self.total_play_time(pk, since),
+        }
+        return http.OK(stats)
