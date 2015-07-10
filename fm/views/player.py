@@ -481,10 +481,9 @@ class QueueView(MethodView):
             return http.BadRequest()
 
     @authenticated
-    def delete(self):
-        data = request.json
+    def delete(self, uuid):
         try:
-            Queue.delete(uri=data['uri'], user=current_user, uuid=data['uuid'])
+            Queue.delete(uuid=uuid)
         except ValueError:
             return http.NoContent()
         return http.OK()

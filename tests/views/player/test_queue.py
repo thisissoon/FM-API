@@ -9,10 +9,11 @@ Unit tests for the ``fm.views.player.QueueView`` class.
 """
 
 # Standard Libs
-import httplib
 import json
+import uuid
 
 # Third Party Libs
+import httplib
 import mock
 import pytest
 from flask import url_for
@@ -238,32 +239,27 @@ class TestQueueDelete(QueueTest):
         db.session.commit()
 
         for i, track in enumerate(tracks):
+            track_uuid = str(uuid.uuid4())
             self.redis.rpush(
                 config.PLAYLIST_REDIS_KEY,
                 json.dumps({
                     'uri': track.spotify_uri,
                     'user': current_user.id,
-                    'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
+                    'uuid': track_uuid,
                 })
             )
 
-        url = url_for('player.queue')
-        response = self.client.delete(url, data=json.dumps({
-            'uri': tracks[1].spotify_uri,
-            'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
-        }))
-
+        url = url_for('player.queue', uuid=track_uuid)
+        response = self.client.delete(url)
         assert response.status_code == httplib.OK
         assert self.redis.llen(config.PLAYLIST_REDIS_KEY) == 2
 
     def should_return_no_content_for_non_existing_key(self):
-        track = TrackFactory.create()
+        TrackFactory.create()
 
         url = url_for('player.queue')
-        response = self.client.delete(url, data=json.dumps({
-            'uri': track.spotify_uri,
-            'uuid': 'blabla',
-        }))
+        url = url_for('player.queue', uuid='bla-bla-bla')
+        response = self.client.delete(url)
 
         assert response.status_code == httplib.NO_CONTENT
 
@@ -282,10 +278,8 @@ class TestQueueDelete(QueueTest):
         )
 
         url = url_for('player.queue')
-        response = self.client.delete(url, data=json.dumps({
-            'uri': track.spotify_uri,
-            'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da',
-        }))
+        url = url_for('player.queue', uuid='16fd2706-8baf-433b-82eb-8c7fada847da')
+        response = self.client.delete(url)
 
         assert response.status_code == httplib.OK
         self.redis.publish.assert_called_once_with(
