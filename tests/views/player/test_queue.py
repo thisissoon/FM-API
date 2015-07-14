@@ -233,7 +233,6 @@ class TestQueueDelete(QueueTest):
 
         assert response.status_code == httplib.UNAUTHORIZED
 
-    @pytest.mark.skipif(True, reason='Redis mock library is not fully compatible')
     def should_delete_track_in_queue(self):
         tracks = [TrackFactory() for i in range(3)]
         db.session.add_all(tracks)
