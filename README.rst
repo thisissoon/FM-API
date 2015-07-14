@@ -374,14 +374,11 @@ album and artist nested objects.
 ``DELETE``
 ^^^^^^^^^^
 
-Remove a track from the queue:
+Remove a track from the queue: ``http DELETE http://localhost/player/queue/{:uuid}``
 
 .. code-block::
 
-    {
-      "uri": "spotify:track:6FshvOVICpRVkwpYE5BYTD",
-      "uuid": "16fd2706-8baf-433b-82eb-8c7fada847da",
-    }
+    http DELETE http://localhost/player/queue/16fd2706-8baf-433b-82eb-8c7fada847da
 
 
 ``/player/queue/meta``
