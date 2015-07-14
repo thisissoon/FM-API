@@ -24,13 +24,13 @@ from tests.factories.spotify import (
 
 # First Party Libs
 from fm.ext import db
-from fm.thirdparty.spotify import TrackSerializer
 from fm.serializers.spotify import ArtistSerializer
+from fm.thirdparty.spotify import TrackSerializer
 
 
 class TestGetStats(object):
 
-    def should_return_played_tracks_since_selected_date(self):
+    def should_return_played_tracks_from_selected_date(self):
         user = UserFactory()
         most_played = TrackFactory()
         second_most_played = TrackFactory()
@@ -52,7 +52,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('users.stats', pk=user.id, since='2015-06-01')
+        url = url_for('users.stats', pk=user.id, **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -96,7 +96,7 @@ class TestGetStats(object):
             },
         ]
 
-    def should_return_most_played_artist_since_selected_date(self):
+    def should_return_most_played_artist_from_selected_date(self):
         user = UserFactory()
         most_played = ArtistFactory()
         second_most_played = ArtistFactory()
@@ -126,7 +126,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('users.stats', pk=user.id, since='2015-06-01')
+        url = url_for('users.stats', pk=user.id, **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -235,7 +235,7 @@ class TestGetStats(object):
             },
         ]
 
-    def should_return_most_played_genre_since_selected_date(self):
+    def should_return_most_played_genre_from_selected_date(self):
         user = UserFactory()
         most_played = GenreFactory()
         second_most_played = GenreFactory()
@@ -272,7 +272,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('users.stats', pk=user.id, since='2015-06-01')
+        url = url_for('users.stats', pk=user.id, **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -308,7 +308,7 @@ class TestGetStats(object):
         assert response.status_code == 200
         assert response.json['total_play_time'] == 2200
 
-    def should_return_played_time_since_selected_date(self):
+    def should_return_played_time_from_selected_date(self):
         user = UserFactory()
         entries = [
             user,
@@ -328,7 +328,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('users.stats', pk=user.id, since='2015-06-01')
+        url = url_for('users.stats', pk=user.id, **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200
@@ -351,7 +351,7 @@ class TestGetStats(object):
         assert response.status_code == 200
         assert response.json['total_plays'] == 2
 
-    def should_return_total_plays_since_selected_date(self):
+    def should_return_total_plays_from_selected_date(self):
         user = UserFactory()
         entries = [
             user,
@@ -366,7 +366,7 @@ class TestGetStats(object):
         db.session.add_all(entries)
         db.session.commit()
 
-        url = url_for('users.stats', pk=user.id, since='2015-06-01')
+        url = url_for('users.stats', pk=user.id, **{'from': '2015-06-01'})
         response = self.client.get(url)
 
         assert response.status_code == 200

@@ -16,32 +16,20 @@ from datetime import datetime
 import pytz
 from flask import request
 from flask.views import MethodView
-from sqlalchemy import desc
-from sqlalchemy.orm import lazyload
-from sqlalchemy.sql import func
 
 # First Party Libs
 from fm import http
+from fm.logic import stats
 from fm.logic.oauth import update_spotify_credentials
+from fm.models.spotify import PlaylistHistory
 from fm.models.user import User
+from fm.serializers.spotify import ArtistSerializer
 from fm.serializers.user import UserSerializer
 from fm.session import authenticated, current_user
 from fm.thirdparty.spotify import (
     PlaylistSerializer,
     SpotifyApi,
     TrackSerializer
-)
-from fm.models.spotify import (
-    Album,
-    Artist,
-    ArtistAlbumAssociation,
-    ArtistGenreAssociation,
-    Genre,
-    PlaylistHistory,
-    Track
-)
-from fm.serializers.spotify import (
-    ArtistSerializer
 )
 
 
@@ -135,63 +123,34 @@ class UserStatsView(MethodView):
     """ Provides statistics for a specific user.
     """
 
-    def total_play_time(self, user_pk, since):
-        query = Track.query \
-            .with_entities(func.sum(Track.duration).label('sum')) \
-            .join(PlaylistHistory) \
-            .filter(PlaylistHistory.user_id == user_pk)
-
-        if since:
-            query = query.filter(PlaylistHistory.created >= since)
+    def total_play_time(self, user_pk, since, until):
+        query = stats.total_play_time(since).filter(
+            PlaylistHistory.user_id == user_pk
+        )
         return query.first()[0]
 
-    def total_plays(self, user_pk, since):
-        query = PlaylistHistory.query \
-            .filter(PlaylistHistory.user_id == user_pk)
-        if since:
-            query = query.filter(PlaylistHistory.created >= since)
+    def total_plays(self, user_pk, since, until):
+        query = stats.total_plays(since).filter(
+            PlaylistHistory.user_id == user_pk
+        )
         return query.count()
 
-    def most_played_tracks(self, user_pk, since):
-        query = Track.query \
-            .options(lazyload(Track.album)) \
-            .with_entities(Track, func.count(Track.id).label('count')) \
-            .join(PlaylistHistory) \
-            .filter(PlaylistHistory.user_id == user_pk) \
-            .group_by(Track.id) \
-            .order_by(desc('count'))
-        if since:
-            query = query.filter(PlaylistHistory.created >= since)
+    def most_played_tracks(self, user_pk, since, until):
+        query = stats.most_played_tracks(since).filter(
+            PlaylistHistory.user_id == user_pk
+        )
         return query.limit(10)
 
-    def most_played_artists(self, user_pk, since):
-        query = Artist.query \
-            .with_entities(Artist, func.count(Artist.id).label('count')) \
-            .join(ArtistAlbumAssociation) \
-            .join(Album) \
-            .join(Track) \
-            .join(PlaylistHistory) \
-            .filter(PlaylistHistory.user_id == user_pk) \
-            .group_by(Artist.id) \
-            .order_by(desc('count'))
-        if since:
-            query = query.filter(PlaylistHistory.created >= since)
+    def most_played_artists(self, user_pk, since, until):
+        query = stats.most_played_artists(since).filter(
+            PlaylistHistory.user_id == user_pk
+        )
         return query.limit(10)
 
-    def most_played_genres(self, user_pk, since):
-        query = Genre.query \
-            .with_entities(Genre, func.count(Genre.id).label('count')) \
-            .join(ArtistGenreAssociation) \
-            .join(Artist) \
-            .join(ArtistAlbumAssociation) \
-            .join(Album) \
-            .join(Track) \
-            .join(PlaylistHistory) \
-            .filter(PlaylistHistory.user_id == user_pk) \
-            .group_by(Genre.id) \
-            .order_by(desc('count'))
-        if since:
-            query = query.filter(PlaylistHistory.created >= since)
+    def most_played_genres(self, user_pk, since, until):
+        query = stats.most_played_genres(since).filter(
+            PlaylistHistory.user_id == user_pk
+        )
         return query.limit(10)
 
     def get(self, pk):
@@ -206,27 +165,30 @@ class UserStatsView(MethodView):
         if user is None:
             return http.NotFound()
 
-        since = request.args.get('since', None)
+        since = request.args.get('from', None)
         if since:
             since = pytz.utc.localize(datetime.strptime(since, '%Y-%m-%d'))
+        until = request.args.get('to', None)
+        if until:
+            until = pytz.utc.localize(datetime.strptime(until, '%Y-%m-%d'))
 
-        stats = {
+        payload = {
             'most_played_tracks': [
                 {
                     'track': TrackSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_tracks(pk, since)],
+                } for u, t in self.most_played_tracks(pk, since, until)],
             'most_played_artists': [
                 {
                     'artist': ArtistSerializer().serialize(u),
                     'total': t
-                } for u, t in self.most_played_artists(pk, since)],
+                } for u, t in self.most_played_artists(pk, since, until)],
             'most_played_genres': [
                 {
                     'name': u.name,
                     'total': t
-                } for u, t in self.most_played_genres(pk, since)],
-            'total_plays': self.total_plays(pk, since),
-            'total_play_time': self.total_play_time(pk, since),
+                } for u, t in self.most_played_genres(pk, since, until)],
+            'total_plays': self.total_plays(pk, since, until),
+            'total_play_time': self.total_play_time(pk, since, until),
         }
-        return http.OK(stats)
+        return http.OK(payload)
