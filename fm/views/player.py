@@ -184,15 +184,16 @@ class CurrentView(MethodView):
         """
 
         now = datetime.utcnow()
-        if now.tzinfo is None:
-            now = now.replace(tzinfo=dateutil.tz.tzutc())
+        # Always set tzinfo
+        now = now.replace(tzinfo=dateutil.tz.tzutc())
 
         # Get play start time
         start_time = redis.get('fm:player:start_time')
         if start_time is None:
             start_time = now
         else:
-            start_time = dateutil.parser.parse(start_time)
+            start_time = dateutil.parser.parse(start_time).replace(
+                tzinfo=dateutil.tz.tzutc())
 
         # Get Pause Durration
         try:
@@ -206,7 +207,8 @@ class CurrentView(MethodView):
         if paused:
             paused_start = redis.get('fm:player:pause_time')
             if paused_start is not None:
-                paused_start = dateutil.parser.parse(paused_start)
+                paused_start = dateutil.parser.parse(paused_start).replace(
+                    tzinfo=dateutil.tz.tzutc())
                 pause_durration += int((now - paused_start).total_seconds() * 1000)
 
         # Perform calculation
