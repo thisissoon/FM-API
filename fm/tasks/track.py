@@ -9,7 +9,7 @@ Asynchronous tasks specifically relating to Tracks.
 """
 
 # First Party Libs
-from fm.ext import celery
+from fm.ext import celery, db
 from fm.models.spotify import Track
 from fm.thirdparty.echonest import EchoNestError, get_track_analysis
 
@@ -35,7 +35,10 @@ def update_analysis(pk):
         # TODO: Log This
         return False
 
-    # commit analysis data to track
-    analysis
+    # commit analysis data to Track model
+    track.audio_summary = analysis
+
+    db.session.add(track)
+    db.session.commit()
 
     return True
