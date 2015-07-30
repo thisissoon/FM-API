@@ -298,3 +298,21 @@ ECHONEST_ARTIST_GENRES = {
         }
     }
 }
+
+# Example EchoNest Track Analysis Data
+ECHONEST_TRACK_ANALYSIS = {
+    'response': {
+        'track': {
+            'audio_summary': {
+                'danceability': 0.5164314670162907
+            },
+            'id': 'ARHMCWM1187FB37D67',
+            'name': 'Super Massive Blackhole'
+        },
+        'status': {
+            'code': 0,
+            'message': 'Success',
+            'version': '4.2'
+        }
+    }
+}

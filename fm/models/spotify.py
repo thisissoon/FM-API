@@ -206,6 +206,9 @@ class Track(db.Model):
         nullable=False,
         index=True)
 
+    #: Audio analysis from Echonest
+    audio_summary = db.Column(JSON)
+
     #
     # Relations
     #

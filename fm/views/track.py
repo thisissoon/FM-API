@@ -67,4 +67,7 @@ class TrackVeiw(MethodView):
         if track is None:
             return http.NotFound()
 
-        return http.OK(TrackSerializer().serialize(track))
+        data = TrackSerializer().serialize(track)
+        data['audio_summary'] = track.audio_summary
+
+        return http.OK(data)
