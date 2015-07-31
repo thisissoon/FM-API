@@ -114,7 +114,7 @@ def validate_signature(key, expected):
     """
 
     # Generates a hex of the request digest based on the secret key
-    sig = base64.b64decode(hmac.new(key, request.body, hashlib.sha256).digest())
+    sig = base64.b64encode(hmac.new(key, request.body, hashlib.sha256).digest())
 
     # Return if they match or not
     return sig == expected
