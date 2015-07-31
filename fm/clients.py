@@ -16,10 +16,14 @@ Clients ID and the password the signature.
 Example
 -------
     GET /foo
-    Authorization: Soundwave frJIUN8DYpKDtOLCwo//yllqDzg=
+    Authorization: Basic client:7f22960e19ce8d29d5c856667c4133c19339fefe2759e6d
+
+Clients should use SHA256 and send a Hex of the HMAC digest.
 """
 
 # Standard Libs
+import hashlib
+import hmac
 from functools import wraps
 
 # Third Party Libs
@@ -85,3 +89,27 @@ def get_private_key(client_id):
     key = clients.get(client_id, None)
 
     return key
+
+
+def validate_signature(key, expected):
+    """ Validates the HMAC signature sent with the request, encoding the raw
+    request body and comparing the signatures.
+
+    Arguments
+    ---------
+    key : str
+        The client private key
+    expected : str
+        The signature expected
+
+    Returns
+    -------
+    bool
+        If the signatures match
+    """
+
+    # Generates a hex of the request digest based on the secret key
+    sig = hmac.new(key, request.body, hashlib.sha256).hexdigest()
+
+    # Return if they match or not
+    return sig == expected
