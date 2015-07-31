@@ -20,7 +20,7 @@ HMAC.
 from functools import wraps
 
 # Third Party Libs
-from flask import request
+from flask import current_app, request
 
 # First Party Libs
 from fm.http import Unauthorized
@@ -51,3 +51,25 @@ def valid_request():
     """
 
     pass
+
+
+def get_private_key(client_id):
+    """ Gets the private key for the client from Flask application
+    configuration.
+
+    Example
+    -------
+        >>> EXTERNAL_CLIENTS = {
+        >>>     'Client-ID': 'PrivateKey'
+        >>> }
+
+    Returns
+    -------
+    str or None
+        The clients private key or None if the client is not found
+    """
+
+    clients = current_app.config.get('EXTERNAL_CLIENTS', {})
+    key = clients.get(client_id, None)
+
+    return key
