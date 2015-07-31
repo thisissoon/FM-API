@@ -17,7 +17,7 @@ import hmac
 import mock
 
 # First Party Libs
-from fm.clients import get_private_key, validate_signature
+from fm.clients import get_private_key, valid_request, validate_signature
 
 
 class TestGetPrivateKey(object):
@@ -53,3 +53,51 @@ class TestValidateSignature(object):
         sig = base64.b64encode(h.digest())
 
         assert validate_signature(key, sig)
+
+
+class TestValidateRequest(object):
+
+    @mock.patch('fm.clients.request')
+    def test_invalid_or_no_client_id(self, _request):
+        _request.headers = {}
+
+        assert valid_request() == False
+
+    @mock.patch('fm.clients.request')
+    def test_invalid_auth_type(self, _request):
+        _request.headers = {
+            'Authorization': 'Foo Bar'
+        }
+
+        assert valid_request() == False
+
+    @mock.patch('fm.clients.request')
+    def test_invalid_auth_creds(self, _request):
+        _request.headers = {
+            'Authorization': 'HMAC Bar'
+        }
+
+        assert valid_request() == False
+
+    @mock.patch('fm.clients.request')
+    def test_invalid_request(self, _request):
+        _request.headers = {
+            'Authorization': 'HMAC foo:bar'
+        }
+        _request.data = 'foo'
+        self.app.config['EXTERNAL_CLIENTS']['foo'] = 'bar'
+
+        assert valid_request() == False
+
+    @mock.patch('fm.clients.request')
+    def test_valid_request(self, _request):
+        h = hmac.new('foo', 'foo', hashlib.sha256)
+        sig = base64.b64encode(h.digest())
+
+        _request.headers = {
+            'Authorization': 'HMAC foo:{0}'.format(sig)
+        }
+        _request.data = 'foo'
+        self.app.config['EXTERNAL_CLIENTS']['foo'] = 'foo'
+
+        assert valid_request()

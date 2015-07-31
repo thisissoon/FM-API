@@ -63,7 +63,15 @@ def valid_request():
     """
 
     try:
-        cid, sig = request.headers.get('Authorization', '').split()
+        auth_type, auth_creds = request.headers.get('Authorization', '').split()
+    except ValueError:
+        return False
+
+    if not auth_type == 'HMAC':
+        return False
+
+    try:
+        cid, sig = auth_creds.split(':')
     except ValueError:
         return False
 
@@ -71,7 +79,7 @@ def valid_request():
     if key is None:
         return False
 
-    return valid_request(key, sig)
+    return validate_signature(key, sig)
 
 
 def get_private_key(client_id):
