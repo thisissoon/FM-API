@@ -15,13 +15,18 @@ Clients ID and the password the signature.
 
 Example
 -------
-    GET /foo
-    Authorization: Basic client:7f22960e19ce8d29d5c856667c4133c19339fefe2759e6d
+    GET / HTTP/1.1
+    Accept: */*
+    Accept-Encoding: gzip, deflate
+    Authorization: HMAC client:fyKWDhnOjSnVyFZmfEEzwZM5/v4nWebca33eCYuLX9Q=
+    Connection: keep-alive
 
-Clients should use SHA256 and send a Hex of the HMAC digest.
+Clients should use SHA256 to encode their requests and send a Base 64 encoded
+version of the HMAC digest.
 """
 
 # Standard Libs
+import base64
 import hashlib
 import hmac
 from functools import wraps
@@ -109,7 +114,7 @@ def validate_signature(key, expected):
     """
 
     # Generates a hex of the request digest based on the secret key
-    sig = hmac.new(key, request.body, hashlib.sha256).hexdigest()
+    sig = base64.b64decode(hmac.new(key, request.body, hashlib.sha256).digest())
 
     # Return if they match or not
     return sig == expected
