@@ -17,7 +17,45 @@ import hmac
 import mock
 
 # First Party Libs
-from fm.clients import get_private_key, valid_request, validate_signature
+from fm.clients import (
+    get_private_key,
+    known_client,
+    valid_request,
+    validate_signature
+)
+from fm.http import Unauthorized
+
+
+class TestKnownClientDecorator(object):
+
+    @known_client
+    def i_am_protected(self):
+        return True
+
+    def test_should_return_unauthorised(self):
+        response = self.i_am_protected()
+
+        assert type(response) == Unauthorized
+
+    @mock.patch('fm.clients.current_app')
+    @mock.patch('fm.clients.request')
+    def test_should_allow_access(self, _request, _app):
+        h = hmac.new('foo', 'foo', hashlib.sha256)
+        sig = base64.b64encode(h.digest())
+
+        _request.headers = {
+            'Authorization': 'HMAC foo:{0}'.format(sig)
+        }
+        _request.data = 'foo'
+        _app.config = {
+            'EXTERNAL_CLIENTS': {
+                'foo': 'foo'
+            }
+        }
+
+        response = self.i_am_protected()
+
+        assert response
 
 
 class TestGetPrivateKey(object):
@@ -75,6 +113,17 @@ class TestValidateRequest(object):
     def test_invalid_auth_creds(self, _request):
         _request.headers = {
             'Authorization': 'HMAC Bar'
+        }
+
+        assert valid_request() == False
+
+    @mock.patch('fm.clients.request')
+    def test_invalide_client_id(self, _request):
+        h = hmac.new('foo', 'foo', hashlib.sha256)
+        sig = base64.b64encode(h.digest())
+
+        _request.headers = {
+            'Authorization': 'HMAC foo:{0}'.format(sig)
         }
 
         assert valid_request() == False
