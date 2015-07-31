@@ -71,7 +71,7 @@ def valid_request():
     if key is None:
         return False
 
-    return False
+    return valid_request(key, sig)
 
 
 def get_private_key(client_id):
