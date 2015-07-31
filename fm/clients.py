@@ -19,6 +19,9 @@ HMAC.
 # Standard Libs
 from functools import wraps
 
+# Third Party Libs
+from flask import request
+
 # First Party Libs
 from fm.http import Unauthorized
 
@@ -38,4 +41,13 @@ def known_client(function):
 
 
 def valid_request():
+    """ Validates an incoming request from and ensures it comes from a trusted
+    source.
+
+    Returns
+    -------
+    bool
+        If the request is from a trust client
+    """
+
     pass
