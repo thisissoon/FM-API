@@ -9,11 +9,14 @@ Allow known external clients that are not users access to the API, these could
 be the Player or Volume control systems for example which are physical boxes
 that run outside of the network perimeter.
 
-Clients should send a Client-ID header which will correlate to a Private Key
-stored both on the Client and the Server. The Client will encode their request
-with this key, the server will check the request validity by also encoding
-the raw request with the same key and ensuring they match, this is known as
-HMAC.
+Clients should encode their request body with their private key using HMAC, this
+should then be sent with the Authorization Header with the username being the
+Clients ID and the password the signature.
+
+Example
+-------
+    GET /foo
+    Authorization: Soundwave frJIUN8DYpKDtOLCwo//yllqDzg=
 """
 
 # Standard Libs
@@ -50,7 +53,16 @@ def valid_request():
         If the request is from a trust client
     """
 
-    pass
+    try:
+        cid, sig = request.headers.get('Authorization', '').split()
+    except ValueError:
+        return False
+
+    key = get_private_key(cid)
+    if key is None:
+        return False
+
+    return False
 
 
 def get_private_key(client_id):
