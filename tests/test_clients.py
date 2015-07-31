@@ -35,7 +35,7 @@ class TestValidateSignature(object):
 
     @mock.patch('fm.clients.request')
     def test_return_false_no_match(self, _request):
-        _request.body = 'foo'
+        _request.data = 'foo'
 
         # Keys don't match
         key = 'bar'
@@ -46,7 +46,7 @@ class TestValidateSignature(object):
 
     @mock.patch('fm.clients.request')
     def test_return_true(self, _request):
-        _request.body = 'foo'
+        _request.data = 'foo'
 
         key = 'foo'
         h = hmac.new('foo', 'foo', hashlib.sha256)
