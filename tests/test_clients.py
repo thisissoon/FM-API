@@ -19,7 +19,7 @@ import mock
 # First Party Libs
 from fm.clients import (
     get_private_key,
-    known_client,
+    know_client_only_required,
     valid_request,
     validate_signature
 )
@@ -28,7 +28,7 @@ from fm.http import Unauthorized
 
 class TestKnownClientDecorator(object):
 
-    @known_client
+    @know_client_only_required
     def i_am_protected(self):
         return True
 

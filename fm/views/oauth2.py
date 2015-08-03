@@ -23,7 +23,7 @@ from fm.logic.oauth import authorize_spotify_user
 from fm.models.user import User
 from fm.oauth2.google import GoogleOAuth2Exception, authenticate_oauth_code
 from fm.oauth2.spotify import SpotifyOAuth2Exception
-from fm.session import authenticated, current_user, make_session
+from fm.session import current_user, make_session, session_only_required
 
 
 class GoogleTestClientView(MethodView):
@@ -117,7 +117,7 @@ class GoogleConnectView(MethodView):
 
 class SpotifyConnectView(MethodView):
 
-    @authenticated
+    @session_only_required
     def get(self):
         try:
             code = request.args['code']

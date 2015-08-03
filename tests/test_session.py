@@ -15,7 +15,6 @@ import uuid
 import mock
 from flask import g
 from itsdangerous import URLSafeTimedSerializer
-from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
@@ -23,16 +22,17 @@ from fm.http import Unauthorized
 from fm.session import (
     SESSION_KEY,
     USER_SESSION_KEY,
-    authenticated,
     make_session,
+    session_only_required,
     user_from_session,
     validate_session
 )
+from tests.factories.user import UserFactory
 
 
-class TestAuthenticated(object):
+class TestSessionOnlyDecorator(object):
 
-    @authenticated
+    @session_only_required
     def i_am_protected(self):
         return True
 

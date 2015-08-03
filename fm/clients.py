@@ -38,7 +38,7 @@ from flask import current_app, request
 from fm.http import Unauthorized
 
 
-def known_client(function):
+def know_client_only_required(function):
     """ Decorator which requires that the view is accessible by only
     known external clients.
     """
