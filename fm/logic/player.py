@@ -115,7 +115,7 @@ class Queue(object):
         for item in Queue.iterate():
             json_item = json.loads(item)
             if json_item.get('uuid') == uuid:
-                redis.lrem(key=config.PLAYLIST_REDIS_KEY, value=item, count=1)
+                redis.lrem(config.PLAYLIST_REDIS_KEY, item, 1)
                 redis.publish(config.PLAYER_CHANNEL, json.dumps({
                     'event': 'deleted',
                     'uri': json_item['uri'],
