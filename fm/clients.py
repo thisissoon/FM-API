@@ -18,7 +18,7 @@ Example
     GET / HTTP/1.1
     Accept: */*
     Accept-Encoding: gzip, deflate
-    Authorization: HMAC client:fyKWDhnOjSnVyFZmfEEzwZM5/v4nWebca33eCYuLX9Q=
+    Authorization: Basic Y2xpZW50OmZ5S1dEaG5PalNuVnlGWm1mRUV6d1pNNS92NG5XZWJjYTMzZUNZdUxYOVE9
     Connection: keep-alive
 
 Clients should use SHA256 to encode their requests and send a Base 64 encoded
@@ -67,11 +67,13 @@ def valid_request():
     except ValueError:
         return False
 
-    if not auth_type == 'HMAC':
+    try:
+        creds = base64.b64decode(auth_creds)
+    except TypeError:
         return False
 
     try:
-        cid, sig = auth_creds.split(':')
+        cid, sig = creds.split(':')
     except ValueError:
         return False
 

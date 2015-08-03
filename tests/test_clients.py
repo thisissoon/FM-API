@@ -112,7 +112,7 @@ class TestValidateRequest(object):
     @mock.patch('fm.clients.request')
     def test_invalid_auth_creds(self, _request):
         _request.headers = {
-            'Authorization': 'HMAC Bar'
+            'Authorization': 'Basic Bar'
         }
 
         assert valid_request() == False
@@ -121,17 +121,19 @@ class TestValidateRequest(object):
     def test_invalide_client_id(self, _request):
         h = hmac.new('foo', 'foo', hashlib.sha256)
         sig = base64.b64encode(h.digest())
+        creds = base64.b64encode('foo:{0}'.format(sig))
 
         _request.headers = {
-            'Authorization': 'HMAC foo:{0}'.format(sig)
+            'Authorization': 'Basic {0}'.format(creds)
         }
 
         assert valid_request() == False
 
     @mock.patch('fm.clients.request')
     def test_invalid_request(self, _request):
+        creds = base64.b64encode('foo:bar')
         _request.headers = {
-            'Authorization': 'HMAC foo:bar'
+            'Authorization': 'Basic {0}'.format(creds)
         }
         _request.data = 'foo'
         self.app.config['EXTERNAL_CLIENTS']['foo'] = 'bar'
@@ -142,9 +144,10 @@ class TestValidateRequest(object):
     def test_valid_request(self, _request):
         h = hmac.new('foo', 'foo', hashlib.sha256)
         sig = base64.b64encode(h.digest())
+        creds = base64.b64encode('foo:{0}'.format(sig))
 
         _request.headers = {
-            'Authorization': 'HMAC foo:{0}'.format(sig)
+            'Authorization': 'Basic {0}'.format(creds)
         }
         _request.data = 'foo'
         self.app.config['EXTERNAL_CLIENTS']['foo'] = 'foo'
