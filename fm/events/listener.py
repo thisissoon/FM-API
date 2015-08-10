@@ -12,7 +12,7 @@ handling events it cares about.
 # Standard Libs
 import json
 
-# Third Pary Libs
+# Third Party Libs
 import gevent
 from gevent.monkey import patch_all
 

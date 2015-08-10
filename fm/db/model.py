@@ -11,12 +11,12 @@ SQLAlchemy models.
 # Standard Libs
 import datetime
 
-# Third Pary Libs
+# Third Party Libs
+from dateutil.tz import tzutc
 from flask.ext.sqlalchemy import Model
 from sqlalchemy import Column
 
 # First Party Libs
-from dateutil.tz import tzutc
 from fm.db.types import UTCDateTime
 
 

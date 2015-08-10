@@ -11,14 +11,14 @@ PyTest Configuration
 # Standard Libs
 import json
 
-# Third Pary Libs
+# Third Party Libs
 import pytest
 from flask import g
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.app import create
 from fm.ext import db as _db
-from tests.factories.user import UserFactory
 
 
 _app = create()  # Create Application Instance

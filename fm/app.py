@@ -12,7 +12,7 @@ Flask Application Factory for bootstraping the FM API Application.
 import os
 import traceback
 
-# Third Pary Libs
+# Third Party Libs
 from flask import Flask, request
 
 # First Party Libs

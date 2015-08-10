@@ -12,7 +12,7 @@ import httplib
 import json
 import urllib
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 import pytest
 from flask import g, url_for

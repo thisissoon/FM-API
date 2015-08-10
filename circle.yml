@@ -23,7 +23,13 @@ test:
     - sed "s/<QUAY_TOKEN>/$QUAY_TOKEN/" < .dockercfg.template > ~/.dockercfg
 
 deployment:
-  latest:
+  prod:
     branch: master
     commands:
-      - docker push quay.io/$REPO:$TAG
+      - docker tag $REPO:$TAG quay.io/$REPO:prod
+      - docker push quay.io/$REPO:prod
+  latest:
+    branch: develop
+    commands:
+      - docker tag $REPO:$TAG quay.io/$REPO:latest
+      - docker push quay.io/$REPO:latest

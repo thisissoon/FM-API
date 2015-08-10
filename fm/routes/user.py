@@ -8,8 +8,7 @@ fm.user.routes
 Routes for the User Views
 """
 
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.via.routers.default import Pluggable
 
 # First Party Libs
@@ -21,6 +20,8 @@ routes = [
     Pluggable('/authenticated', user.UserAuthenticatedView, 'authenticated'),
     # /users/{id}
     Pluggable('/<pk>', user.UserView, 'user'),
+    # /users/{id}/stats
+    Pluggable('/<pk>/stats', user.UserStatsView, 'stats'),
 
     Pluggable('/<user_pk>/spotify-playlists/',
               user.UserSpotifyPlaylistView, 'user_spotify_playlists'),

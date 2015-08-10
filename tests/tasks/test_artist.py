@@ -11,15 +11,15 @@ Unittests for Artist Celery Tasks.
 # Standard Libs
 import uuid
 
-# Third Pary Libs
+# Third Party Libs
 import mock
+from tests.factories.spotify import ArtistFactory
 
 # First Party Libs
 from fm.ext import db
 from fm.models.spotify import Artist, Genre
 from fm.tasks.artist import update_genres
 from fm.thirdparty.echonest import EchoNestError
-from tests.factories.spotify import ArtistFactory
 
 
 class TestUpdateGenres(object):

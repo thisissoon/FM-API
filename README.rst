@@ -366,9 +366,20 @@ album and artist nested objects.
                 "given_name": "Chris",
                 "id": "8258be6b-ee53-4186-8bbd-55bc0a3a6f24"
             }
+            "uuid": "16fd2706-8baf-433b-82eb-8c7fada847da"
         }
         ...
     ]
+
+``DELETE``
+^^^^^^^^^^
+
+Remove a track from the queue: ``http DELETE http://localhost/player/queue/{:uuid}``
+
+.. code-block::
+
+    http DELETE http://localhost/player/queue/16fd2706-8baf-433b-82eb-8c7fada847da
+
 
 ``/player/queue/meta``
 ~~~~~~~~~~~~~~~~~~

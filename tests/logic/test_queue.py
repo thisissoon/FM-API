@@ -1,15 +1,15 @@
 # Standard Libs
 import unittest
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 from mockredis import mock_redis_client
+from tests.factories.spotify import TrackFactory
+from tests.factories.user import UserFactory
 
 # First Party Libs
 from fm.ext import db
 from fm.logic.player import Queue
-from tests.factories.spotify import TrackFactory
-from tests.factories.user import UserFactory
 
 
 @mock.patch('fm.logic.player.redis', mock_redis_client())

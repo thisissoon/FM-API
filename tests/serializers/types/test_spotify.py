@@ -11,16 +11,16 @@ Unit tests for sptoify Serializer field types.
 # Standard Libs
 import httplib
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 import pytest
 import requests
 from kim.exceptions import ValidationError
 from simplejson import JSONDecodeError
+from tests import TRACK_DATA
 
 # First Party Libs
 from fm.serializers.types.spotify import SpotifyURI
-from tests import TRACK_DATA
 
 
 class TestSpotifyURI(object):
@@ -46,7 +46,7 @@ class TestSpotifyURI(object):
         field = SpotifyURI()
 
         with pytest.raises(ValidationError) as e:
-            field.validate('foo')
+            field.validate('spotify:track:foo')
 
         assert e.value.message == 'Unable to get track data from Spotify'
 

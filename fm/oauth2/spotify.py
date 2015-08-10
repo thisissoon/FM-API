@@ -10,7 +10,7 @@ Spotify oAuth2 Connection helper methods.
 # Standard Libs
 import httplib
 
-# Third Pary Libs
+# Third Party Libs
 import requests
 from flask import url_for
 

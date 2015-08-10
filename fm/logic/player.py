@@ -7,8 +7,9 @@ generating random content.
 
 # Standard Libs
 import json
+import uuid
 
-# Third Pary Libs
+# Third Party Libs
 from sqlalchemy.sql import func
 
 # First Party Libs
@@ -23,7 +24,7 @@ class Queue(object):
     """
 
     @staticmethod
-    def add(uri, user):
+    def add(uri, user, notification=True):
         """ Add a track into a redis queue
 
         Parameters
@@ -39,16 +40,27 @@ class Queue(object):
             config.PLAYLIST_REDIS_KEY,
             json.dumps({
                 'uri': uri,
-                'user': user
+                'user': user,
+                'uuid': str(uuid.uuid4()),
             })
         )
 
         # Publish Add Event
-        redis.publish(config.PLAYER_CHANNEL, json.dumps({
-            'event': 'add',
-            'uri': uri,
-            'user': user
-        }))
+        if notification:
+            redis.publish(config.PLAYER_CHANNEL, json.dumps({
+                'event': 'add',
+                'uri': uri,
+                'user': user
+            }))
+
+    @staticmethod
+    def iterate():
+        for index in range(Queue.length()):
+            yield Queue.get_item(index)
+
+    @staticmethod
+    def get_item(index):
+        return redis.lindex(config.PLAYLIST_REDIS_KEY, index)
 
     @staticmethod
     def get_queue(offset=0, limit=None):
@@ -89,6 +101,29 @@ class Queue(object):
         """
 
         return redis.llen(config.PLAYLIST_REDIS_KEY)
+
+    @staticmethod
+    def delete(uuid):
+        """ Remove a track from a redis queue
+
+        Parameters
+        ----------
+        uuid: Uuid
+            Unique identifator of track in the queue
+        """
+
+        for item in Queue.iterate():
+            json_item = json.loads(item)
+            if json_item.get('uuid') == uuid:
+                redis.lrem(config.PLAYLIST_REDIS_KEY, item, 1)
+                redis.publish(config.PLAYER_CHANNEL, json.dumps({
+                    'event': 'deleted',
+                    'uri': json_item['uri'],
+                    'user': json_item['user'],
+                }))
+                break
+        else:
+            raise ValueError('Cannot find value')
 
 
 class Random(object):

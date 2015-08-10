@@ -7,8 +7,7 @@ tests.test_google
 
 Tests for Google OAuth2 helpers.
 """
-
-# Third Pary Libs
+# Third Party Libs
 import mock
 import pytest
 from oauth2client.client import FlowExchangeError

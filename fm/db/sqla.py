@@ -7,8 +7,7 @@ fm.fb.sqla
 
 Custom SQLAlchemy functionality.
 """
-
-# Third Pary Libs
+# Third Party Libs
 from flask.ext.sqlalchemy import (
     SQLAlchemy,
     _BoundDeclarativeMeta,

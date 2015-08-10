@@ -11,7 +11,7 @@ Unit tests for the ``fm.views.oauth2.GoogleConnectView`` class.
 # Standard Libs
 import json
 
-# Third Pary Libs
+# Third Party Libs
 import mock
 from flask import url_for
 

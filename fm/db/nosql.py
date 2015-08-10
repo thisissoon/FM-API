@@ -11,8 +11,8 @@ Classes for connecting to NoSQL data stores.
 # Standard Libs
 import urlparse
 
-# Third Pary Libs
-from redis import StrictRedis
+# Third Party Libs
+import redis
 
 
 class Redis(object):
@@ -74,7 +74,7 @@ class Redis(object):
 
         # Connect to Redis
         uri = urlparse.urlparse(app.config.get('REDIS_SERVER_URI'))
-        self.connection = StrictRedis(
+        self.connection = redis.Redis(
             host=uri.hostname,
             port=uri.port,
             password=uri.password,

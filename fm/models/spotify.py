@@ -12,7 +12,6 @@ Models for storing Spotify Track data.
 import uuid
 
 # Third Party Libs
-# Third Pary Libs
 from sqlalchemy import Index, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -206,6 +205,9 @@ class Track(db.Model):
         server_default='0',
         nullable=False,
         index=True)
+
+    #: Audio analysis from Echonest
+    audio_summary = db.Column(JSON)
 
     #
     # Relations
