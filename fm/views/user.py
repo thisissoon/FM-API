@@ -25,7 +25,7 @@ from fm.models.spotify import PlaylistHistory
 from fm.models.user import User
 from fm.serializers.spotify import ArtistSerializer
 from fm.serializers.user import UserSerializer
-from fm.session import authenticated, current_user
+from fm.session import current_user, session_only_required
 from fm.thirdparty.spotify import (
     PlaylistSerializer,
     SpotifyApi,
@@ -37,7 +37,7 @@ class UserAuthenticatedView(MethodView):
     """ Authenticated User Resource - returns the currently authenticated user.
     """
 
-    @authenticated
+    @session_only_required
     def get(self):
         """ Returns the currently authenticated user
         """

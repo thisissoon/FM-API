@@ -27,6 +27,7 @@ from sqlalchemy import desc
 
 # First Party Libs
 from fm import http
+from fm.auth import authenticated
 from fm.ext import config, db, redis
 from fm.logic import stats
 from fm.logic.player import Queue, Random
@@ -39,7 +40,7 @@ from fm.serializers.spotify import (
     TrackSerializer
 )
 from fm.serializers.user import UserSerializer
-from fm.session import authenticated, current_user
+from fm.session import current_user
 from fm.tasks.queue import add, add_album
 
 

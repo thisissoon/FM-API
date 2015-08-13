@@ -30,7 +30,7 @@ USER_SESSION_KEY = 'fm:api:user:session:{0}'
 current_user = LocalProxy(lambda: user_from_session())
 
 
-def authenticated(function):
+def session_only_required(function):
     """ Decorator which requires that the view is accessable only to users
     with a valid session.
     """
