@@ -287,6 +287,7 @@ class TestQueueDelete(QueueTest):
             json.dumps({
                 'event': 'deleted',
                 'uri': track.spotify_uri,
-                'user': current_user.id
+                'user': current_user.id,
+                'uuid': '16fd2706-8baf-433b-82eb-8c7fada847da'
             })
         )

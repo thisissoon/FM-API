@@ -120,6 +120,7 @@ class Queue(object):
                     'event': 'deleted',
                     'uri': json_item['uri'],
                     'user': json_item['user'],
+                    'uuid': json_item['uuid'],
                 }))
                 break
         else:
