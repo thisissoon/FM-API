@@ -20,6 +20,7 @@ from fm import models  # noqa
 from fm import http
 from fm.ext import celery, db, redis, via
 from fm.http.cors import CORS
+import fm.logs
 
 
 def configure(app, config=None):
@@ -127,6 +128,8 @@ def create(config=None):
 
     # Error Handling
     errors(app)
+
+    fm.logs.configure(app)
 
     @app.before_request
     def require_json():
