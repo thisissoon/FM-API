@@ -14,6 +14,7 @@ from oauth2client.client import FlowExchangeError, credentials_from_code
 
 # First Party Libs
 from fm.ext import config
+from flask import current_app
 
 
 class GoogleOAuth2Exception(Exception):
@@ -131,8 +132,8 @@ def authenticate_oauth_code(code):
     credentials = get_credentials(code)
     user = user_from_credentials(credentials)
 
-    if not user['domain'] in config.GOOGLE_ALLOWED_DOMAINS:
-        disconnect(credentials.access_token)
+    current_app.logger.info('[Google auth] user profile {}'.format(user))
+    if not user.get('domain') in config.GOOGLE_ALLOWED_DOMAINS:
         raise GoogleOAuth2Exception('You need be a member of SOON_ or This Here')
 
     return user, credentials
