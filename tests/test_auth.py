@@ -40,7 +40,7 @@ class TestAuthenticatedDecorator(object):
 class TestIsAuthenticatedRequest(object):
 
     def test_returns_false_by_default(self):
-        assert is_authenticated_request() == False
+        assert not is_authenticated_request()
 
     @mock.patch('fm.auth.session.user_from_session')
     def test_valid_session(self, _user_from_session):

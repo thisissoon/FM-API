@@ -80,7 +80,7 @@ class TestValidateSignature(object):
         h = hmac.new('foo', 'foo', hashlib.sha256)
         sig = base64.b64encode(h.digest())
 
-        assert validate_signature(key, sig) == False
+        assert not validate_signature(key, sig)
 
     @mock.patch('fm.clients.request')
     def test_return_true(self, _request):
@@ -99,7 +99,7 @@ class TestValidateRequest(object):
     def test_invalid_or_no_client_id(self, _request):
         _request.headers = {}
 
-        assert valid_request() == False
+        assert not valid_request()
 
     @mock.patch('fm.clients.request')
     def test_invalid_auth_type(self, _request):
@@ -107,7 +107,7 @@ class TestValidateRequest(object):
             'Authorization': 'Foo Bar'
         }
 
-        assert valid_request() == False
+        assert not valid_request()
 
     @mock.patch('fm.clients.request')
     def test_invalid_auth_creds(self, _request):
@@ -115,7 +115,7 @@ class TestValidateRequest(object):
             'Authorization': 'Basic Bar'
         }
 
-        assert valid_request() == False
+        assert not valid_request()
 
     @mock.patch('fm.clients.request')
     def test_invalide_client_id(self, _request):
@@ -127,7 +127,7 @@ class TestValidateRequest(object):
             'Authorization': 'Basic {0}'.format(creds)
         }
 
-        assert valid_request() == False
+        assert not valid_request()
 
     @mock.patch('fm.clients.request')
     def test_invalid_request(self, _request):
@@ -138,7 +138,7 @@ class TestValidateRequest(object):
         _request.data = 'foo'
         self.app.config['EXTERNAL_CLIENTS']['foo'] = 'bar'
 
-        assert valid_request() == False
+        assert not valid_request()
 
     @mock.patch('fm.clients.request')
     def test_valid_request(self, _request):

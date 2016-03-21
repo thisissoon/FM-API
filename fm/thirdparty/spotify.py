@@ -16,7 +16,7 @@ class BaseSpotifySerializer(Serializer):
 
     id = Field(t.String)
     name = Field(t.String)
-    spotify_uri = Field(t.String)
+    uri = Field(t.String)
 
 
 class PlaylistSerializer(BaseSpotifySerializer):
@@ -222,7 +222,7 @@ class BaseSpotify(object):
     def __init__(self, metadata):
         self.id = metadata['id']
         self.name = metadata['name']
-        self.spotify_uri = metadata['uri']
+        self.uri = metadata['uri']
         self.raw = metadata
 
 
