@@ -43,7 +43,7 @@ class TestGetMute(BaseMuteTest):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['mute'] == False
+        assert not response.json['mute']
 
     def ensure_invalid_state_is_false(self):
         self.redis.get.return_value = 'foo'
@@ -52,7 +52,7 @@ class TestGetMute(BaseMuteTest):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['mute'] == False
+        assert not response.json['mute']
 
 
 @pytest.mark.usefixtures("authenticated")
