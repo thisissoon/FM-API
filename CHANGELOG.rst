@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+2016-03-21
+----------
+- Fix: Spotify ``uri`` and ``spotify_uri`` inconsistency.
+
 2015-07-31
 ------------
 - Feature: track analysis from echnoest
