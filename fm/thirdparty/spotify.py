@@ -222,7 +222,7 @@ class BaseSpotify(object):
     def __init__(self, metadata):
         self.id = metadata['id']
         self.name = metadata['name']
-        self.spotify_uri = metadata['uri']
+        self.uri = metadata['uri']
         self.raw = metadata
 
 
