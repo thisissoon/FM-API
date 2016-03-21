@@ -29,8 +29,9 @@ from fm.session import current_user, session_only_required
 from fm.thirdparty.spotify import (
     PlaylistSerializer,
     SpotifyApi,
-    TrackSerializer
+    TrackSerializer,
 )
+from fm.serializers.spotify import TrackSerializer as FMTrackSerializer
 
 
 class UserAuthenticatedView(MethodView):
@@ -175,7 +176,7 @@ class UserStatsView(MethodView):
         payload = {
             'most_played_tracks': [
                 {
-                    'track': TrackSerializer().serialize(u),
+                    'track': FMTrackSerializer().serialize(u),
                     'total': t
                 } for u, t in self.most_played_tracks(pk, since, until)],
             'most_played_artists': [
@@ -191,4 +192,5 @@ class UserStatsView(MethodView):
             'total_plays': self.total_plays(pk, since, until),
             'total_play_time': self.total_play_time(pk, since, until),
         }
+
         return http.OK(payload)
