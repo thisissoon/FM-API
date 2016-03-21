@@ -25,7 +25,7 @@ from tests.factories.spotify import (
 # First Party Libs
 from fm.ext import db
 from fm.serializers.spotify import ArtistSerializer
-from fm.thirdparty.spotify import TrackSerializer
+from fm.serializers.spotify import TrackSerializer as FMTrackSerializer
 
 
 class TestGetStats(object):
@@ -58,11 +58,11 @@ class TestGetStats(object):
         assert response.status_code == 200
         assert response.json['most_played_tracks'] == [
             {
-                'track': TrackSerializer().serialize(most_played),
+                'track': FMTrackSerializer().serialize(most_played),
                 'total': 2
             },
             {
-                'track': TrackSerializer().serialize(second_most_played),
+                'track': FMTrackSerializer().serialize(second_most_played),
                 'total': 1
             },
         ]
@@ -87,11 +87,11 @@ class TestGetStats(object):
         assert response.status_code == 200
         assert response.json['most_played_tracks'] == [
             {
-                'track': TrackSerializer().serialize(most_played),
+                'track': FMTrackSerializer().serialize(most_played),
                 'total': 2
             },
             {
-                'track': TrackSerializer().serialize(second_most_played),
+                'track': FMTrackSerializer().serialize(second_most_played),
                 'total': 1
             },
         ]
