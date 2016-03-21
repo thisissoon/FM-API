@@ -12,7 +12,7 @@ Models for storing Spotify Track data.
 import uuid
 
 # Third Party Libs
-from sqlalchemy import Index, func
+from sqlalchemy import Index, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declared_attr
@@ -49,6 +49,11 @@ class Artist(db.Model):
         'genre_associations',
         'genre',
         creator=lambda genre: ArtistGenreAssociation(genre=genre))
+
+    tracks = association_proxy(
+        'track_associations',
+        'track',
+        creator=lambda track: TrackArtistAssociation(track=track))
 
 
 class ArtistAlbumAssociation(db.Model):
@@ -214,3 +219,32 @@ class Track(db.Model):
     #
 
     album = db.relation('Album', backref='tracks', lazy='joined')
+
+    artists = association_proxy(
+        'track_associations',
+        'artist',
+        creator=lambda artist: TrackArtistAssociation(artist=artist))
+
+
+class TrackArtistAssociation(db.Model):
+    """ Linking Tracks to Artists
+    """
+
+    __tablename__ = 'track_artist'
+
+    __table_args__ = (
+        UniqueConstraint('artist_id', 'track_id'),
+    )
+
+    #: Artist Primary Key
+    artist_id = db.Column(db.ForeignKey('artist.id'), primary_key=True, index=True)
+
+    #: Track Primary Key
+    track_id = db.Column(db.ForeignKey('track.id'), primary_key=True, index=True)
+
+    #
+    # Relations
+    #
+
+    artist = db.relationship('Artist', backref='track_associations', lazy='joined')
+    track = db.relationship('Track', backref='artists', lazy='joined')

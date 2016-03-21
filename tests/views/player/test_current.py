@@ -159,7 +159,7 @@ class TestCurrentGet(BaseCurrentTest):
             _dt.utcnow.return_value = now
             response = self.client.get(url)
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
         assert response.json['track'] == TrackSerializer().serialize(track)
         assert response.json['user'] == UserSerializer().serialize(user)
         assert response.json['player']['elapsed_time'] == 5000
