@@ -169,28 +169,30 @@ class TestUserGet(object):
 
         expected = [
             {
-                'id': '6kxQr8LTtln4Li4dnT6N0B',
-                'name': 'Running Motivation',
-                'tracks': {
-                    'playlist': url_for('users.user_spotify_track',
-                                        user_pk=user.id,
-                                        playlist_pk='6kxQr8LTtln4Li4dnT6N0B',
-                                        _external=True),
-                    'total': 39
+                u'id': u'6kxQr8LTtln4Li4dnT6N0B',
+                u'name': u'Running Motivation',
+                u'tracks': {
+                    u'playlist': url_for(
+                        'users.user_spotify_track',
+                        user_pk=user.id,
+                        playlist_pk='6kxQr8LTtln4Li4dnT6N0B',
+                        _external=True),
+                    u'total': 39
                 },
-                'uri': 'spotify:user:spotify:playlist:6kxQr8LTtln4Li..'
+                u'uri': u'spotify:user:spotify:playlist:6kxQr8LTtln4Li..'
             },
             {
-                'id': '4wtLaWQcPct5tlAWTxqjMD',
-                'name': 'The Happy Hipster',
-                'tracks': {
-                    'playlist': url_for('users.user_spotify_track',
-                                        user_pk=user.id,
-                                        playlist_pk='4wtLaWQcPct5tlAWTxqjMD',
-                                        _external=True),
-                    'total': 186
+                u'id': u'4wtLaWQcPct5tlAWTxqjMD',
+                u'name': u'The Happy Hipster',
+                u'tracks': {
+                    u'playlist': url_for(
+                        'users.user_spotify_track',
+                        user_pk=user.id,
+                        playlist_pk='4wtLaWQcPct5tlAWTxqjMD',
+                        _external=True),
+                    u'total': 186
                 },
-                'uri': 'spotify:user:spotify:playlist:4wtLaWQcPct5gy..'
+                u'uri': u'spotify:user:spotify:playlist:4wtLaWQcPct5gy..'
             }
         ]
         response = self.client.get(url_for('users.user_spotify_playlists',

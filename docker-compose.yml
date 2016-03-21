@@ -6,6 +6,8 @@ api:
   links:
     - postgres
     - redis
+  volumes:
+    - .:/fm
   environment:
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@postgres:5432/soonfm
     - GOOGLE_REDIRECT_URI=http://localhost:8000/
@@ -16,12 +18,15 @@ api:
     - REDIS_SERVER_URI=redis://FMAPI_redis_1:6379/
     - REDIS_DB=0
     - ECHONEST_API_KEY=CIJ9BRHQVCOULALBX
+
 celery:
   image: quay.io/thisissoon/fm-api
   command: celery -A fm.tasks.app worker -l info -c 2
   links:
     - postgres
     - redis
+  volumes:
+    - .:/fm
   environment:
     - C_FORCE_ROOT=True
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@FMAPI_postgres_1:5432/soonfm
@@ -33,6 +38,7 @@ celery:
     - REDIS_SERVER_URI=redis://FMAPI_redis_1:6379/
     - REDIS_DB=0
     - ECHONEST_API_KEY=CIJ9BRHQVCOULALBX
+
 socket:
   image: soon/fm-socket
   command: npm start
@@ -40,6 +46,7 @@ socket:
     - "8080:8080"
   links:
     - redis
+
 postgres:
   image: soon/docker-postgresql
   ports:
@@ -50,6 +57,7 @@ postgres:
     - POSTGRESQL_USER=soonfm
     - POSTGRESQL_PASS=soonfm
     - POSTGRESQL_DB=soonfm
+
 redis:
   image: redis
   ports:

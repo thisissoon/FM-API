@@ -16,7 +16,7 @@ class BaseSpotifySerializer(Serializer):
 
     id = Field(t.String)
     name = Field(t.String)
-    spotify_uri = Field(t.String)
+    uri = Field(t.String)
 
 
 class PlaylistSerializer(BaseSpotifySerializer):
