@@ -169,28 +169,30 @@ class TestUserGet(object):
 
         expected = [
             {
-                'id': '6kxQr8LTtln4Li4dnT6N0B',
-                'name': 'Running Motivation',
-                'tracks': {
-                    'playlist': url_for('users.user_spotify_track',
-                                        user_pk=user.id,
-                                        playlist_pk='6kxQr8LTtln4Li4dnT6N0B',
-                                        _external=True),
-                    'total': 39
+                u'id': u'6kxQr8LTtln4Li4dnT6N0B',
+                u'name': u'Running Motivation',
+                u'tracks': {
+                    u'playlist': url_for(
+                        'users.user_spotify_track',
+                        user_pk=user.id,
+                        playlist_pk='6kxQr8LTtln4Li4dnT6N0B',
+                        _external=True),
+                    u'total': 39
                 },
-                'spotify_uri': 'spotify:user:spotify:playlist:6kxQr8LTtln4Li..'
+                u'uri': u'spotify:user:spotify:playlist:6kxQr8LTtln4Li..'
             },
             {
-                'id': '4wtLaWQcPct5tlAWTxqjMD',
-                'name': 'The Happy Hipster',
-                'tracks': {
-                    'playlist': url_for('users.user_spotify_track',
-                                        user_pk=user.id,
-                                        playlist_pk='4wtLaWQcPct5tlAWTxqjMD',
-                                        _external=True),
-                    'total': 186
+                u'id': u'4wtLaWQcPct5tlAWTxqjMD',
+                u'name': u'The Happy Hipster',
+                u'tracks': {
+                    u'playlist': url_for(
+                        'users.user_spotify_track',
+                        user_pk=user.id,
+                        playlist_pk='4wtLaWQcPct5tlAWTxqjMD',
+                        _external=True),
+                    u'total': 186
                 },
-                'spotify_uri': 'spotify:user:spotify:playlist:4wtLaWQcPct5gy..'
+                u'uri': u'spotify:user:spotify:playlist:4wtLaWQcPct5gy..'
             }
         ]
         response = self.client.get(url_for('users.user_spotify_playlists',
@@ -411,23 +413,23 @@ class TestUserGet(object):
         expected = [{
             "album": {
                 "id": "63Tn875CPFiwSpdKafhnvi",
-                "spotify_uri": "spotify:album:63Tn875CPFiwSpdKafhnvi",
+                "uri": "spotify:album:63Tn875CPFiwSpdKafhnvi",
                 "name": "Ludwig Van Beethoven: Orchestral Magni.."
             },
             "name": "Symphony No. 5 in C Minor, Op. 67: I. Alle..",
-            "spotify_uri": "spotify:track:2zhkrmXqlGP8BXJDoBiWts",
+            "uri": "spotify:track:2zhkrmXqlGP8BXJDoBiWts",
             "artists": [
                 {
                     "id": "2wOqMjp9TyABvtHdOSOTUS",
-                    "spotify_uri": "spotify:artist:2wOqMjp9TyABvtHdOSOTUS",
+                    "uri": "spotify:artist:2wOqMjp9TyABvtHdOSOTUS",
                     "name": "Ludwig van Beethoven"
                 }, {
                     "id": "0K23lQ2hSQAlxSEeZ05bjI",
-                    "spotify_uri": "spotify:artist:0K23lQ2hSQAlxSEeZ05bjI",
+                    "uri": "spotify:artist:0K23lQ2hSQAlxSEeZ05bjI",
                     "name": "Boston Symphony Orchestra"
                 }, {
                     "id": "2RKnompMfdeZsyis6Gs4ce",
-                    "spotify_uri": "spotify:artist:2RKnompMfdeZsyis6Gs4ce",
+                    "uri": "spotify:artist:2RKnompMfdeZsyis6Gs4ce",
                     "name": "Charles Munch"
                 }
             ],
@@ -436,19 +438,19 @@ class TestUserGet(object):
         }, {
             "album": {
                 "id": "7oyz4rAEXqVz99kmWe3ejU",
-                "spotify_uri": "spotify:album:7oyz4rAEXqVz99kmWe3ejU",
+                "uri": "spotify:album:7oyz4rAEXqVz99kmWe3ejU",
                 "name": "50 Film Classics"
             },
             "name": "Strauss, R: Also sprach Zarathustra, Op. 3..",
-            "spotify_uri": "spotify:track:7rNIsIG00EuyZZzLrVDNvg",
+            "uri": "spotify:track:7rNIsIG00EuyZZzLrVDNvg",
             "artists": [
                 {
                     "id": "2uuAaf6yCHYDZDVCdMUlA3",
-                    "spotify_uri": "spotify:artist:2uuAaf6yCHYDZDVCdMUlA3",
+                    "uri": "spotify:artist:2uuAaf6yCHYDZDVCdMUlA3",
                     "name": "Klaus Tennstedt"
                 }, {
                     "id": "3PfJE6ebCbCHeuqO4BfNeA",
-                    "spotify_uri": "spotify:artist:3PfJE6ebCbCHeuqO4BfNeA",
+                    "uri": "spotify:artist:3PfJE6ebCbCHeuqO4BfNeA",
                     "name": "London Philharmonic Orchestra"
                 }
             ],
