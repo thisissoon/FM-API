@@ -40,8 +40,7 @@ test:
 	py.test
 
 circleci:
-	$(MAKE) test -vv
-	coveralls
+	$(MAKE) test
 
 sdist: clean
 	python setup.py sdist
