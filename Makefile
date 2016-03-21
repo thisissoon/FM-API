@@ -2,6 +2,9 @@
 # Makefile
 #
 
+IMAGE 		:= thisissoon/fm-api
+TAG 		:= latest
+
 .PHONY: clean-pyc clean-build docs
 
 help:
@@ -43,3 +46,6 @@ circleci:
 sdist: clean
 	python setup.py sdist
 	find dist -type f -exec ls {} \; | xargs tar -ztvf $$1
+
+image:
+	docker build --force-rm -t $(IMAGE):$(TAG) .

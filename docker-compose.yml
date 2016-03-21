@@ -7,7 +7,7 @@ api:
     - postgres
     - redis
   environment:
-    - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@FMAPI_postgres_1:5432/soonfm
+    - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@postgres:5432/soonfm
     - GOOGLE_REDIRECT_URI=http://localhost:8000/
     - CORS_ACA_ORIGIN=http://localhost:8000
     - GOOGLE_CLIENT_ID=826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com
