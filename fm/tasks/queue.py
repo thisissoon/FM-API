@@ -91,6 +91,9 @@ def add(data, user, notification=True):
         if album not in artist.albums:
             artist.albums.append(album)
 
+        if track not in artist.tracks:
+            artist.tracks.append(track)
+
         db.session.add(artist)
         db.session.commit()
 
