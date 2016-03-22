@@ -82,6 +82,21 @@ class TestAdd(object):
         assert track.spotify_uri == TRACK_DATA['uri']
         assert track.album_id == Album.query.first().id
 
+    def should_add_artists_to_new_track(self):
+        assert Track.query.count() == 0
+        add.delay(TRACK_DATA, self.user.id)
+        track = Track.query.one()
+        assert len(track.artists) == 1
+
+    def should_add_only_unique_artists_to_new_track(self):
+        assert Track.query.count() == 0
+
+        user_id = self.user.id
+        add.delay(TRACK_DATA, user_id)
+        add.delay(TRACK_DATA, user_id)
+        track = Track.query.one()
+        assert len(track.artists) == 1
+
     def should_update_existing_track(self):
         album = AlbumFactory(spotify_uri=TRACK_DATA['album']['uri'])
         track = TrackFactory(name='Foo', spotify_uri=TRACK_DATA['uri'], album=album)
