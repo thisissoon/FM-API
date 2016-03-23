@@ -48,7 +48,6 @@ def add(data, user, notification=True):
     user : str
         Id of the user whom added the track to the queue
     """
-
     # Create or Update Album
     album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
     if album is None:
@@ -60,6 +59,7 @@ def add(data, user, notification=True):
 
     db.session.add(album)
     db.session.commit()
+    album_id = album.id  # keep album id outside of session
 
     # Crate or Update Track
 
@@ -70,7 +70,7 @@ def add(data, user, notification=True):
     track.name = data['name']
     track.spotify_uri = data['uri']
     track.duration = data['duration_ms']
-    track.album_id = album.id
+    track.album_id = album_id
 
     db.session.add(track)
     db.session.commit()
@@ -88,10 +88,10 @@ def add(data, user, notification=True):
         artist.name = item['name']
         artist.spotify_uri = item['uri']
 
-        if album not in artist.albums:
+        if album_id not in [x.id for x in artist.albums]:
             artist.albums.append(album)
 
-        if track not in artist.tracks:
+        if track.id not in [x.id for x in artist.tracks]:
             artist.tracks.append(track)
 
         db.session.add(artist)

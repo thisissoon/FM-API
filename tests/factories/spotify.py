@@ -92,6 +92,10 @@ class TrackFactory(Factory):
     album = factory.SubFactory(AlbumWithArtist)
     duration = fuzzy.FuzzyInteger(1000, 10000)
 
+    @factory.post_generation
+    def groups(self, create, extracted, **kwargs):
+        self.artists.append(ArtistFactory())
+
 
 class PlaylistHistoryFactory(Factory):
     """ Factory for generating Playlist Hisotry entries
