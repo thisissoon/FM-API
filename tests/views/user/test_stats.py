@@ -55,7 +55,7 @@ class TestGetStats(object):
         url = url_for('users.stats', pk=user.id, **{'from': '2015-06-01'})
         response = self.client.get(url)
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.data
         assert response.json['most_played_tracks'] == [
             {
                 'track': FMTrackSerializer().serialize(most_played),
