@@ -96,6 +96,30 @@ class ArtistGenreAssociation(db.Model):
     genre = db.relationship('Genre', backref='artist_associations', lazy='joined')
 
 
+class TrackArtistAssociation(db.Model):
+    """ Linking Tracks to Artists
+    """
+
+    __tablename__ = 'artist_track'
+
+    __table_args__ = (
+        UniqueConstraint('artist_id', 'track_id'),
+    )
+
+    #: Artist Primary Key
+    artist_id = db.Column(db.ForeignKey('artist.id'), primary_key=True, index=True)
+
+    #: Track Primary Key
+    track_id = db.Column(db.ForeignKey('track.id'), primary_key=True, index=True)
+
+    #
+    # Relations
+    #
+
+    artist = db.relationship('Artist', backref='track_associations', lazy='joined')
+    track = db.relationship('Track', backref='artist_associations', lazy='joined')
+
+
 class Album(db.Model):
     """ Holds Spotify Album data
     """
@@ -221,30 +245,6 @@ class Track(db.Model):
     album = db.relation('Album', backref='tracks', lazy='joined')
 
     artists = association_proxy(
-        'track_associations',
+        'artist_associations',
         'artist',
         creator=lambda artist: TrackArtistAssociation(artist=artist))
-
-
-class TrackArtistAssociation(db.Model):
-    """ Linking Tracks to Artists
-    """
-
-    __tablename__ = 'track_artist'
-
-    __table_args__ = (
-        UniqueConstraint('artist_id', 'track_id'),
-    )
-
-    #: Artist Primary Key
-    artist_id = db.Column(db.ForeignKey('artist.id'), primary_key=True, index=True)
-
-    #: Track Primary Key
-    track_id = db.Column(db.ForeignKey('track.id'), primary_key=True, index=True)
-
-    #
-    # Relations
-    #
-
-    artist = db.relationship('Artist', backref='track_associations', lazy='joined')
-    track = db.relationship('Track', backref='artists', lazy='joined')

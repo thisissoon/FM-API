@@ -4,6 +4,7 @@ Change Log
 2016.03.23
 ----------
 - Make refenrece between artists and tracks
+- Fix missing artist values in the queue
 
 2016.03.21.1
 -------------
