@@ -222,6 +222,8 @@ class TestCurrentDelete(BaseCurrentTest):
         self.redis.publish.assert_called_once_with(
             self.app.config.get('PLAYER_CHANNEL'),
             json.dumps({
-                'event': 'stop'
+                'event': 'stop',
+                'user': str(user.id),
+                'track': str(track.id),
             })
         )
