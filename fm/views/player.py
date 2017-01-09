@@ -266,14 +266,16 @@ class CurrentView(MethodView):
             A http response intance, in this case it should always be a 204
         """
 
-        track = self.get_current_track()
-        if track is None:
+        track, user = self.get_current_track()
+        if track is None or user is None:
             return http.NoContent()
 
         redis.publish(
             config.PLAYER_CHANNEL,
             json.dumps({
-                'event': 'stop'
+                'event': 'stop',
+                'user': str(user.id),
+                'track': str(track.id),
             })
         )
 

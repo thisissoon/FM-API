@@ -14,8 +14,8 @@ api:
     - CORS_ACA_ORIGIN=http://localhost:8000
     - GOOGLE_CLIENT_ID=826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com
     - GOOGLE_CLIENT_SECRET=HuJwtrN_tiE2qa4XsikjxnQr
-    - CELERY_BROKER_URL=redis://FMAPI_redis_1:6379/0
-    - REDIS_SERVER_URI=redis://FMAPI_redis_1:6379/
+    - CELERY_BROKER_URL=redis://redis:6379/0
+    - REDIS_SERVER_URI=redis://redis:6379/
     - REDIS_DB=0
     - ECHONEST_API_KEY=CIJ9BRHQVCOULALBX
 
@@ -34,8 +34,8 @@ celery:
     - CORS_ACA_ORIGIN=http://localhost:8000
     - GOOGLE_CLIENT_ID=826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com
     - GOOGLE_CLIENT_SECRET=HuJwtrN_tiE2qa4XsikjxnQr
-    - CELERY_BROKER_URL=redis://FMAPI_redis_1:6379/0
-    - REDIS_SERVER_URI=redis://FMAPI_redis_1:6379/
+    - CELERY_BROKER_URL=redis://redis:6379/0
+    - REDIS_SERVER_URI=redis://redis:6379/
     - REDIS_DB=0
     - ECHONEST_API_KEY=CIJ9BRHQVCOULALBX
 
