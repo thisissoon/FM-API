@@ -20,6 +20,7 @@ requests==2.6.0
 
 # Serialization
 py-kim==0.1.6
+simplejson==3.8.2
 
 # Misc
 python-dateutil==2.4.0
