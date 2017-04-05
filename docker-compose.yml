@@ -12,8 +12,8 @@ api:
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@postgres:5432/soonfm
     - GOOGLE_REDIRECT_URI=http://localhost:8000/
     - CORS_ACA_ORIGIN=http://localhost:8000
-    - GOOGLE_CLIENT_ID=826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com
-    - GOOGLE_CLIENT_SECRET=HuJwtrN_tiE2qa4XsikjxnQr
+    - GOOGLE_CLIENT_ID=999522755620-6eqk606akoip4malaqp4pndnb2i9v8v1.apps.googleusercontent.com
+    - GOOGLE_CLIENT_SECRET=C19cqHw7fIzLawHqGr2Laq-9
     - CELERY_BROKER_URL=redis://redis:6379/0
     - REDIS_SERVER_URI=redis://redis:6379/
     - REDIS_DB=0
@@ -32,8 +32,8 @@ celery:
     - SQLALCHEMY_DATABASE_URI=postgresql://soonfm:soonfm@FMAPI_postgres_1:5432/soonfm
     - GOOGLE_REDIRECT_URI=http://localhost:8000/
     - CORS_ACA_ORIGIN=http://localhost:8000
-    - GOOGLE_CLIENT_ID=826576189197-4sr9fonm8vr6ora4mfgdtou6j3v69asq.apps.googleusercontent.com
-    - GOOGLE_CLIENT_SECRET=HuJwtrN_tiE2qa4XsikjxnQr
+    - GOOGLE_CLIENT_ID=999522755620-6eqk606akoip4malaqp4pndnb2i9v8v1.apps.googleusercontent.com
+    - GOOGLE_CLIENT_SECRET=C19cqHw7fIzLawHqGr2Laq-9
     - CELERY_BROKER_URL=redis://redis:6379/0
     - REDIS_SERVER_URI=redis://redis:6379/
     - REDIS_DB=0
