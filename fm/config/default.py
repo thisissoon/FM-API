@@ -56,9 +56,27 @@ REDIS_DB = os.environ.get('REDIS_DB', 0)
 # SQLAlchemy
 
 SQLALCHEMY_NATIVE_UNICODE = False
+SQLALCHEMY_DB_USER = os.environ.get(
+    'SQLALCHEMY_DB_USER',
+    'postgres')
+SQLALCHEMY_DB_PASS = os.environ.get(
+    'SQLALCHEMY_DB_PASS',
+    'postgres')
+SQLALCHEMY_DB_HOST = os.environ.get(
+    'SQLALCHEMY_DB_HOST',
+    'localhost')
+SQLALCHEMY_DB_NAME = os.environ.get(
+    'SQLALCHEMY_DB_NAME',
+    'fm')
 SQLALCHEMY_DATABASE_URI = os.environ.get(
     'SQLALCHEMY_DATABASE_URI',
-    'sqlite://:memory:')
+    'postgres://{0}:{1}@{2}:5432/{3}'.format(
+        SQLALCHEMY_DB_USER,
+        SQLALCHEMY_DB_PASS,
+        SQLALCHEMY_DB_HOST,
+        SQLALCHEMY_DB_NAME,
+    )
+)
 
 # CORS
 
