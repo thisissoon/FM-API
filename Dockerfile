@@ -22,8 +22,7 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y -q \
     && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # Install Pip
-RUN chmod +x /get-pip.py
-RUN python /get-pip.py
+RUN chmod +x /get-pip.py && python /get-pip.py
 
 # Set 5000 to be the default exposed port
 EXPOSE 5000
@@ -32,13 +31,20 @@ EXPOSE 5000
 COPY ./REQUIREMENTS /fm/REQUIREMENTS
 RUN pip install -r REQUIREMENTS
 
+# Default Environment Settings
+ENV FM_SETTINGS_MODULE=fm.config.default \
+    GUNICORN_HOST=0.0.0.0 \
+    GUNICORN_PORT=5000 \
+    GUNICORN_WORKERS=2 \
+    REDIS_DB=0 \
+    REDIS_CHANNEL=fm:events
+
+# Default Entrypoint
+ENTRYPOINT ["gunicorn", "fm.wsgi:app"]
+
 # Entry point - Runs the Gunicorn Server by Defult - WSGI entry point is dms/wsgi.py
 # Enironment variables can be used to to set the Host / Port / Workers and Settings Modules
-CMD gunicorn \
-    -b $GUNICORN_HOST:$GUNICORN_PORT \
-    -w $GUNICORN_WORKERS \
-    -e DMS_SETTINGS_MODULE=$DMS_SETTINGS_MODULE \
-    fm.wsgi:app
+CMD ["-c", "/fm/fm/config/gunicorn.py"]
 
 # Always Copy Files Last as everything that follows this will not be cached by docker
 COPY . /fm
