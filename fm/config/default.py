@@ -65,15 +65,19 @@ SQLALCHEMY_DB_PASS = os.environ.get(
 SQLALCHEMY_DB_HOST = os.environ.get(
     'SQLALCHEMY_DB_HOST',
     'localhost')
+SQLALCHEMY_DB_PORT = os.environ.get(
+    'SQLALCHEMY_DB_PORT',
+    '5432')
 SQLALCHEMY_DB_NAME = os.environ.get(
     'SQLALCHEMY_DB_NAME',
     'fm')
 SQLALCHEMY_DATABASE_URI = os.environ.get(
     'SQLALCHEMY_DATABASE_URI',
-    'postgres://{0}:{1}@{2}:5432/{3}'.format(
+    'postgres://{0}:{1}@{2}:{3}/{4}'.format(
         SQLALCHEMY_DB_USER,
         SQLALCHEMY_DB_PASS,
         SQLALCHEMY_DB_HOST,
+        SQLALCHEMY_DB_PORT,
         SQLALCHEMY_DB_NAME,
     )
 )
