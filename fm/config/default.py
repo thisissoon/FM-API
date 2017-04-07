@@ -48,10 +48,11 @@ VIA_ROUTES_MODULE = 'fm.routes.root'
 
 # Redis
 
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost:6379')
+REDIS_DB = os.environ.get('REDIS_DB', 0)
 REDIS_SERVER_URI = os.environ.get(
     'REDIS_SERVER_URI',
-    'redis://localhost:6379/')
-REDIS_DB = os.environ.get('REDIS_DB', 0)
+    'redis://{0}/'.format(REDIS_HOST))
 
 # SQLAlchemy
 

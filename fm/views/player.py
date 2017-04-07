@@ -78,8 +78,8 @@ class VolumeView(MethodView):
 
         try:
             volume = int(redis.get('fm:player:volume'))
-        except ValueError:
-            volume = 100
+        except (ValueError, TypeError):
+            volume = 0
 
         return http.OK({'volume': volume})
 

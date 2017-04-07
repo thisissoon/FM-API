@@ -35,9 +35,7 @@ RUN pip install -r REQUIREMENTS
 ENV FM_SETTINGS_MODULE=fm.config.default \
     GUNICORN_HOST=0.0.0.0 \
     GUNICORN_PORT=5000 \
-    GUNICORN_WORKERS=2 \
-    REDIS_DB=0 \
-    REDIS_CHANNEL=fm:events
+    GUNICORN_WORKERS=1
 
 # Default Entrypoint
 ENTRYPOINT ["gunicorn", "fm.wsgi:app"]
