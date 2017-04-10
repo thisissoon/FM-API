@@ -20,4 +20,6 @@ class RootView(MethodView):
         """
         """
 
-        return http.OK({'message': 'Welcome to the thisissoon.fm API'})
+        return http.OK({
+            'message': 'Welcome to the thisissoon.fm API',
+        })

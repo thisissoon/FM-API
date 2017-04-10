@@ -34,7 +34,7 @@ class TestVolumeGet(BaseVolumeTest):
         response = self.client.get(url)
 
         assert response.status_code == 200
-        assert response.json['volume'] == 100
+        assert response.json['volume'] == 0
 
     def should_return_current_volume(self):
         self.redis.get.return_value = 70

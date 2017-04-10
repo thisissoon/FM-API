@@ -7,29 +7,34 @@ machine:
     - postgresql
     - docker
   environment:
-    REPO: thisissoon/fm-api
-    TAG: $(sed 's/master/latest/;s/\//\-/' <<<$CIRCLE_BRANCH)
+    PROJECT_NAME: soon-fm-production
+    GCLOUD_COMPUTE_ZONE: europe-west1-c
+    REPO: gcr.io/soon-fm-production/api
     SQLALCHEMY_DATABASE_URI: postgres://ubuntu@localhost:5432/circle_test
 
+# Log into gcloud
 dependencies:
   override:
-    - docker build -t $REPO:$TAG .
+    - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
+    - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update kubectl
+    - echo $GCLOUD_SERVICE_AUTH | base64 --decode -i > ${HOME}/account-auth.json
+    - sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/account-auth.json
+    - sudo /opt/google-cloud-sdk/bin/gcloud config set project ${PROJECT_NAME}
+    - sudo /opt/google-cloud-sdk/bin/gcloud config set compute/zone ${GCLOUD_COMPUTE_ZONE}
+    - docker build -t $REPO:$CIRCLE_SHA1 .
+    - docker tag $REPO:$CIRCLE_SHA1 $REPO:latest
 
+# Run tests in build container
 test:
   override:
-    - docker run -it --name test --net=host -e CIRCLE_BRANCH=$CIRCLE_BRANCH -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$TAG make circleci
-  post:
-    - docker tag $REPO:$TAG quay.io/$REPO:$TAG
-    - sed "s/<QUAY_TOKEN>/$QUAY_TOKEN/" < .dockercfg.template > ~/.dockercfg
+    - docker run --rm -it --net=host --entrypoint=make -e FM_SETTINGS_MODULE=fm.config.test -e CIRCLE_BRANCH=$CIRCLE_BRANCH -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN -e SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI $REPO:$CIRCLE_SHA1 test
 
+# Deploy container to appropriate environment
 deployment:
   prod:
     branch: master
     commands:
-      - docker tag $REPO:$TAG quay.io/$REPO:prod
-      - docker push quay.io/$REPO:prod
-  latest:
-    branch: develop
-    commands:
-      - docker tag $REPO:$TAG quay.io/$REPO:latest
-      - docker push quay.io/$REPO:latest
+      - sudo /opt/google-cloud-sdk/bin/gcloud --quiet container clusters get-credentials production
+      - sudo /opt/google-cloud-sdk/bin/gcloud --quiet config set container/cluster production
+      - sudo /opt/google-cloud-sdk/bin/gcloud -- push $REPO:$CIRCLE_SHA1
+      - cat k8s/all-in-one.yml | sed "s#\$IMAGE#${REPO}:${CIRCLE_SHA1}#g" | kubectl apply -f -
