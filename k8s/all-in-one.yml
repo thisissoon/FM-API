@@ -7,6 +7,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-api-conf
+  labels:
+    app: api
+    tier: backend
 data:
   api.conf: |
     server_tokens                   off;
@@ -34,6 +37,18 @@ data:
             proxy_set_header    X-Forwarded-for $remote_addr;
         }
     }
+# API Environment Variable Configuration
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-env-config
+  labels:
+    app: api
+    tier: backend
+data:
+  REDIS_HOST: redis:6379
+  SQLALCHEMY_DB_HOST: cloudsql.default
 ---
 # Service
 apiVersion: v1
@@ -43,7 +58,6 @@ metadata:
   labels:
     app: api
     tier: backend
-    env: prod
 spec:
   type: NodePort
   ports:
@@ -51,7 +65,6 @@ spec:
   selector:
     app: api
     tier: backend
-    env: prod
 ---
 # Deployment
 apiVersion: apps/v1beta1
@@ -84,12 +97,11 @@ spec:
         - containerPort: 80
       # # Python API Application
       - name: api
-        image: $IMAGE
+        image: gcr.io/soon-fm-production/api:$TAG
+        envFrom:
+          - configMapRef:
+              name: api-env-config
         env:
-          - name: REDIS_HOST
-            value: redis:6379
-          - name: SQLALCHEMY_DB_HOST
-            value: cloudsql.default
           - name: SQLALCHEMY_DB_USER
             valueFrom:
               secretKeyRef:
@@ -105,27 +117,27 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: dbupgrade
+  name: api-db-upgrade-$TAG
 spec:
   template:
     metadata:
       labels:
         app: api
         tier: backend
-        env: prod
     spec:
       restartPolicy: Never
       containers:
       - name: dbupgrade
-        image: $IMAGE
+        image: gcr.io/soon-fm-production/api:$TAG
         command:
           - python
           - ./manage.py
           - db
           - upgrade
+        envFrom:
+          - configMapRef:
+              name: api-env-config
         env:
-          - name: SQLALCHEMY_DB_HOST
-            value: cloudsql.default
           - name: SQLALCHEMY_DB_USER
             valueFrom:
               secretKeyRef:

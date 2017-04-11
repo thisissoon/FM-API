@@ -15,12 +15,13 @@ machine:
 # Log into gcloud
 dependencies:
   override:
+    - echo $GCLOUD_SERVICE_AUTH | base64 --decode -i > ${HOME}/account-auth.json
     - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
     - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update kubectl
-    - echo $GCLOUD_SERVICE_AUTH | base64 --decode -i > ${HOME}/account-auth.json
     - sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/account-auth.json
     - sudo /opt/google-cloud-sdk/bin/gcloud config set project ${PROJECT_NAME}
     - sudo /opt/google-cloud-sdk/bin/gcloud config set compute/zone ${GCLOUD_COMPUTE_ZONE}
+    - sudo /opt/google-cloud-sdk/bin/gcloud docker -- pull $REPO:base
     - docker build -t $REPO:$CIRCLE_SHA1 .
     - docker tag $REPO:$CIRCLE_SHA1 $REPO:latest
 
@@ -37,4 +38,6 @@ deployment:
       - sudo /opt/google-cloud-sdk/bin/gcloud --quiet container clusters get-credentials production
       - sudo /opt/google-cloud-sdk/bin/gcloud --quiet config set container/cluster production
       - sudo /opt/google-cloud-sdk/bin/gcloud docker -- push $REPO:$CIRCLE_SHA1
-      - cat k8s/all-in-one.yml | sed "s#\$IMAGE#${REPO}:${CIRCLE_SHA1}#g" | kubectl apply -f -
+      - sudo chown -R $USER /home/ubuntu/.config
+      - sudo chown -R $USER /home/ubuntu/.kube
+      - cat k8s/all-in-one.yml | sed "s#\$TAG#${CIRCLE_SHA1}#g" | kubectl apply -f -

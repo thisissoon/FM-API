@@ -2,7 +2,7 @@
 # Makefile
 #
 
-IMAGE 		:= thisissoon/fm-api
+IMAGE 		:= gcr.io/soon-fm-production/api
 TAG 		:= latest
 
 .PHONY: clean-pyc clean-build docs
@@ -48,3 +48,6 @@ sdist: clean
 
 image:
 	docker build --force-rm -t $(IMAGE):$(TAG) .
+
+base:
+	docker build -f Dockerfile.base --force-rm -t $(IMAGE):base .

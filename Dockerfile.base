@@ -1,0 +1,39 @@
+# Base Docker File
+
+# Alpine is thin linux OS that weighs in at a few MB
+FROM alpine:3.5
+
+# Install OS level dependencies
+RUN apk update \
+    && apk add --no-cache build-base \
+        openssl \
+        ca-certificates \
+        postgresql-dev \
+        libevent-dev \
+        libffi-dev \
+        python-dev \
+        git \
+    && wget -qO- https://bootstrap.pypa.io/get-pip.py | python -
+
+# Set 5000 to be the default exposed port
+EXPOSE 5000
+
+# Set Working Directory
+WORKDIR /fm
+
+# Install the Requirements via pip - Copying 1 file is cached
+COPY ./REQUIREMENTS /fm/REQUIREMENTS
+RUN pip install -r REQUIREMENTS && rm -rf ~/.pip/cache/
+
+# Default Environment Settings
+ENV FM_SETTINGS_MODULE=fm.config.default \
+    GUNICORN_HOST=0.0.0.0 \
+    GUNICORN_PORT=5000 \
+    GUNICORN_WORKERS=1
+
+# Default Entrypoint
+ENTRYPOINT ["gunicorn", "fm.wsgi:app"]
+
+# Entry point - Runs the Gunicorn Server by Defult - WSGI entry point is dms/wsgi.py
+# Enironment variables can be used to to set the Host / Port / Workers and Settings Modules
+CMD ["-c", "/fm/fm/config/gunicorn.py"]
