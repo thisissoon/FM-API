@@ -13,10 +13,13 @@ import json
 
 # Third Party Libs
 import mock
+import httplib
+import requests
 from mockredis import mock_redis_client
 from tests import TRACK_DATA
 from tests.factories.spotify import AlbumFactory, ArtistFactory, TrackFactory
 from tests.factories.user import UserFactory
+from tests import ECHONEST_ARTIST_GENRES
 
 # First Party Libs
 from fm.ext import config, db
@@ -43,6 +46,20 @@ class TestAdd(object):
         patch = mock.patch('fm.tasks.queue.update_genres')
         self.update_genres = patch.start()
         self.update_genres.return_value = []
+        self.addPatchCleanup(patch)
+
+        # Patch Requests to EchoNest
+        self.requests = mock.MagicMock()
+        self.requests.get.return_value = mock.MagicMock(
+            status_code=httplib.OK,
+            json=mock.MagicMock(return_value=ECHONEST_ARTIST_GENRES))
+        self.requests.ConnectionError = requests.ConnectionError
+
+        patch = mock.patch(
+            'fm.thirdparty.echonest.requests',
+            new_callable=mock.PropertyMock(return_value=self.requests))
+
+        patch.start()
         self.addPatchCleanup(patch)
 
     def should_create_new_album(self):

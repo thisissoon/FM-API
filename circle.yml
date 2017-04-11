@@ -36,5 +36,5 @@ deployment:
     commands:
       - sudo /opt/google-cloud-sdk/bin/gcloud --quiet container clusters get-credentials production
       - sudo /opt/google-cloud-sdk/bin/gcloud --quiet config set container/cluster production
-      - sudo /opt/google-cloud-sdk/bin/gcloud -- push $REPO:$CIRCLE_SHA1
+      - sudo /opt/google-cloud-sdk/bin/gcloud docker -- push $REPO:$CIRCLE_SHA1
       - cat k8s/all-in-one.yml | sed "s#\$IMAGE#${REPO}:${CIRCLE_SHA1}#g" | kubectl apply -f -

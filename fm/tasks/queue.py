@@ -48,6 +48,7 @@ def add(data, user, notification=True):
     user : str
         Id of the user whom added the track to the queue
     """
+
     # Create or Update Album
     album = Album.query.filter(Album.spotify_uri == data['album']['uri']).first()
     if album is None:
@@ -77,7 +78,7 @@ def add(data, user, notification=True):
     Queue.add(track.spotify_uri, user, notification)
 
     # Call Sub task for track analysis updating
-    update_analysis.s(track.id).delay()
+    update_analysis.delay(track.id)
 
     # Create or Update Artists - Appending Album to the Artists Albums
     for item in data['artists']:
