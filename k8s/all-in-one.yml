@@ -149,11 +149,12 @@ spec:
         command:
           - celery
           - -A
-          - fm.tasks.app worker
+          - fm.tasks.app
           - -l
           - info
           - -c
           - '1'
+          - worker
         envFrom:
           - configMapRef:
               name: api-env-config
