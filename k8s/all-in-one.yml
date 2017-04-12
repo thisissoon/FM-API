@@ -12,22 +12,6 @@ metadata:
     tier: backend
 data:
   api.conf: |
-    server_tokens                   off;
-    client_body_buffer_size         10K;
-    client_header_buffer_size       1k;
-    client_max_body_size            8m;
-    large_client_header_buffers     2 1k;
-    client_body_timeout             12;
-    client_header_timeout           12;
-    send_timeout                    10;
-    gzip                            on;
-    gzip_comp_level                 6;
-    gzip_min_length                 1000;
-    gzip_proxied                    expired no-cache no-store private auth;
-    gzip_types                      text/plain application/x-javascript text/xml text/css application/xml application/json;
-    add_header                      X-Frame-Options "DENY";
-    add_header                      X-Content-Type-Options "nosniff";
-    add_header                      X-XSS-Protection "1; mode=block";
     server {
         listen 80;
         location / {
@@ -47,7 +31,6 @@ metadata:
     app: api
     tier: backend
 data:
-  SERVER_NAME: api.thisissoon.fm
   REDIS_HOST: redis:6379
   SQLALCHEMY_DB_HOST: cloudsql.default
   CELERY_BROKER_URL: redis://redis:6379/0
@@ -64,6 +47,7 @@ spec:
   type: NodePort
   ports:
   - port: 80
+    protocol: TCP
   selector:
     app: api
     tier: backend
@@ -91,7 +75,7 @@ spec:
       containers:
       # Nginx Container
       - name: nginx
-        image: nginx:1.10.3-alpine
+        image: gcr.io/soon-fm-production/nginx:1.10.3
         resources:
           requests:
             memory: "10Mi"
@@ -208,7 +192,7 @@ spec:
   template:
     metadata:
       labels:
-        app: api
+        app: api-eventlistener
         tier: backend
     spec:
       # Containers
@@ -266,7 +250,7 @@ spec:
   template:
     metadata:
       labels:
-        app: api
+        app: api-dbupgrade
         tier: backend
     spec:
       restartPolicy: Never
