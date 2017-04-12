@@ -37,8 +37,8 @@ data:
             proxy_set_header    X-Forwarded-for $remote_addr;
         }
     }
-# API Environment Variable Configuration
 ---
+# API Environment Variable Configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -47,8 +47,10 @@ metadata:
     app: api
     tier: backend
 data:
+  SERVER_NAME: api.thisissoon.fm
   REDIS_HOST: redis:6379
   SQLALCHEMY_DB_HOST: cloudsql.default
+  CELERY_BROKER_URL: redis://redis:6379/0
 ---
 # Service
 apiVersion: v1
@@ -66,19 +68,19 @@ spec:
     app: api
     tier: backend
 ---
-# Deployment
+# API Deployment
+# Runs Nginx / UWSGI and Celery Workers
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: api
 spec:
-  replicas: 1
+  replicas: 4
   template:
     metadata:
       labels:
         app: api
         tier: backend
-        env: prod
     spec:
       # Volumes
       volumes:
@@ -90,6 +92,9 @@ spec:
       # Nginx Container
       - name: nginx
         image: nginx:1.10.3-alpine
+        resources:
+          requests:
+            memory: "10Mi"
         volumeMounts:
         - name: nginx-config-volume
           mountPath: /etc/nginx/conf.d
@@ -98,6 +103,114 @@ spec:
       # # Python API Application
       - name: api
         image: gcr.io/soon-fm-production/api:$TAG
+        resources:
+          requests:
+            memory: "60Mi"
+        envFrom:
+          - configMapRef:
+              name: api-env-config
+        env:
+          - name: CORS_ACA_ORIGIN
+            valueFrom:
+              secretKeyRef:
+                name: api-cors
+                key: origin
+          - name: SQLALCHEMY_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-api-credentials
+                key: username
+          - name: SQLALCHEMY_DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-api-credentials
+                key: password
+          - name: GOOGLE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: id
+          - name: GOOGLE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: secret
+          - name: GOOGLE_REDIRECT_URI
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: redirect
+      # Celery Worker
+      - name: celery-worker
+        image: gcr.io/soon-fm-production/api:$TAG
+        resources:
+          requests:
+            memory: "50Mi"
+        command:
+          - celery
+          - -A
+          - fm.tasks.app worker
+          - -l
+          - info
+          - -c
+          - '1'
+        envFrom:
+          - configMapRef:
+              name: api-env-config
+        env:
+          - name: C_FORCE_ROOT
+            value: "True"
+          - name: SQLALCHEMY_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-api-credentials
+                key: username
+          - name: SQLALCHEMY_DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-api-credentials
+                key: password
+          - name: GOOGLE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: id
+          - name: GOOGLE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: secret
+          - name: GOOGLE_REDIRECT_URI
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: redirect
+---
+# Event Listener
+# We only ever want to run 1 of these
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: api-eventlistener
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api
+        tier: backend
+    spec:
+      # Containers
+      containers:
+      - name: api
+        image: gcr.io/soon-fm-production/api:$TAG
+        resources:
+          requests:
+            memory: "70Mi"
+        command:
+          - python
+          - ./manage.py
+          - runeventlistener
         envFrom:
           - configMapRef:
               name: api-env-config
@@ -112,6 +225,21 @@ spec:
               secretKeyRef:
                 name: cloudsql-api-credentials
                 key: password
+          - name: GOOGLE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: id
+          - name: GOOGLE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: secret
+          - name: GOOGLE_REDIRECT_URI
+            valueFrom:
+              secretKeyRef:
+                name: api-google-oauth
+                key: redirect
 ---
 # Migration Job
 apiVersion: batch/v1
