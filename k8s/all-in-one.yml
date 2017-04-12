@@ -115,6 +115,11 @@ spec:
               secretKeyRef:
                 name: api-cors
                 key: origin
+          - name: ECHONEST_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: api-echonest
+                key: key
           - name: SQLALCHEMY_DB_USER
             valueFrom:
               secretKeyRef:
@@ -161,6 +166,11 @@ spec:
         env:
           - name: C_FORCE_ROOT
             value: "True"
+          - name: ECHONEST_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: api-echonest
+                key: key
           - name: SQLALCHEMY_DB_USER
             valueFrom:
               secretKeyRef:
@@ -216,6 +226,11 @@ spec:
           - configMapRef:
               name: api-env-config
         env:
+          - name: ECHONEST_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: api-echonest
+                key: key
           - name: SQLALCHEMY_DB_USER
             valueFrom:
               secretKeyRef:
