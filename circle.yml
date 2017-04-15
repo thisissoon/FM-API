@@ -40,4 +40,4 @@ deployment:
       - sudo /opt/google-cloud-sdk/bin/gcloud docker -- push $REPO:$CIRCLE_SHA1
       - sudo chown -R $USER /home/ubuntu/.config
       - sudo chown -R $USER /home/ubuntu/.kube
-      - cat k8s/all-in-one.yml | sed "s#\$TAG#${CIRCLE_SHA1}#g" | kubectl apply -f -
+      - cat k8s.yml | sed "s#\$TAG#${CIRCLE_SHA1}#g" | kubectl apply -f -
