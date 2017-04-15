@@ -11,9 +11,20 @@ metadata:
     app: api
     tier: backend
 data:
+  proxy.html: |
+    <!DOCTYPE HTML>
+    <script src="//cdn.rawgit.com/jpillora/xdomain/0.6.17/dist/xdomain.min.js"></script>
+    <script>
+      xdomain.masters({
+        "http://thisissoon.fm": "*"
+      });
+    </script>
   api.conf: |
     server {
         listen 80;
+        location =/proxy.html {
+            alias /etc/nginx/conf.d/proxy.html;
+        }
         location / {
             proxy_pass          http://localhost:5000;
             proxy_set_header    Host            $host;
