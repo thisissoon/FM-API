@@ -15,8 +15,6 @@ data:
     server {
         listen 80;
         location / {
-            rewrite ^/api(.*)$ /$1 break;
-            rewrite ^/api/(.*)$ $1 break;
             proxy_pass          http://localhost:5000;
             proxy_set_header    Host            $host;
             proxy_set_header    X-Real-IP       $remote_addr;
