@@ -78,7 +78,7 @@ def add(data, user, notification=True):
     Queue.add(track.spotify_uri, user, notification)
 
     # Call Sub task for track analysis updating
-    update_analysis.delay(track.id)
+    update_analysis.s(track.id).delay()
 
     # Create or Update Artists - Appending Album to the Artists Albums
     for item in data['artists']:
