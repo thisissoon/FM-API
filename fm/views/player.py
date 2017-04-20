@@ -276,6 +276,8 @@ class CurrentView(MethodView):
                 'event': 'stop',
                 'user': str(user.id),
                 'track': str(track.id),
+                'uri': str(track.spotify_uri),
+                'by': str(current_user.id),
             })
         )
 

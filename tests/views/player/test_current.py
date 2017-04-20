@@ -26,6 +26,7 @@ from fm.ext import db
 from fm.serializers.spotify import TrackSerializer
 from fm.serializers.user import UserSerializer
 from fm.views.player import CurrentView
+from fm.session import current_user
 
 
 class BaseCurrentTest(object):
@@ -212,7 +213,7 @@ class TestCurrentDelete(BaseCurrentTest):
 
         self.redis.get.return_value = json.dumps({
             'uri': track.spotify_uri,
-            'user': user.id
+            'user': user.id,
         })
 
         url = url_for('player.current')
@@ -225,5 +226,7 @@ class TestCurrentDelete(BaseCurrentTest):
                 'event': 'stop',
                 'user': str(user.id),
                 'track': str(track.id),
+                'uri': str(track.spotify_uri),
+                'by': str(current_user.id),
             })
         )
