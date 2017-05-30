@@ -19,6 +19,8 @@ from fm.views import RootView
 routes = [
     # /
     Pluggable('/', RootView, 'root'),
+    # /spotify/*
+    Include('fm.routes.spotify', url_prefix='/spotify', endpoint='spotify'),
     # /player/*
     Include('fm.routes.player', url_prefix='/player', endpoint='player'),
     # /track/*
