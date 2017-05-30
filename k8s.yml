@@ -91,6 +91,7 @@ spec:
         resources:
           requests:
             memory: "10Mi"
+            cpu: 0
         volumeMounts:
         - name: nginx-config-volume
           mountPath: /etc/nginx/conf.d
@@ -102,10 +103,21 @@ spec:
         resources:
           requests:
             memory: "60Mi"
+            cpu: 0
         envFrom:
           - configMapRef:
               name: api-env-config
         env:
+          - name: SPOTIFY_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: spotify
+                key: id
+          - name: SPOTIFY_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: spotify
+                key: secret
           - name: CORS_ACA_ORIGIN
             valueFrom:
               secretKeyRef:
@@ -147,6 +159,7 @@ spec:
         resources:
           requests:
             memory: "50Mi"
+            cpu: 0
         command:
           - celery
           - -A
@@ -162,6 +175,16 @@ spec:
         env:
           - name: C_FORCE_ROOT
             value: "True"
+          - name: SPOTIFY_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: spotify
+                key: id
+          - name: SPOTIFY_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: spotify
+                key: secret
           - name: ECHONEST_API_KEY
             valueFrom:
               secretKeyRef:
@@ -214,6 +237,7 @@ spec:
         resources:
           requests:
             memory: "70Mi"
+            cpu: 0
         command:
           - python
           - ./manage.py
@@ -222,6 +246,16 @@ spec:
           - configMapRef:
               name: api-env-config
         env:
+          - name: SPOTIFY_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: spotify
+                key: id
+          - name: SPOTIFY_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: spotify
+                key: secret
           - name: ECHONEST_API_KEY
             valueFrom:
               secretKeyRef:
