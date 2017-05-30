@@ -19,4 +19,7 @@ routes = [
     Pluggable('/search', spotify.SearchView, 'search'),
     Pluggable('/artist/<id>', spotify.ArtistView, 'artist'),
     Pluggable('/artist/<id>/albums', spotify.ArtistAlbumView, 'artist.alums'),
+    Pluggable('/albums/<id>', spotify.AlbumView, 'album'),
+    Pluggable('/albums/<id>/tracks', spotify.AlbumTrackView, 'album.tracks'),
+
 ]

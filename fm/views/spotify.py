@@ -119,7 +119,7 @@ class ArtistAlbumView(MethodView):
         if request.args.get('album_type') is not None:
             params['album_type'] = request.args.get('album_type')
         if request.args.get('market') is not None:
-            params['album_type'] = request.args.get('market')
+            params['market'] = request.args.get('market')
         if request.args.get('limit') is not None:
             params['limit'] = request.args.get('limit')
         if request.args.get('offset') is not None:
@@ -127,6 +127,63 @@ class ArtistAlbumView(MethodView):
 
         r = requests.get(
             'https://api.spotify.com/v1/artists/{0}/albums'.format(id),
+            headers={
+                "Authorization": "Bearer {0}".format(token),
+            },
+            params=params)
+
+        if r.status_code != httplib.OK:
+            return http.NotFound()
+
+        return http.OK(r.json())
+
+
+class AlbumView(MethodView):
+
+    def get(self, id=None):
+        """Returns the album from spotify
+        """
+
+        if id is None:
+            return http.NotFound()
+
+        # TODO: exception handling
+        token = get_client_credentials()
+
+        r = requests.get(
+            'https://api.spotify.com/v1/albums/{0}'.format(id),
+            headers={
+                "Authorization": "Bearer {0}".format(token),
+            })
+
+        if r.status_code != httplib.OK:
+            return http.NotFound()
+
+        return http.OK(r.json())
+
+
+class AlbumTrackView(MethodView):
+
+    def get(self, id=None):
+        """Returns an albums tracks
+        """
+
+        if id is None:
+            return http.NotFound()
+
+        # TODO: exception handling
+        token = get_client_credentials()
+
+        params = {}
+        if request.args.get('market') is not None:
+            params['market'] = request.args.get('market')
+        if request.args.get('limit') is not None:
+            params['limit'] = request.args.get('limit')
+        if request.args.get('offset') is not None:
+            params['offset'] = request.args.get('offset')
+
+        r = requests.get(
+            'https://api.spotify.com/v1/albums/{0}/tracks'.format(id),
             headers={
                 "Authorization": "Bearer {0}".format(token),
             },
