@@ -18,11 +18,16 @@ from flask.views import MethodView
 
 # First Party Libs
 from fm import http
+from fm.ext import redis
 
 
 def get_client_credentials():
     """Calls the spotify API to return the client credentials token
     """
+
+    token = redis.get('fm:spotify:token')
+    if token is not None:
+        return token
 
     r = requests.post(
         'https://accounts.spotify.com/api/token',
@@ -37,7 +42,13 @@ def get_client_credentials():
     if r.status_code != httplib.OK:
         raise Exception('invalid status code response')
 
-    return r.json().get('access_token')
+    json = r.json()
+    token = json.get('access_token')
+    expire = json.get('expires_in')
+
+    redis.set('fm:spotify:token', token, ex=expire)
+
+    return token
 
 
 class SearchView(MethodView):
