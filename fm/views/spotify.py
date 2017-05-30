@@ -18,6 +18,7 @@ from flask.views import MethodView
 
 # First Party Libs
 from fm import http
+from fm.auth import authenticated
 from fm.ext import redis
 
 
@@ -55,6 +56,7 @@ class SearchView(MethodView):
     """Search View.
     """
 
+    @authenticated
     def get(self):
         """Implements the search endpoint via the Spotify Web API
         which requires authentication
@@ -81,6 +83,7 @@ class SearchView(MethodView):
 
 class ArtistView(MethodView):
 
+    @authenticated
     def get(self, id=None):
         """Returns the artist data from spotify
         """
@@ -105,6 +108,7 @@ class ArtistView(MethodView):
 
 class ArtistAlbumView(MethodView):
 
+    @authenticated
     def get(self, id=None):
         """Returns an artists albums
         """
@@ -140,6 +144,7 @@ class ArtistAlbumView(MethodView):
 
 class AlbumView(MethodView):
 
+    @authenticated
     def get(self, id=None):
         """Returns the album from spotify
         """
@@ -164,6 +169,7 @@ class AlbumView(MethodView):
 
 class AlbumTrackView(MethodView):
 
+    @authenticated
     def get(self, id=None):
         """Returns an albums tracks
         """
@@ -197,6 +203,7 @@ class AlbumTrackView(MethodView):
 
 class TrackView(MethodView):
 
+    @authenticated
     def get(self, id=None):
         """Returns the track from spotify
         """
