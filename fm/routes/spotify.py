@@ -17,8 +17,8 @@ from fm.views import spotify
 
 routes = [
     Pluggable('/search', spotify.SearchView, 'search'),
-    Pluggable('/artist/<id>', spotify.ArtistView, 'artist'),
-    Pluggable('/artist/<id>/albums', spotify.ArtistAlbumView, 'artist.albums'),
+    Pluggable('/artists/<id>', spotify.ArtistView, 'artist'),
+    Pluggable('/artists/<id>/albums', spotify.ArtistAlbumView, 'artist.albums'),
     Pluggable('/albums/<id>', spotify.AlbumView, 'album'),
     Pluggable('/albums/<id>/tracks', spotify.AlbumTrackView, 'album.tracks'),
     Pluggable('/tracks/<id>', spotify.TrackView, 'track'),
