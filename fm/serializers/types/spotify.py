@@ -20,6 +20,7 @@ from simplejson import JSONDecodeError
 
 # First Party Libs
 from fm.models.user import User
+from fm.views.spotify import get_client_credentials
 
 
 class SpotifyPlaylistEndpoint(t.String):
@@ -72,6 +73,11 @@ class SpotifyURI(t.String):
             The Spotiy URI
         """
 
+        try:
+            token = get_client_credentials()
+        except:
+            return ValidationError('Spotify credentials error')
+
         spotify_api_map = {
             'track': 'https://api.spotify.com/v1/tracks/{0}',
             'album': 'https://api.spotify.com/v1/albums/{0}'
@@ -83,7 +89,11 @@ class SpotifyURI(t.String):
             raise ValidationError('Unknow spotify uri: {}'.format(value))
 
         try:
-            response = requests.get(endpoint)
+            response = requests.get(
+                endpoint,
+                headers={
+                    "Authorization": "Bearer {0}".format(token),
+                })
         except requests.ConnectionError:
             raise ValidationError('Unable to get track data from Spotify')
 
