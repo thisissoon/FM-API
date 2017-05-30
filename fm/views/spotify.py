@@ -193,3 +193,27 @@ class AlbumTrackView(MethodView):
             return http.NotFound()
 
         return http.OK(r.json())
+
+
+class TrackView(MethodView):
+
+    def get(self, id=None):
+        """Returns the track from spotify
+        """
+
+        if id is None:
+            return http.NotFound()
+
+        # TODO: exception handling
+        token = get_client_credentials()
+
+        r = requests.get(
+            'https://api.spotify.com/v1/tracks/{0}'.format(id),
+            headers={
+                "Authorization": "Bearer {0}".format(token),
+            })
+
+        if r.status_code != httplib.OK:
+            return http.NotFound()
+
+        return http.OK(r.json())
