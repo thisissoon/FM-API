@@ -76,7 +76,7 @@ class SpotifyURI(t.String):
         try:
             token = get_client_credentials()
         except:
-            return ValidationError('Spotify credentials error')
+            raise ValidationError('Spotify credentials error')
 
         spotify_api_map = {
             'track': 'https://api.spotify.com/v1/tracks/{0}',

@@ -31,12 +31,16 @@ class TestSpotifyURI(object):
         self.requests.get.return_value = mock.MagicMock(
             status_code=httplib.OK,
             json=mock.MagicMock(return_value=TRACK_DATA))
+        self.requests.post.return_value = mock.MagicMock(
+            status_code=httplib.OK,
+            json=mock.MagicMock(return_value={
+                'access_token': 'foo',
+                'expire_in': 1,
+            }))
         self.requests.ConnectionError = requests.ConnectionError
-
         patch = mock.patch(
             'fm.serializers.types.spotify.requests',
             new_callable=mock.PropertyMock(return_value=self.requests))
-
         patch.start()
         self.addPatchCleanup(patch)
 
