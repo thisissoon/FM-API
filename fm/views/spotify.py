@@ -119,22 +119,64 @@ class ArtistAlbumView(MethodView):
         # TODO: exception handling
         token = get_client_credentials()
 
-        params = {}
-        if request.args.get('album_type') is not None:
-            params['album_type'] = request.args.get('album_type')
-        if request.args.get('market') is not None:
-            params['market'] = request.args.get('market')
-        if request.args.get('limit') is not None:
-            params['limit'] = request.args.get('limit')
-        if request.args.get('offset') is not None:
-            params['offset'] = request.args.get('offset')
-
         r = requests.get(
             'https://api.spotify.com/v1/artists/{0}/albums'.format(id),
             headers={
                 "Authorization": "Bearer {0}".format(token),
             },
-            params=params)
+            params=request.args)
+
+        if r.status_code != httplib.OK:
+            return http.NotFound()
+
+        return http.OK(r.json())
+
+
+class ArtistsTopTrackView(MethodView):
+
+    @authenticated
+    def get(self, id=None):
+        """Returns an artists top tracks
+        """
+
+        if id is None:
+            return http.NotFound()
+
+        # TODO: exception handling
+        token = get_client_credentials()
+
+        r = requests.get(
+            'https://api.spotify.com/v1/artists/{0}/top-tracks'.format(id),
+            headers={
+                "Authorization": "Bearer {0}".format(token),
+            },
+            params=request.args)
+
+        if r.status_code != httplib.OK:
+            return http.NotFound()
+
+        return http.OK(r.json())
+
+
+class ArtistsRelatedView(MethodView):
+
+    @authenticated
+    def get(self, id=None):
+        """Returns an artists related artists
+        """
+
+        if id is None:
+            return http.NotFound()
+
+        # TODO: exception handling
+        token = get_client_credentials()
+
+        r = requests.get(
+            'https://api.spotify.com/v1/artists/{0}/related-artists'.format(id),
+            headers={
+                "Authorization": "Bearer {0}".format(token),
+            },
+            params=request.args)
 
         if r.status_code != httplib.OK:
             return http.NotFound()
@@ -180,20 +222,12 @@ class AlbumTrackView(MethodView):
         # TODO: exception handling
         token = get_client_credentials()
 
-        params = {}
-        if request.args.get('market') is not None:
-            params['market'] = request.args.get('market')
-        if request.args.get('limit') is not None:
-            params['limit'] = request.args.get('limit')
-        if request.args.get('offset') is not None:
-            params['offset'] = request.args.get('offset')
-
         r = requests.get(
             'https://api.spotify.com/v1/albums/{0}/tracks'.format(id),
             headers={
                 "Authorization": "Bearer {0}".format(token),
             },
-            params=params)
+            params=request.args)
 
         if r.status_code != httplib.OK:
             return http.NotFound()
