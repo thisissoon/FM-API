@@ -43,6 +43,11 @@ class TestSpotifyURI(object):
             new_callable=mock.PropertyMock(return_value=self.requests))
         patch.start()
         self.addPatchCleanup(patch)
+        patch = mock.patch(
+            'fm.views.spotify.requests',
+            new_callable=mock.PropertyMock(return_value=self.requests))
+        patch.start()
+        self.addPatchCleanup(patch)
 
     def should_catch_connection_error(self):
         self.requests.get.side_effect = requests.ConnectionError()
