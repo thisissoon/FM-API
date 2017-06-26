@@ -158,8 +158,7 @@ class TestQueuePost(QueueTest):
         assert response.json['errors']['uri'][0]  \
             == 'Unknow spotify uri: foo'
 
-    @mock.patch('fm.tasks.queue.update_genres')
-    def should_add_track_to_queue(self, update_genres):
+    def should_add_track_to_queue(self):
         self.requests_mock.return_value = mock.MagicMock(
             status_code=httplib.OK,
             json=mock.MagicMock(return_value=TRACK_DATA)
@@ -182,7 +181,6 @@ class TestQueuePost(QueueTest):
             'uri': TRACK_DATA['uri'],
             'user': user.id
         }))
-        update_genres.s.assert_called_with(Artist.query.all()[0].id)
 
     # @pytest.mark.skip(reason='It\'s brokend and not used')
     # def should_add_album_tracks(self):
