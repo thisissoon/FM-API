@@ -29,7 +29,7 @@ class TestGetCredentials(object):
         credentials_from_code.side_effect = FlowExchangeError('some_error')
 
         with pytest.raises(google.GoogleOAuth2Exception):
-            google.get_credentials('foo')
+            google.get_credentials('foo', '')
 
 
 class TestDisconnect(object):
@@ -73,5 +73,5 @@ class TestAuthenticateOauthCode(object):
         user_from_credentials.return_value = {'domain': 'foo.com'}
 
         with pytest.raises(google.GoogleOAuth2Exception):
-            google.authenticate_oauth_code('foo')
+            google.authenticate_oauth_code('foo', '')
             disconnect.assert_called_once_with('bar')

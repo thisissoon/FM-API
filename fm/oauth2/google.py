@@ -25,7 +25,7 @@ class GoogleOAuth2Exception(Exception):
     pass
 
 
-def get_credentials(code):
+def get_credentials(code, origin):
     """ Creates a google oauth2 client credentials instance, validating
     the provided token with google.
 
@@ -45,13 +45,19 @@ def get_credentials(code):
         Google oAuth2 client credentials instance
     """
 
+    redirect_uri = ''
+    redirects = config.GOOGLE_REDIRECT_URI.split(",")
+    for redirect in redirects:
+        if origin == redirect:
+            redirect_uri = redirect
+
     try:
         credentials = credentials_from_code(
             config.GOOGLE_CLIENT_ID,
             config.GOOGLE_CLIENT_SECRET,
             '',
             code,
-            redirect_uri=config.GOOGLE_REDIRECT_URI)
+            redirect_uri=redirect_uri)
     except FlowExchangeError as e:
         raise GoogleOAuth2Exception(
             'Problem authenticating with Google: {0}'.format(e.message))
@@ -108,7 +114,7 @@ def disconnect(access_token):
         raise GoogleOAuth2Exception('Unable to disconnect application')
 
 
-def authenticate_oauth_code(code):
+def authenticate_oauth_code(code, origin):
     """ Authenticates the users web flow oAuth2 code with Google returning
     the authenticated users Google+ data to be stored in the system.
 
@@ -129,7 +135,7 @@ def authenticate_oauth_code(code):
         The user data from Google+ and Credentials instance
     """
 
-    credentials = get_credentials(code)
+    credentials = get_credentials(code, origin)
     user = user_from_credentials(credentials)
 
     current_app.logger.info('[Google auth] user profile {}'.format(user))
