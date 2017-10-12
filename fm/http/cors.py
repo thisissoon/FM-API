@@ -42,7 +42,11 @@ class CORS(object):
             """
 
             response.headers[HEADERS['CREDENTIALS']] = app.config['CORS_ACA_CREDENTIALS']
-            response.headers[HEADERS['ORIGIN']] = app.config['CORS_ACA_ORIGIN']
+
+            for origin in app.config['CORS_ACA_ORIGIN'].split(","):
+                if origin == request.headers.get('ORIGIN'):
+                    response.headers[HEADERS['ORIGIN']] = origin
+                    break
 
             if expose_headers(app) is not None:
                 response.headers[HEADERS['EXPOSE_HEADERS']] = expose_headers(app)
