@@ -48,6 +48,7 @@ def get_credentials(code, origin):
     redirect_uri = ''
     redirects = config.GOOGLE_REDIRECT_URI.split(",")
     for redirect in redirects:
+        current_app.logger.info('[Google auth] redirect {}'.format(redirect))
         if origin == redirect:
             redirect_uri = redirect
 

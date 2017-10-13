@@ -65,9 +65,11 @@ class GoogleConnectView(MethodView):
 
         # OAuth Code Validation
         try:
+            origin = request.headers.get('ORIGIN')
+            current_app.logger.info('[Google auth] origin {}'.format(origin))
             result, credentials = authenticate_oauth_code(
                 request.json['code'],
-                request.headers.get('ORIGIN'))
+                origin)
         except GoogleOAuth2Exception as e:
             return http.UnprocessableEntity(errors={
                 'code': [
