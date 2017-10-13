@@ -10,6 +10,7 @@ Google oAuth2 Connection helper methods.
 # Third Party Libs
 import apiclient
 import httplib2
+from furl import furl
 from oauth2client.client import FlowExchangeError, credentials_from_code
 
 # First Party Libs
@@ -46,10 +47,11 @@ def get_credentials(code, origin):
     """
 
     redirect_uri = ''
-    redirects = config.GOOGLE_REDIRECT_URI.split(",")
-    for redirect in redirects:
+    for redirect in config.GOOGLE_REDIRECT_URI.split(","):
         current_app.logger.info('[Google auth] redirect {}'.format(redirect))
-        if origin == redirect:
+        o = furl(origin)
+        r = furl(redirect)
+        if origin.host == redirect.host:
             redirect_uri = redirect
 
     try:
