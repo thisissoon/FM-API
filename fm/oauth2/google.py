@@ -51,7 +51,7 @@ def get_credentials(code, origin):
         current_app.logger.info('[Google auth] redirect {}'.format(redirect))
         o = furl(origin)
         r = furl(redirect)
-        if origin.host == redirect.host:
+        if o.host == r.host:
             redirect_uri = redirect
 
     try:

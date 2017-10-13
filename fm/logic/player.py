@@ -35,7 +35,7 @@ class Queue(object):
             The user id of the user whome added the track to the Queue
         """
 
-        qid = str(uuid.uuid4()
+        qid = str(uuid.uuid4())
 
         # Push the Track into the Queue
         redis.rpush(
@@ -43,7 +43,7 @@ class Queue(object):
             json.dumps({
                 'uri': uri,
                 'user': user,
-                'uuid': qid),
+                'uuid': qid,
             })
         )
 
