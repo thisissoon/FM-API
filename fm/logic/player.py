@@ -35,19 +35,22 @@ class Queue(object):
             The user id of the user whome added the track to the Queue
         """
 
+        qid = str(uuid.uuid4()
+
         # Push the Track into the Queue
         redis.rpush(
             config.PLAYLIST_REDIS_KEY,
             json.dumps({
                 'uri': uri,
                 'user': user,
-                'uuid': str(uuid.uuid4()),
+                'uuid': qid),
             })
         )
 
         # Publish Add Event
         if notification:
             redis.publish(config.PLAYER_CHANNEL, json.dumps({
+                'id': qid,
                 'event': 'add',
                 'uri': uri,
                 'user': user
